@@ -8,7 +8,7 @@ run `generate_snow_textures.ps1 -FreezeRecipe -WriteManifest`.
 
 Expected hashes come from the manifest rather than constants copied into several
 scripts. The manifest is a delivered file, so any change to it moves the
-canonical tree hash in `outputs/EnvironmentalWeapons_build_hashes.json`, and the
+canonical tree hash in `outputs/EnvironmentalEffects_build_hashes.json`, and the
 pixel properties are re-proved from the images by `validate_snow_textures.ps1`.
 #>
 param()

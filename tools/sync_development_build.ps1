@@ -13,12 +13,17 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $projectRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd('\')
 $sourceRoot = [IO.Path]::GetFullPath((Join-Path $projectRoot 'mod')).TrimEnd('\')
 $workspaceRoot = [IO.Path]::GetFullPath((Split-Path -Parent (Split-Path -Parent $projectRoot))).TrimEnd('\')
-$canonicalRoot = Join-Path $workspaceRoot 'outputs\EnvironmentalWeapons'
+# The mod id is the one name Project Zomboid binds saves to, so it is declared
+# once and every derived path, ZIP prefix and identity check reads it from here.
+# The literals in the Assert-ExactPath calls below are deliberately NOT derived
+# from it: they are the guard that catches an accidental edit of this line.
+$modId = 'EnvironmentalEffects'
+$canonicalRoot = Join-Path $workspaceRoot "outputs\$modId"
 $outputsRoot = Join-Path $workspaceRoot 'outputs'
-$zipPath = Join-Path $outputsRoot 'EnvironmentalWeapons.zip'
-$hashManifestPath = Join-Path $outputsRoot 'EnvironmentalWeapons_build_hashes.json'
-$installRoot = 'C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons'
-$expectedId = 'EnvironmentalWeapons'
+$zipPath = Join-Path $outputsRoot "$modId.zip"
+$hashManifestPath = Join-Path $outputsRoot "${modId}_build_hashes.json"
+$installRoot = "C:\Users\4b1t2\Zomboid\mods\$modId"
+$expectedId = $modId
 
 function Assert-ExactPath([string]$Actual, [string]$Expected, [string]$Label) {
     $actualFull = [IO.Path]::GetFullPath($Actual).TrimEnd('\')
@@ -193,7 +198,7 @@ function New-SafeZip {
             Sort-Object FullName) {
             $relative = (Get-RelativePath $canonicalRoot $file.FullName).Replace('\', '/')
             $entry = $archive.CreateEntry(
-                "EnvironmentalWeapons/$relative",
+                "$modId/$relative",
                 [IO.Compression.CompressionLevel]::Optimal)
             $entryStream = $entry.Open()
             $fileStream = [IO.File]::OpenRead($file.FullName)
@@ -222,10 +227,10 @@ function Assert-ZipParity {
             $name = $entry.FullName
             if ($name.StartsWith('/') -or $name -match '^[A-Za-z]:' -or
                 ($name -split '/') -contains '..' -or
-                -not $name.StartsWith('EnvironmentalWeapons/')) {
+                -not $name.StartsWith("$modId/")) {
                 throw "Unsafe ZIP entry: $name"
             }
-            $relative = $name.Substring('EnvironmentalWeapons/'.Length)
+            $relative = $name.Substring("$modId/".Length)
             if (-not $expectedByPath.ContainsKey($relative)) {
                 throw "Unexpected ZIP entry: $name"
             }
@@ -287,14 +292,14 @@ function Write-BuildHashes {
     try { $entryCount = $zipArchive.Entries.Count }
     finally { $zipArchive.Dispose() }
     $manifest = [ordered]@{
-        artifact = 'EnvironmentalWeapons'
+        artifact = $modId
         build = 'development-test'
         debug = $true
         target = 'Project Zomboid 42.20 single-player'
         canonicalTreeSha256 = Get-TreeHash $records
         canonicalFileCount = $records.Count
         zip = [ordered]@{
-            path = 'EnvironmentalWeapons.zip'
+            path = "$modId.zip"
             bytes = (Get-Item -LiteralPath $zipPath).Length
             sha256 = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
             entryCount = $entryCount
@@ -329,8 +334,8 @@ function Assert-BuildHashes {
 }
 
 Assert-ExactPath $sourceRoot (Join-Path $workspaceRoot 'work\EnvironmentalWeapons\mod') 'Source'
-Assert-ExactPath $canonicalRoot (Join-Path $workspaceRoot 'outputs\EnvironmentalWeapons') 'Canonical'
-Assert-ExactPath $installRoot 'C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons' 'Install'
+Assert-ExactPath $canonicalRoot (Join-Path $workspaceRoot 'outputs\EnvironmentalEffects') 'Canonical'
+Assert-ExactPath $installRoot 'C:\Users\4b1t2\Zomboid\mods\EnvironmentalEffects' 'Install'
 Assert-NotReparsePoint $sourceRoot 'Source'
 Assert-NotReparsePoint $canonicalRoot 'Canonical'
 Assert-NotReparsePoint $installRoot 'Install'
