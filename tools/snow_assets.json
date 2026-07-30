@@ -27,7 +27,7 @@
       "flankCoverage": 0.05,
       "flankMaxAlpha": 0.45,
       "visuallyVerified": true,
-      "verificationNote": "User confirmed in game on 2026-07-29: equipped, aiming, and slung-on-back views all show snow on upward-facing surfaces with wood grain intact and undersides clear."
+      "verificationNote": "User confirmed in game on 2026-07-30 after the review fixes: equipped, aiming, and slung-on-back views all show snow on upward-facing surfaces with wood grain intact and undersides clear. Earlier confirmations on 2026-07-29 covered superseded bytes."
     },
     {
       "id": "EW_MSR788_Rifle_SnowMedium",
@@ -46,7 +46,7 @@
       "flankCoverage": 0.15,
       "flankMaxAlpha": 0.55,
       "visuallyVerified": true,
-      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet. In-game approval still pending."
+      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet and by the user in game on 2026-07-30."
     },
     {
       "id": "EW_MSR788_Rifle_SnowHeavy",
@@ -65,7 +65,7 @@
       "flankCoverage": 0.30,
       "flankMaxAlpha": 0.78,
       "visuallyVerified": true,
-      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet. In-game approval still pending."
+      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet and by the user in game on 2026-07-30."
     },
     {
       "id": "EW_MSR788_Rifle_SnowFull",
@@ -84,7 +84,7 @@
       "flankCoverage": 0.36,
       "flankMaxAlpha": 0.90,
       "visuallyVerified": true,
-      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet. In-game approval still pending."
+      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet and by the user in game on 2026-07-30."
     }
   ]
 }

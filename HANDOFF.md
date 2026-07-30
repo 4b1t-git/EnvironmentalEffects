@@ -9,7 +9,13 @@ and the natural weather cycle now advances one stage per 10 game minutes in each
 direction. Every validator passes. **The three screenshots in `docs/evidence`
 predate all of this**, so what is in them is not what ships today.
 
-The open task is in-game confirmation of the natural cycle and of stages 2-4.
+All four stages are confirmed in game as of 2026-07-30, after the engine review
+fixes. The next task is expanding to the remaining firearms.
+
+**Before investing in that expansion, settle the publication question.** The
+textures are derivatives of the installed vanilla art. The project has always
+carried this as "pending release-rights review", and it decides whether this can
+reach the Workshop at all or stays a personal build.
 
 ## Quick path
 
@@ -33,9 +39,9 @@ The open task is in-game confirmation of the natural cycle and of stages 2-4.
 | Enabled weapon | `Base.HuntingRifle` only |
 | Vanilla visual source | `weapons/firearm/MSR788_Rifle`, 256×256 texture |
 | Visual coverage | All four stages present; stage 0 is vanilla |
-| Equipped visual | Confirmed in game by the user for stage 1 |
+| Equipped visual | Confirmed in game by the user, all four stages |
 | Ground visual | Confirmed snowy and flat after removing WorldStaticModel |
-| Stages 2-4 | Validators pass and the progression was reviewed on the contact sheet; **not yet confirmed in game** |
+| Stages 2-4 | Validators pass, progression reviewed on the contact sheet, and confirmed in game on 2026-07-30 |
 | Snow placement | Mesh-normal gated; 72-94% of snow mass on up-facing surface |
 | Progression | Provably nested: each stage's snow is a superset of the previous |
 | Flank dusting | Sparse flecks at stage 1, growing to real cover at stage 4; undersides always clear |
