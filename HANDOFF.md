@@ -49,7 +49,7 @@ reach the Workshop at all or stays a personal build.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Logic suite | 54 assertions pass; 28 textures validated |
+| Logic suite | 59 assertions pass; 28 textures validated |
 | Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons` |
 | Release status | Development test, not publishable |
 
@@ -98,6 +98,7 @@ them shows the refined mask.
 | A stowed weapon thaws even while it snows outside | Pure logic tests |
 | Snow holds on a frozen weapon outdoors in clear weather | Pure logic tests |
 | Rain strips snow even below freezing, one stage per tick | Pure logic tests |
+| A dropped weapon accumulates and thaws, judged by its own square | Pure logic tests + bounded-radius guard |
 | A stage change refreshes held and slung weapons, in any pose | Static validator + user report |
 | A schema bump preserves the vanilla snapshot, snow and stage | Pure logic tests |
 | The slot probe runs only for profiled items | Pure logic tests |
@@ -148,7 +149,7 @@ Required results:
 - regeneration `PASS`;
 - visual validation: 256×256, zero transparent pixels, drift-core luma ≥ 205,
   drift-core saturation ≤ 0.06, up-facing share ≥ 0.68;
-- pure logic: 54 assertions;
+- pure logic: 59 assertions;
 - static validator `PASS`;
 - work/canonical/installed file counts and SHA-256 values match;
 - ZIP entries all start with `EnvironmentalWeapons/`, contain no `..`, absolute
@@ -238,6 +239,7 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | Absolute coverage band 8-55% of the atlas | Same defect: T_Carabine at 5.3% of its atlas was 31% of its own area | Measure coverage against the weapon's owned atlas area |
 | `upShare` floors disagreeing between validators | validate.js kept 0.68 while the PowerShell validator moved to 0.45, so the stricter one rejected a valid M16 stage 4 | Both use the density ratio plus a matching 0.45 floor |
 | Accumulation rate scaled by snowfall intensity | Build 42.20 reports precipitation intensity far below 1.0 during snow, so the nominal 8-hours-to-full became 20+ game hours and the mod looked broken: the user watched for hours and never left stage 1 | Intensity gates accumulation; the rate is a fixed one stage per tick |
+| Dropped weapons never simulated | Exposure walked only the player's inventory, so a rifle dropped indoors kept its snow forever and one left out in a blizzard collected none | Bounded sweep of nearby squares, each item judged by its own square |
 | Exposure defined as "in hands" only | A rifle slung on the back collected nothing though it is fully in the weather, and a snowy rifle stowed in a bag stayed snowy forever because melt was also hands-only | Hands and body slots accumulate; anything in a container thaws |
 | Stage change invisible while seated | `resetEquippedHandsModels` does not reach the rendered model in a seated or lying animation state, so the change only appeared after standing up | Also request `resetModelNextFrame`, the deferred full rebuild vanilla uses for appearance changes |
 | Stage change invisible on a slung weapon | The refresh was gated on the item being in hands, so a weapon on the back is drawn on the character but never got refreshed at all | Refresh whenever the item is rendered on the character, hands or body slot |

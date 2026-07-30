@@ -190,6 +190,18 @@ if (!/Exposure\.attachedToBody/.test(adapter)) {
   throw new Error("Slung weapons would not be refreshed on a stage change");
 }
 const exposure = fs.readFileSync(resolve("42/media/lua/client/EnvironmentalWeapons/EW_Exposure.lua"), "utf8");
+// Dropped weapons must be simulated, and the sweep must stay bounded: ground
+// items are world objects on squares, so cost scales with area rather than with
+// what the player carries.
+if (!/getWorldObjects/.test(exposure)) {
+  throw new Error("Ground sweep missing; dropped weapons would never thaw or accumulate");
+}
+const groundRadius = /GROUND_RADIUS\s*=\s*(\d+)/.exec(exposure);
+if (!groundRadius) throw new Error("Ground sweep has no bounded radius");
+if (Number(groundRadius[1]) > 16) {
+  const squares = (2 * Number(groundRadius[1]) + 1) ** 2;
+  throw new Error(`Ground sweep radius ${groundRadius[1]} is too wide: ${squares} squares per tick`);
+}
 if (!/Exposure\.attachedToBody\s*=\s*attachedToBody/.test(exposure)) {
   throw new Error("EW_Exposure must export attachedToBody for the visual adapter");
 }

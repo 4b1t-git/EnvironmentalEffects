@@ -5,6 +5,17 @@ local Exposure = {}
 -- nesting case and bounds the walk if a mod builds a cycle.
 local MAX_CONTAINER_DEPTH = 4
 
+-- Weapons lying on the ground are simulated too, but only near the player.
+-- Without this a rifle dropped indoors kept its snow forever and one left out in
+-- a blizzard never collected any: the controller simply never saw it.
+--
+-- The sweep is deliberately bounded. Ground items are world objects on squares,
+-- so cost scales with area rather than with what the player carries. A radius of
+-- 10 is 441 squares per tick, which is cheap at one tick per ten game minutes,
+-- and it matches how the rest of the game treats distance: what is near you
+-- behaves, what is far away is not simulated.
+local GROUND_RADIUS = 10
+
 -- Verified against the 42.20 bytecode: InventoryItem exposes getAttachedSlot()
 -- returning an int and getAttachedSlotType() returning a String. A slung rifle
 -- or holstered pistol reports a slot; a loose inventory item does not.
@@ -41,7 +52,10 @@ function Exposure.resolve(player)
     -- meant Lua evaluated it for every item in the inventory before the profile
     -- check could reject it, paying two pcalls per carried item every tick for
     -- items that can never match a profile.
-    local function record(item, isExposed)
+    -- `itemOutside` defaults to the player's square, which is right for anything
+    -- carried, and is passed explicitly for ground items so each one is judged by
+    -- where it actually lies.
+    local function record(item, isExposed, itemOutside)
         -- Deduplicated by Lua object identity, which matters for two-handed
         -- rifles that report the same instance in both hands.
         if not item or seen[item] then return end
@@ -50,7 +64,7 @@ function Exposure.resolve(player)
         result[#result + 1] = {
             item = item,
             exposed = isExposed(item),
-            outside = outside,
+            outside = itemOutside == nil and outside or itemOutside,
         }
     end
 
@@ -90,6 +104,51 @@ function Exposure.resolve(player)
 
     local okInventory, inventory = pcall(function() return player:getInventory() end)
     if okInventory then walk(inventory, 1) end
+
+    -- Finally the ground nearby. `outside` is read from the item's own square,
+    -- not the player's: a rifle dropped in a doorway thaws or collects snow
+    -- according to where IT lies, which is the whole point of tracking it.
+    local okSquare, square = pcall(function() return player:getSquare() end)
+    if not okSquare or not square then return result end
+    local okCell, cell = pcall(function() return getCell() end)
+    if not okCell or not cell then return result end
+
+    local px, py, pz
+    local okCoords = pcall(function()
+        px, py, pz = square:getX(), square:getY(), square:getZ()
+    end)
+    if not okCoords then return result end
+
+    for dy = -GROUND_RADIUS, GROUND_RADIUS do
+        for dx = -GROUND_RADIUS, GROUND_RADIUS do
+            local okGround, ground = pcall(function()
+                return cell:getGridSquare(px + dx, py + dy, pz)
+            end)
+            if okGround and ground then
+                local groundOutside = false
+                local okOutside, value = pcall(function() return ground:isOutside() end)
+                if okOutside then groundOutside = value == true end
+
+                local okObjects, objects = pcall(function() return ground:getWorldObjects() end)
+                if okObjects and objects then
+                    local count = 0
+                    local okCount, size = pcall(function() return objects:size() end)
+                    if okCount then count = tonumber(size) or 0 end
+                    for index = 0, count - 1 do
+                        local okItem, item = pcall(function()
+                            local object = objects:get(index)
+                            return object and object:getItem() or nil
+                        end)
+                        -- Lying in the open is exposed by definition; the square
+                        -- decides whether that means snowfall or shelter.
+                        if okItem and item then
+                            record(item, alwaysExposed, groundOutside)
+                        end
+                    end
+                end
+            end
+        end
+    end
 
     return result
 end

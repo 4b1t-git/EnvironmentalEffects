@@ -23,10 +23,21 @@ bags to a bounded depth, and classifies every profiled weapon:
 | Primary or secondary hand | yes | accumulates |
 | Attached to a body slot (slung, holstered) | yes | accumulates |
 | Loose in inventory or inside a bag | no | thaws |
+| Lying on the ground within 10 tiles | yes | accumulates or thaws, per its own square |
 
 Body attachment is read from `getAttachedSlot()`, with `getAttachedSlotType()` as
 a fallback. Tracking stowed weapons is what allows snow to melt off them at all;
 before this, a snowy rifle put in a bag stayed snowy forever.
+
+Ground items are read from `square:getWorldObjects()` over a bounded radius. The
+sweep costs area rather than inventory size, so it is capped at 10 tiles, 441
+squares per tick; `tools/validate.js` fails the build if that radius grows past
+16. A dropped weapon is judged by **its own** square, not the player's, so a rifle
+lying outside a doorway keeps collecting snow while the player stands indoors.
+
+Weapons further away are not simulated at all, which matches how the game treats
+distance generally. A rifle abandoned in another town keeps whatever state it had
+until the player returns.
 
 ## Persistent schema
 

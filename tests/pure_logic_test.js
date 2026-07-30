@@ -198,6 +198,23 @@ check(classify({ inHands: false, attachedSlot: 3 }), true, "holstered weapon is 
 check(classify({ inHands: false, attachedSlot: -1 }), false, "stowed weapon is sheltered");
 check(classify({ inHands: false }), false, "absent slot reads as sheltered");
 
+// ---- A weapon on the ground is judged by ITS square, not the player's ----
+// The player can stand indoors beside a doorway while the rifle lies outside in
+// the snow, and the reverse. Using the player's square would get both wrong.
+function groundRecord(playerOutside, squareOutside) {
+  return { exposed: true, outside: squareOutside === undefined ? playerOutside : squareOutside };
+}
+check(groundRecord(false, true), { exposed: true, outside: true },
+  "rifle outdoors while the player stands inside still collects snow");
+check(groundRecord(true, false), { exposed: true, outside: false },
+  "rifle indoors while the player stands outside still thaws");
+check(groundRecord(true), { exposed: true, outside: true },
+  "a carried item falls back to the player's square");
+check(step(100, TICK, { ...frozenClear, ...groundRecord(true, false) }), 75,
+  "a snowy rifle dropped indoors loses a stage per tick");
+check(step(0, TICK, { exposed: true, outside: true, snowIntensity: 0.4, rainIntensity: 0, temperatureC: -5 }), 25,
+  "a clean rifle dropped outdoors in snowfall gains a stage per tick");
+
 // ---- Controller elapsed-minute gate ----
 const clock = new ExposureClock();
 check(clock.update(0, ["rifle"]).rifle, 0, "first observation charges nothing");
