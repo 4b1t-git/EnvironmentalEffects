@@ -64,6 +64,17 @@ local profiles = {
         },
     },
     {
+        fullType = "Base.MSR7T_Rifle",
+        enabled = true,
+        stages = {
+            [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [1] = { equippedModel = "EW_MSR7T_Rifle_SnowLight", worldModel = nil, icon = nil },
+            [2] = { equippedModel = "EW_MSR7T_Rifle_SnowMedium", worldModel = nil, icon = nil },
+            [3] = { equippedModel = "EW_MSR7T_Rifle_SnowHeavy", worldModel = nil, icon = nil },
+            [4] = { equippedModel = "EW_MSR7T_Rifle_SnowFull", worldModel = nil, icon = nil },
+        },
+    },
+    {
         fullType = "Base.TrapperCarbine",
         enabled = true,
         stages = {

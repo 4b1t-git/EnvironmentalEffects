@@ -36,7 +36,7 @@ reach the Workshop at all or stays a personal build.
 | --- | --- |
 | Game target | Project Zomboid 42.20 stable, single-player |
 | Multiplayer | Explicitly pinned for later |
-| Enabled weapons | 7 firearms: HuntingRifle, AssaultRifle, AssaultRifle2, JS14_Rifle, L92_Carbine, VarmintRifle, TrapperCarbine |
+| Enabled weapons | 8 firearms: HuntingRifle, MSR7T_Rifle, AssaultRifle, AssaultRifle2, JS14_Rifle, L92_Carbine, VarmintRifle, TrapperCarbine |
 | Vanilla visual source | `weapons/firearm/MSR788_Rifle`, 256×256 texture |
 | Visual coverage | All four stages present; stage 0 is vanilla |
 | Equipped visual | Confirmed in game by the user, all four stages |
@@ -49,7 +49,7 @@ reach the Workshop at all or stays a personal build.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Logic suite | 59 assertions pass; 28 textures validated |
+| Logic suite | 59 assertions pass; 32 textures validated |
 | Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons` |
 | Release status | Development test, not publishable |
 
@@ -270,7 +270,14 @@ reviewed. Do not upload or publish the texture, seed, or package.
    screenshots in `docs/evidence`.
 3. Revalidate save/load and restore in a disposable single-player save, watching
    for visible popping at the stage thresholds.
-4. Decide whether attachments should carry snow. Scopes are the strong case: they
+4. Remaining firearms, in the order surveyed: shotguns (Shotgun, ShotgunSawnoff,
+   DoubleBarrelShotgun, DoubleBarrelShotgunSawnoff, JS3T_Shotgun), then pistols
+   and revolvers (Pistol, Pistol2, Pistol3, Revolver, Revolver_Long,
+   Revolver_Short). Expect to retune noiseBase for the handguns: they pack a much
+   smaller object into the same 256x256 atlas, so drifts land at a different
+   physical scale. Three weapons stay blocked on texture size: Revolver_CapGun
+   and Rifle_CapGun at 64x64, L94_Rifle at 2048x2048.
+5. Decide whether attachments should carry snow. Scopes are the strong case: they
    mount on top, so they are the most exposed part of the rifle, and a pristine
    black scope on a snowed rifle is the most visible inconsistency left. Only
    `x2Scope`, `x4Scope` and `x8Scope` are worth it; the laser, choke tubes and
