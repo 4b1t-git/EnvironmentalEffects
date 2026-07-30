@@ -182,6 +182,7 @@ vanilla pixels:
 Detail retention rose from 46-78% to 73-91% of the vanilla baseline.
 
 This development build is installed at
-`C:\Users\4b1t2\Zomboid\mods\EnvironmentalEffects`. The editable source remains
+`%USERPROFILE%\Zomboid\mods\EnvironmentalEffects`, derived from the current
+user's profile so the toolchain runs on any machine. The editable source remains
 `work/EnvironmentalWeapons`; use the continuation workflow above so the
 canonical output, ZIP, hash manifest, and same-ID installed tree stay identical.

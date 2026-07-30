@@ -58,7 +58,7 @@ multiplayer and no poster.
 | Debug state | `DEBUG = true` development build |
 | Logic suite | 64 assertions pass; 76 textures validated |
 | Mod identity | `id=EnvironmentalEffects`, frozen 2026-07-30 while unpublished |
-| Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalEffects` |
+| Installed path | `%USERPROFILE%\Zomboid\mods\EnvironmentalEffects` |
 | Release status | Development test, not publishable |
 
 ## Visual evidence

@@ -15,14 +15,22 @@ $sourceRoot = [IO.Path]::GetFullPath((Join-Path $projectRoot 'mod')).TrimEnd('\'
 $workspaceRoot = [IO.Path]::GetFullPath((Split-Path -Parent (Split-Path -Parent $projectRoot))).TrimEnd('\')
 # The mod id is the one name Project Zomboid binds saves to, so it is declared
 # once and every derived path, ZIP prefix and identity check reads it from here.
-# The literals in the Assert-ExactPath calls below are deliberately NOT derived
-# from it: they are the guard that catches an accidental edit of this line.
+# The id in the Assert-ExactPath calls below is deliberately spelled out rather
+# than interpolated: it is the guard that catches an accidental edit of this line.
 $modId = 'EnvironmentalEffects'
 $canonicalRoot = Join-Path $workspaceRoot "outputs\$modId"
 $outputsRoot = Join-Path $workspaceRoot 'outputs'
 $zipPath = Join-Path $outputsRoot "$modId.zip"
 $hashManifestPath = Join-Path $outputsRoot "${modId}_build_hashes.json"
-$installRoot = "C:\Users\4b1t2\Zomboid\mods\$modId"
+# Project Zomboid keeps local mods under the current user's profile. Deriving the
+# path rather than hard-coding one machine's is what lets anyone who clones this
+# repository run the toolchain. USERPROFILE is checked explicitly because an
+# empty one would silently produce a root-relative path and install somewhere
+# unintended, which is exactly what the guards below exist to prevent.
+if ([string]::IsNullOrWhiteSpace($env:USERPROFILE)) {
+    throw 'USERPROFILE is not set; cannot locate the Project Zomboid mods folder'
+}
+$installRoot = Join-Path $env:USERPROFILE "Zomboid\mods\$modId"
 $expectedId = $modId
 
 function Assert-ExactPath([string]$Actual, [string]$Expected, [string]$Label) {
@@ -335,7 +343,7 @@ function Assert-BuildHashes {
 
 Assert-ExactPath $sourceRoot (Join-Path $workspaceRoot 'work\EnvironmentalWeapons\mod') 'Source'
 Assert-ExactPath $canonicalRoot (Join-Path $workspaceRoot 'outputs\EnvironmentalEffects') 'Canonical'
-Assert-ExactPath $installRoot 'C:\Users\4b1t2\Zomboid\mods\EnvironmentalEffects' 'Install'
+Assert-ExactPath $installRoot (Join-Path $env:USERPROFILE 'Zomboid\mods\EnvironmentalEffects') 'Install'
 Assert-NotReparsePoint $sourceRoot 'Source'
 Assert-NotReparsePoint $canonicalRoot 'Canonical'
 Assert-NotReparsePoint $installRoot 'Install'
