@@ -10,7 +10,14 @@
 #
 # assets/snow_texture_manifest.json IS tracked: it records the expected hashes and
 # measurements, so a regenerated texture can still be verified byte-for-byte.
-42/media/textures/weapons/firearm/EW_*.png
+#
+# NOTE: the first pattern below read `42/media/...` until 2026-07-30. A pattern
+# containing a slash is anchored to this file's directory, so it looked for
+# `<root>/42/...` and never matched the real path `mod/42/...`. The textures were
+# tracked and committed for the whole life of the repository as a result. The
+# pattern is fixed here; removing them from the index is a separate decision,
+# because they are already in history.
+mod/42/media/textures/weapons/firearm/EW_*.png
 tools/recipes/*.png.seed
 
 # In-game screenshots. Evidence for the maintainer, not source, and not ours to
@@ -21,3 +28,9 @@ docs/evidence/*.png
 # It is part of the delivered tree but derived from it, so tracking it only means
 # every sync dirties the working tree for no information.
 artifact_manifest.json
+
+# Assistant tooling residue. `gentle-ai skill-registry refresh` drops this into
+# the project root; it describes the maintainer's local skill setup, not the mod.
+# It also landed inside the installed PZ mod folder once, which broke the
+# output/install parity audit in tools/sync_development_build.ps1.
+.atl/
