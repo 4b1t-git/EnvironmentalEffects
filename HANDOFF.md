@@ -49,7 +49,7 @@ reach the Workshop at all or stays a personal build.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Logic suite | 59 assertions pass; 76 textures validated |
+| Logic suite | 64 assertions pass; 76 textures validated |
 | Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons` |
 | Release status | Development test, not publishable |
 
@@ -234,6 +234,8 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | Fourth noise octave | Sat at 3.2 texels per cycle, the atlas Nyquist limit, so it aliased into speckle rather than adding shape | Three octaves |
 | Literal sparkle cutoff (`fbm >= 0.88`) | A 3-octave fbm sum almost never reaches it, so only 2-14 crystals appeared and the feature could not be judged | Threshold bisected to a target density, like every other threshold |
 | Raw-luma stage monotonicity | Drift shadows legitimately darken texels, and those bands move as drifts grow, so the assertion flagged correct output | Assert nesting on the snow mask, not on raw luma |
+| Flank alpha reaching 0.90 at high stages | A flank is near-vertical, so its snow is thin by definition; letting the dusting reach near-opaque filled a shotgun stock side with solid white that read as a painted rectangle | Cap flankMaxAlpha at 0.42-0.60 |
+| Core statistics measured two different ways | The generator knows the real alpha and reports 0.012-0.019 saturation; the validator's absolute-luma proxy admits bright flank dust over pale wood and reached 0.062 | Strict neutrality asserted on the generator's figure; the pixel pass keeps a loose bound |
 | Handguns shipped with an inverted up axis | All six had upSign +1, so snow landed on their undersides. The grip sits at +Z on every handgun mesh, meaning +Z is DOWN when the weapon is held | Grip-side test recovers the sign from geometry and is enforced on every generate |
 | Contact sheet rendering every weapon +Z up | It ignored upSign, so a handgun drew grip-up. That looks plausible as an image but is upside down for a held weapon, which is why the visual gate passed six inverted assets | The sheet now renders each weapon the way it is held |
 | Crevice and metal affinity multiplying unbounded | A revolver cylinder is deeply fluted AND dark desaturated steel, so it reached nearly 2x affinity, won the global threshold and swallowed the snow budget while the frame stayed bare | Cap the affinity product |

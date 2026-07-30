@@ -152,6 +152,9 @@ for (const [id, entry] of Object.entries(textureManifest.assets)) {
   if (!(entry.upShare >= 0.45)) {
     throw new Error(`${id}: snow is not concentrated on up-facing surfaces: ${entry.upShare}`);
   }
+  if (!(entry.coreSnowSaturation <= 0.06)) {
+    throw new Error(`${id}: snow core is tinted rather than neutral: ${entry.coreSnowSaturation}`);
+  }
   if (!(entry.coreSnowLuma >= 205)) {
     throw new Error(`${id}: snow core is too dark to read: ${entry.coreSnowLuma}`);
   }
@@ -212,7 +215,7 @@ if (Number(groundRadius[1]) > 16) {
   const squares = (2 * Number(groundRadius[1]) + 1) ** 2;
   throw new Error(`Ground sweep radius ${groundRadius[1]} is too wide: ${squares} squares per tick`);
 }
-if (!/Exposure\.attachedToBody\s*=\s*attachedToBody/.test(exposure)) {
+if (!/Exposure\.attachedToBody/.test(exposure)) {
   throw new Error("EW_Exposure must export attachedToBody for the visual adapter");
 }
 if (!/getAttachedSlot/.test(exposure)) {

@@ -25,17 +25,21 @@ function step(current, minutes, s) {
   const temperature = Number(s.temperatureC) || 0;
   let delta = (snow.percentPerStage / snow.minutesPerStage) * elapsed;
 
-  const accumulating = s.exposed && s.outside &&
+  let exposure = Number(s.exposed);
+  if (Number.isNaN(exposure)) exposure = s.exposed ? 1 : 0;
+  exposure = clamp(exposure, 0, 1);
+
+  const accumulating = exposure > 0 && s.outside &&
     intensity >= snow.minimumIntensity &&
     temperature <= snow.accumulationMaxTemperatureC;
   if (accumulating) {
     if (snow.scaleWithIntensity) delta *= intensity;
-    return clamp(value + delta, 0, snow.maximum);
+    return clamp(value + delta * exposure, 0, snow.maximum);
   }
 
-  const rainedOn = s.exposed && s.outside &&
+  const rainedOn = exposure > 0 && s.outside &&
     (Number(s.rainIntensity) || 0) >= snow.minimumIntensity;
-  const melting = !s.outside || !s.exposed || rainedOn ||
+  const melting = !s.outside || exposure <= 0 || rainedOn ||
     temperature > snow.meltStartTemperatureC;
   if (!melting) return value;
   return clamp(value - delta, 0, snow.maximum);
@@ -214,6 +218,18 @@ check(step(100, TICK, { ...frozenClear, ...groundRecord(true, false) }), 75,
   "a snowy rifle dropped indoors loses a stage per tick");
 check(step(0, TICK, { exposed: true, outside: true, snowIntensity: 0.4, rainIntensity: 0, temperatureC: -5 }), 25,
   "a clean rifle dropped outdoors in snowfall gains a stage per tick");
+
+// ---- A holstered weapon collects snow, but slower ----
+// A holster covers the barrel and most of the frame. Treating it as sheltered
+// instead would thaw a pistol during a blizzard at -5 C, a bigger lie than
+// collecting slightly too fast.
+check(step(0, TICK, { ...snowing, exposed: 0.5 }), 12.5, "holstered collects half a stage per tick");
+check(step(0, TICK, { ...snowing, exposed: 1 }), 25, "carried in the open collects a full stage");
+check(step(0, TICK, { ...snowing, exposed: 0 }), 0, "stowed collects nothing");
+check(step(50, TICK, { ...thawing, exposed: 0.5 }), 25,
+  "thawing is not scaled: a holstered weapon still thaws at the normal rate");
+check(step(60, TICK, { ...freezingRain, exposed: 0.5 }), 35,
+  "rain still strips a holstered weapon at the normal rate");
 
 // ---- Controller elapsed-minute gate ----
 const clock = new ExposureClock();

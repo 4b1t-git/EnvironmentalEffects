@@ -16,22 +16,41 @@ local MAX_CONTAINER_DEPTH = 4
 -- behaves, what is far away is not simulated.
 local GROUND_RADIUS = 10
 
+-- A holster is a pouch: it covers the barrel and most of the frame, leaving the
+-- grip and hammer out. So a holstered weapon is genuinely out in the weather, but
+-- it catches far less than one held in the open. Slung on the back is different --
+-- nothing covers it -- so that keeps the full rate.
+--
+-- Treating a holstered weapon as sheltered instead would be worse: it would thaw
+-- during a blizzard at -10 C, which is a bigger lie than collecting snow slightly
+-- too fast.
+local HOLSTER_EXPOSURE = 0.5
+local HOLSTER_SLOT_PATTERN = "[Hh]olster"
+
 -- Verified against the 42.20 bytecode: InventoryItem exposes getAttachedSlot()
 -- returning an int and getAttachedSlotType() returning a String. A slung rifle
 -- or holstered pistol reports a slot; a loose inventory item does not.
-local function attachedToBody(item)
+-- Returns 0 when the item is not on the body, 1 when it is fully out in the
+-- weather, and a fraction when something partly covers it.
+local function bodyExposure(item)
+    local slotType
+    local okType, value = pcall(function() return item:getAttachedSlotType() end)
+    if okType and value ~= nil then slotType = tostring(value) end
+    local sheltered = slotType ~= nil and slotType:match(HOLSTER_SLOT_PATTERN) ~= nil
+
     local ok, slot = pcall(function() return item:getAttachedSlot() end)
     if ok then
         local index = tonumber(slot)
-        if index ~= nil then return index >= 0 end
+        if index ~= nil then
+            if index < 0 then return 0 end
+            return sheltered and HOLSTER_EXPOSURE or 1
+        end
     end
     -- Fallback only if that getter disappears in a later build.
-    local okType, slotType = pcall(function() return item:getAttachedSlotType() end)
-    if okType and slotType ~= nil then
-        local text = tostring(slotType)
-        return text ~= "" and text ~= "null"
+    if slotType ~= nil and slotType ~= "" and slotType ~= "null" then
+        return sheltered and HOLSTER_EXPOSURE or 1
     end
-    return false
+    return 0
 end
 
 local function itemContainer(item)
@@ -73,7 +92,7 @@ function Exposure.resolve(player)
         }
     end
 
-    local function alwaysExposed() return true end
+    local function alwaysExposed() return 1 end
 
     -- Hands first and explicitly. It is the case that must never be missed, and
     -- handling it here does not depend on how the inventory enumerates equipped
@@ -101,7 +120,7 @@ function Exposure.resolve(player)
         for index = 0, size - 1 do
             local okItem, item = pcall(function() return items:get(index) end)
             if okItem and item then
-                record(item, attachedToBody)
+                record(item, bodyExposure)
                 walk(itemContainer(item), depth + 1)
             end
         end
@@ -159,5 +178,9 @@ function Exposure.resolve(player)
     return result
 end
 
-Exposure.attachedToBody = attachedToBody
+-- Kept as a boolean for the visual adapter, which only needs to know whether the
+-- item is drawn on the character at all.
+function Exposure.attachedToBody(item)
+    return bodyExposure(item) > 0
+end
 return Exposure

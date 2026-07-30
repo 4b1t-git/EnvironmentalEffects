@@ -21,7 +21,8 @@ bags to a bounded depth, and classifies every profiled weapon:
 | Location | Exposed | Behaviour in a snowstorm |
 | --- | --- | --- |
 | Primary or secondary hand | yes | accumulates |
-| Attached to a body slot (slung, holstered) | yes | accumulates |
+| Slung on the back | yes | accumulates at the full rate |
+| Holstered | partly | accumulates at half rate; thaws normally |
 | Loose in inventory or inside a bag | no | thaws |
 | Lying on the ground within 10 tiles | yes | accumulates or thaws, per its own square |
 
