@@ -1,3 +1,3 @@
 name=Environmental Effects - Development Test
 id=EnvironmentalEffects
-description=Compilación de prueba para un jugador: acumulación de nieve sobre diecinueve armas de fuego del juego base. No es una versión final.
+description=Compilación de prueba para un jugador: la nieve se acumula sobre diecinueve armas de fuego del juego base, y la lluvia se la lleva aunque haga menos de cero grados. No es una versión final.
