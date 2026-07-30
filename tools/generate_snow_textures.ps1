@@ -929,7 +929,9 @@ foreach ($asset in $spec.assets) {
         $shippable = $false
     }
     elseif (-not $shippable) {
-        $previewDirectory = Join-Path $projectRoot 'docs\preview'
+        # Outside the mod tree: an unverified preview is a review render, not mod
+        # content, and writing it inside would change the delivered tree.
+        $previewDirectory = Join-Path (Split-Path -Parent $projectRoot) 'EnvironmentalWeapons-preview'
         if (-not (Test-Path -LiteralPath $previewDirectory)) {
             New-Item -ItemType Directory -Path $previewDirectory | Out-Null
         }

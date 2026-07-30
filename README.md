@@ -107,10 +107,11 @@ the only place expected hashes live). Adding a weapon is one spec entry.
 
 The up axis is explicit per asset and cannot be inferred: "up-facing area
 exceeds down-facing area" fails on both vanilla pistols, and "centroid below
-mid-height" fails on every rifle. Confirm placement by running
-`node tools/preview_snow_textures.js` and looking at the contact sheet. An asset
-marked `"visuallyVerified": false` is written to `docs/preview/` and never
-frozen or shipped.
+mid-height" fails on every rifle. Confirm placement by running `node tools/preview_snow_textures.js` and looking
+at the contact sheet, which is written to `../EnvironmentalWeapons-preview/`
+(outside the mod tree, because review renders are not mod content). An asset
+marked `"visuallyVerified": false` is written to the preview directory and
+never frozen or shipped.
 
 A second, weaker pass dusts sparse flecks onto the near-vertical flanks, because
 a top-only mask leaves the rifle looking bare whenever the camera sees its side —

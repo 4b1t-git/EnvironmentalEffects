@@ -13,9 +13,6 @@
 42/media/textures/weapons/firearm/EW_*.png
 tools/recipes/*.png.seed
 
-# Rendered from the vanilla-derived textures, so the same restriction applies.
-docs/preview/
-
 # In-game screenshots. Evidence for the maintainer, not source, and not ours to
 # redistribute.
 docs/evidence/*.png

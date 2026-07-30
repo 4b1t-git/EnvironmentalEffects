@@ -129,7 +129,9 @@ node tools/preview_snow_textures.js
 It rewrites every PNG, its frozen seed, and `assets/snow_texture_manifest.json`
 together. **No hashes are hard-coded anywhere else** — the replay script, both
 validators, and the build-hash writer all read the manifest. Then look at
-`docs/preview/contact_sheet.png` before trusting the result.
+`../EnvironmentalWeapons-preview/contact_sheet.png` before trusting the result.
+Previews live outside the mod tree on purpose: writing them inside broke
+work/output parity on every regeneration.
 
 Required results:
 

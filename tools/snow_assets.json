@@ -46,7 +46,7 @@
       "flankCoverage": 0.15,
       "flankMaxAlpha": 0.55,
       "visuallyVerified": true,
-      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on docs/preview/contact_sheet.png. In-game approval still pending."
+      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet. In-game approval still pending."
     },
     {
       "id": "EW_MSR788_Rifle_SnowHeavy",
@@ -65,7 +65,7 @@
       "flankCoverage": 0.30,
       "flankMaxAlpha": 0.78,
       "visuallyVerified": true,
-      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on docs/preview/contact_sheet.png. In-game approval still pending."
+      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet. In-game approval still pending."
     },
     {
       "id": "EW_MSR788_Rifle_SnowFull",
@@ -84,7 +84,7 @@
       "flankCoverage": 0.36,
       "flankMaxAlpha": 0.90,
       "visuallyVerified": true,
-      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on docs/preview/contact_sheet.png. In-game approval still pending."
+      "verificationNote": "Axis inherited from the stage 1 verification: identical mesh, identical source. Progression confirmed on the rendered contact sheet. In-game approval still pending."
     }
   ]
 }

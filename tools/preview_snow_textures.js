@@ -16,7 +16,13 @@ const zlib = require("node:zlib");
 const root = path.resolve(__dirname, "..");
 const spec = JSON.parse(fs.readFileSync(path.join(__dirname, "snow_assets.json"), "utf8"));
 
-const outFile = process.argv[2] || path.join(root, "docs", "preview", "contact_sheet.png");
+// Contact sheets live OUTSIDE the mod tree, in a sibling directory. They are
+// review renders, not mod content: writing them inside meant every regeneration
+// changed the delivered tree and broke work/output parity until the next sync.
+// With nineteen weapons and iterative tuning that is constant friction.
+const PREVIEW_ROOT = path.resolve(root, "..", "EnvironmentalWeapons-preview");
+
+const outFile = process.argv[2] || path.join(PREVIEW_ROOT, "contact_sheet.png");
 const yaw = parseFloat(process.argv[3] || "84");
 const elev = parseFloat(process.argv[4] || "30");
 const ROW_W = 1000;
@@ -282,7 +288,7 @@ for (const asset of spec.assets) {
   const mesh = parseMesh(asset.mesh);
   const base = `${asset.mesh}|${asset.source}`;
   const deliveredPath = path.join(root, asset.output);
-  const previewPath = path.join(root, "docs", "preview", `${asset.id}.png`);
+  const previewPath = path.join(PREVIEW_ROOT, `${asset.id}.png`);
   const texturePath = fs.existsSync(deliveredPath) ? deliveredPath : previewPath;
   if (!fs.existsSync(texturePath)) {
     console.error(`skip ${asset.id}: no texture at ${deliveredPath} or ${previewPath}`);
