@@ -186,7 +186,11 @@ function parseMesh(file) {
   return { verts: verts.data, normals: normals.data, uvs: uvs.data, faces };
 }
 
-function render(mesh, tex, flipV) {
+// upSign flips the model so the weapon is drawn the way it is held. Without this
+// a handgun renders grip-up, which looks plausible as an image and hides an
+// inverted axis -- the six handguns shipped with snow on their undersides because
+// this sheet showed them upside down and the mistake read as normal.
+function render(mesh, tex, flipV, upSign) {
   const ya = (yaw * Math.PI) / 180;
   const ea = (elev * Math.PI) / 180;
   const f = [Math.cos(ea) * Math.sin(ya), Math.cos(ea) * Math.cos(ya), -Math.sin(ea)];
@@ -207,8 +211,9 @@ function render(mesh, tex, flipV) {
     }
   }
   const center = [0, 1, 2].map((k) => (lo[k] + hi[k]) / 2);
+  const sign = upSign === -1 ? -1 : 1;
   const pts = mesh.verts.map((v) => {
-    const d = [v[0] - center[0], v[1] - center[1], v[2] - center[2]];
+    const d = [v[0] - center[0], v[1] - center[1], sign * (v[2] - center[2])];
     return [
       d[0] * r[0] + d[1] * r[1] + d[2] * r[2],
       -(d[0] * u[0] + d[1] * u[1] + d[2] * u[2]),
@@ -299,13 +304,13 @@ for (const asset of spec.assets) {
   if (base !== lastBase) {
     rows.push({
       label: `${path.basename(asset.source)} vanilla`,
-      data: render(mesh, readPng(asset.source), asset.flipV),
+      data: render(mesh, readPng(asset.source), asset.flipV, asset.upSign),
     });
     lastBase = base;
   }
   rows.push({
     label: `${asset.id} stage ${asset.stage}${texturePath === previewPath ? " (UNVERIFIED PREVIEW)" : ""}`,
-    data: render(mesh, derivative, asset.flipV),
+    data: render(mesh, derivative, asset.flipV, asset.upSign),
   });
 }
 

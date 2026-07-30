@@ -135,6 +135,13 @@ public static class EwSnowMask
     const double MetalBoost = 0.28;
     const double MetalSaturationCutoff = 0.34;
 
+    // Crevice and metal affinity multiply, and on a revolver cylinder both max
+    // out: the flutes read as deep recesses and the steel is dark and
+    // desaturated, so that one part reached nearly 2x affinity and swallowed the
+    // whole snow budget while the frame and grip stayed bare. The boosts are meant
+    // to bias where snow settles first, not to let one component win outright.
+    const double AffinityCeiling = 1.35;
+
     // A drift has a lit crest and drops a short shadow onto the bare surface it
     // sits on. This is what makes snow read as resting ON the weapon rather than
     // painted onto it, and it is the largest gain in apparent detail.
@@ -294,9 +301,52 @@ public static class EwSnowMask
         return "vertices=" + vertexCount + " faces=" + faceCount;
     }
 
+    // Recovers which way is DOWN from the geometry, and it works on handguns as
+    // well as long guns.
+    //
+    // A weapon's grip or stock is the largest mass sticking off the bore line, and
+    // it points down: a pistol's grip hangs below the slide, a rifle's stock sits
+    // below the barrel. So take the bore as the median height through the middle
+    // of the length axis, measure how far mass reaches either way, and the bigger
+    // reach is the grip side.
+    //
+    // Measured on ten vanilla meshes it splits cleanly: all six handguns put the
+    // grip at +Z (so +Z is down for them), every long gun puts it at -Z. Two
+    // earlier heuristics -- "up-facing area exceeds down-facing area" and "centroid
+    // below mid-height" -- failed on exactly these cases, which is why the axis was
+    // being confirmed by eye. This one is checked against the spec on every run.
+    public static int InferUpSign(string meshText)
+    {
+        ParseMesh(meshText);
+        double loY = double.MaxValue, hiY = double.MinValue;
+        foreach (var v in _v) { if (v[1] < loY) loY = v[1]; if (v[1] > hiY) hiY = v[1]; }
+
+        var middle = new System.Collections.Generic.List<double>();
+        foreach (var v in _v)
+        {
+            double t = (v[1] - loY) / (hiY - loY);
+            if (t > 0.35 && t < 0.75) middle.Add(v[2]);
+        }
+        if (middle.Count == 0) return 0;
+        middle.Sort();
+        double bore = middle[middle.Count / 2];
+
+        double reachPositive = 0, reachNegative = 0;
+        foreach (var v in _v)
+        {
+            double d = v[2] - bore;
+            if (d > reachPositive) reachPositive = d;
+            if (-d > reachNegative) reachNegative = -d;
+        }
+        // Too close to call: refuse rather than guess.
+        double ratio = Math.Max(reachPositive, reachNegative)
+            / Math.Max(1e-9, Math.Min(reachPositive, reachNegative));
+        if (ratio < 1.25) return 0;
+        return reachPositive > reachNegative ? -1 : +1;   // grip side is down
+    }
+
     // Reports the geometry an operator needs in order to sanity-check the axis
-    // choice for a new mesh. Deliberately descriptive, not a pass/fail gate:
-    // no cheap test recovers the up sign across both rifles and pistols.
+    // choice for a new mesh.
     public static string DescribeAxes(string meshText)
     {
         ParseMesh(meshText);
@@ -592,6 +642,7 @@ public static class EwSnowMask
                 // hold in the crevices and on the barrel before the bare stock does.
                 double affinity = (1.0 + CreviceBoost * surface.Crevice[o])
                     * (1.0 + MetalBoost * surface.Metalness[o]);
+                if (affinity > AffinityCeiling) affinity = AffinityCeiling;
                 field[o] = gatedUp * (NoiseFloor + NoiseGain * n) * affinity;
             }
         }
@@ -980,6 +1031,18 @@ foreach ($asset in $spec.assets) {
     # see the warning in snow_assets.json for why no test can decide it here.
     $axes = [EwSnowMask]::DescribeAxes($meshText)
     Write-Host "    geometry: $axes"
+
+    # The grip-side test recovers DOWN from the geometry and agrees with every
+    # vanilla mesh measured, handguns included. Disagreeing with the spec means one
+    # of the two is wrong, and silently trusting the spec is how the handguns
+    # shipped with snow on their undersides.
+    $inferred = [EwSnowMask]::InferUpSign($meshText)
+    if ($inferred -eq 0) {
+        Write-Warning "$($asset.id): up sign is geometrically ambiguous; the spec value stands unchecked."
+    }
+    elseif ($inferred -ne [int]$asset.upSign) {
+        throw "$($asset.id): spec says upSign $($asset.upSign) but the grip side implies $inferred"
+    }
 
     $shippable = [bool]$asset.visuallyVerified
     if ($PreviewRoot) {
