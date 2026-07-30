@@ -1,0 +1,196 @@
+{
+  "artifact": "EnvironmentalWeapons",
+  "target": "Project Zomboid 42.20 single-player",
+  "files": [
+    {
+      "path": "42/media/lua/client/EnvironmentalWeapons/EW_Climate.lua",
+      "bytes": 1871,
+      "sha256": "64e15e7ea2db76112f8be8d20083b2995291b709205e460b484f513c964c17b4"
+    },
+    {
+      "path": "42/media/lua/client/EnvironmentalWeapons/EW_Controller.lua",
+      "bytes": 2371,
+      "sha256": "2599955e990e9dba00cc4227d238808b1d369b9c79ee87aa90d6436015d0e6e5"
+    },
+    {
+      "path": "42/media/lua/client/EnvironmentalWeapons/EW_DebugProbe.lua",
+      "bytes": 2413,
+      "sha256": "3d8a3527056ff3ba2038ad924d38037ce1eb2bc3c8bffa1b2d10dcf069b06418"
+    },
+    {
+      "path": "42/media/lua/client/EnvironmentalWeapons/EW_Diagnostics.lua",
+      "bytes": 222,
+      "sha256": "247abbd0d1fa6d197c723d2d4c14da031d438a4afdd504831baefc8fdf2dcaf2"
+    },
+    {
+      "path": "42/media/lua/client/EnvironmentalWeapons/EW_Exposure.lua",
+      "bytes": 3626,
+      "sha256": "0aee6afcd5ad2f1049e89daf4ba6608c78ee8c9406d480709f341fae8c683310"
+    },
+    {
+      "path": "42/media/lua/client/EnvironmentalWeapons/EW_VisualAdapter.lua",
+      "bytes": 6077,
+      "sha256": "866d3a6e6ecd4a5c8ec846e355676054e468c863241951a4fd4bd7e4cff13368"
+    },
+    {
+      "path": "42/media/lua/shared/EnvironmentalWeapons/EW_Config.lua",
+      "bytes": 1395,
+      "sha256": "d4131cff3a099f5393855e71609298a98b9a5761bd5467d64c63de44a890d026"
+    },
+    {
+      "path": "42/media/lua/shared/EnvironmentalWeapons/EW_Profiles.lua",
+      "bytes": 1683,
+      "sha256": "617b85bb2fd98704ebb34ec374c56bb44588eeec8d7abb0fb8a92b261320d528"
+    },
+    {
+      "path": "42/media/lua/shared/EnvironmentalWeapons/EW_Simulation.lua",
+      "bytes": 2157,
+      "sha256": "76d744601120d6563b532110e4b4994295efac53eb2c4b9514a656977edcb74c"
+    },
+    {
+      "path": "42/media/lua/shared/EnvironmentalWeapons/EW_StageResolver.lua",
+      "bytes": 535,
+      "sha256": "4a945f969924c1167ae6e624447219919b83441fefc4475a17806e481c1ae206"
+    },
+    {
+      "path": "42/media/lua/shared/EnvironmentalWeapons/EW_State.lua",
+      "bytes": 1612,
+      "sha256": "569231df99ba3187f7f42fe21367e5df63efdb3ff75138d7b3cf78de3f93dcf5"
+    },
+    {
+      "path": "42/media/scripts/models_EnvironmentalWeapons.txt",
+      "bytes": 4391,
+      "sha256": "99e4ab1ebf84b3b99ed520b2830cf84c933f8a07e9142c959b6fbbb2267ab77e"
+    },
+    {
+      "path": "42/media/textures/weapons/firearm/EW_MSR788_Rifle_SnowFull.png",
+      "bytes": 88624,
+      "sha256": "cc468a73dac512c0aaa123bb8c27ae588f94dda86ad14ba450666f715039081e"
+    },
+    {
+      "path": "42/media/textures/weapons/firearm/EW_MSR788_Rifle_SnowHeavy.png",
+      "bytes": 89568,
+      "sha256": "af75a9e89f634ce83f4a703d57b67c7417bd9b00e860cd8516e3d589ccc736e6"
+    },
+    {
+      "path": "42/media/textures/weapons/firearm/EW_MSR788_Rifle_SnowLight.png",
+      "bytes": 87699,
+      "sha256": "2803d14984aeecd49ec4865e17f7bd3631f512dfe6cc35ec0365daeccabcd21d"
+    },
+    {
+      "path": "42/media/textures/weapons/firearm/EW_MSR788_Rifle_SnowMedium.png",
+      "bytes": 89869,
+      "sha256": "2ce41244d1d654f173324eabdd78c62a926750f7a788113644fabff9d39b022c"
+    },
+    {
+      "path": "42/mod.info",
+      "bytes": 172,
+      "sha256": "d1cd7eaf871802fafd8d95c80f6472719bc02069ca3231ccfebba2ffeb3174cc"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "bytes": 6577,
+      "sha256": "fa7394eb8af857cc8d5bd589806b7abb17f246e1b8bf1cb34076c9a38f3dcaa8"
+    },
+    {
+      "path": "CLAUDE_CONTINUATION_PROMPT.md",
+      "bytes": 1920,
+      "sha256": "c538d03fbe93e49f0a7397775e648a334279a7bccefab1c973fc098a84c2c056"
+    },
+    {
+      "path": "HANDOFF.md",
+      "bytes": 19328,
+      "sha256": "1333763da78be9e186fb3e47eabfd482afbd0e546a2cfb732933955517d2e950"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8143,
+      "sha256": "64080e33dff7b34b387604356f683d6e37bb63636c648ab10185c104bb1aa1dd"
+    },
+    {
+      "path": "assets/snow_texture_manifest.json",
+      "bytes": 6784,
+      "sha256": "034f17901afc1a32c1b0f8a9399ea625a642c94b37f67f052d8f7d1003287f7f"
+    },
+    {
+      "path": "docs/evidence/hunting-rifle-stage1-equipped-subtle.png",
+      "bytes": 344664,
+      "sha256": "f752b40a95dd2a2a4a3c96ce5f27ba88a30aa9678017fd511482e9aa9cab1550"
+    },
+    {
+      "path": "docs/evidence/hunting-rifle-stage1-ground-flat-corrected.png",
+      "bytes": 439582,
+      "sha256": "209619abd62fc400bbd1f4f4d2737dda9bef568a4e265fdaadd206a2de260f56"
+    },
+    {
+      "path": "docs/evidence/hunting-rifle-stage1-ground-upright-bug.png",
+      "bytes": 536193,
+      "sha256": "8da7c2b551ee7a004824deccdabfae9d612c49195cae646ab8b7504588b99f70"
+    },
+    {
+      "path": "docs/preview/contact_sheet.png",
+      "bytes": 201870,
+      "sha256": "a03b7658f9c234b8d0dd0709c0186ce83985dd4d466f2759df6a56a0d2babd6b"
+    },
+    {
+      "path": "tests/pure_logic_test.js",
+      "bytes": 10066,
+      "sha256": "699b5de2e0c5494e9e34b1ba00e78541653ac9344885b8bdccd2469fca08cba3"
+    },
+    {
+      "path": "tools/generate_snow_textures.ps1",
+      "bytes": 46960,
+      "sha256": "8f5c07015d7250c366b85dcc345d6bbc43e31f0614c9bd06fecfead0b97df5cc"
+    },
+    {
+      "path": "tools/preview_snow_textures.js",
+      "bytes": 12799,
+      "sha256": "2efcd6eba0f8487f7c597155a7075d6ba3910a084c26c22bcb4663d1952d5180"
+    },
+    {
+      "path": "tools/recipes/EW_MSR788_Rifle_SnowFull.png.seed",
+      "bytes": 88624,
+      "sha256": "cc468a73dac512c0aaa123bb8c27ae588f94dda86ad14ba450666f715039081e"
+    },
+    {
+      "path": "tools/recipes/EW_MSR788_Rifle_SnowHeavy.png.seed",
+      "bytes": 89568,
+      "sha256": "af75a9e89f634ce83f4a703d57b67c7417bd9b00e860cd8516e3d589ccc736e6"
+    },
+    {
+      "path": "tools/recipes/EW_MSR788_Rifle_SnowLight.png.seed",
+      "bytes": 87699,
+      "sha256": "2803d14984aeecd49ec4865e17f7bd3631f512dfe6cc35ec0365daeccabcd21d"
+    },
+    {
+      "path": "tools/recipes/EW_MSR788_Rifle_SnowMedium.png.seed",
+      "bytes": 89869,
+      "sha256": "2ce41244d1d654f173324eabdd78c62a926750f7a788113644fabff9d39b022c"
+    },
+    {
+      "path": "tools/replay_snow_textures.ps1",
+      "bytes": 2832,
+      "sha256": "7fe52d1b653043c0623b0e16f8e54d3ef697470b3e82f836c41808af220970bd"
+    },
+    {
+      "path": "tools/snow_assets.json",
+      "bytes": 5154,
+      "sha256": "75101f29baf079153d5956bf3d1152835ff59513a741161d3c6d1be6a3cd5318"
+    },
+    {
+      "path": "tools/sync_development_build.ps1",
+      "bytes": 14220,
+      "sha256": "b68f213cc85ca00a3caa373f0502e3d9490fe02c4d1fa0f53e686bda52752d74"
+    },
+    {
+      "path": "tools/validate.js",
+      "bytes": 10839,
+      "sha256": "1faa1d4ff0a002c1cf906b4bcbf0f1b38ec732659792b343cb3005724a6bb594"
+    },
+    {
+      "path": "tools/validate_snow_textures.ps1",
+      "bytes": 13600,
+      "sha256": "c50918e6bae8eb02177ff1858991359ba9b4c111dc860d2d9b39626ebc90b9d8"
+    }
+  ]
+}

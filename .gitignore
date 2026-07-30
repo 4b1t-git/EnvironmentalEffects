@@ -1,0 +1,21 @@
+# Vanilla-derived assets are deliberately untracked.
+#
+# The snow textures and their frozen byte recipes are derivatives of the user's
+# installed Project Zomboid art, pending release-rights review. Committing them
+# would put them in any bundle built from this repository, including reviews and
+# CI that run off-machine, which the project guardrails forbid.
+#
+# They are fully reproducible on any machine that owns the game:
+#   powershell -File tools/generate_snow_textures.ps1 -FreezeRecipe -WriteManifest
+#
+# assets/snow_texture_manifest.json IS tracked: it records the expected hashes and
+# measurements, so a regenerated texture can still be verified byte-for-byte.
+42/media/textures/weapons/firearm/EW_*.png
+tools/recipes/*.png.seed
+
+# Rendered from the vanilla-derived textures, so the same restriction applies.
+docs/preview/
+
+# In-game screenshots. Evidence for the maintainer, not source, and not ours to
+# redistribute.
+docs/evidence/*.png
