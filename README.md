@@ -46,6 +46,22 @@ debug action once; the adapter clears only that owned legacy value. It preserves
 any unrelated world-model override. Drop the rifle again to confirm the normal
 `HandWeapon` rotation.
 
+## Layout
+
+The project separates what ships from what builds it:
+
+| Path | What | Reaches a player |
+| --- | --- | --- |
+| `mod/` | The deliverable. Mirrored, zipped and installed verbatim. | yes |
+| `tools/`, `tests/` | The offline toolchain: generator, replay, validators, preview. | no |
+| `assets/snow_texture_manifest.json` | Produced evidence about the built textures. | no |
+| `docs/`, `*.md` | Project documentation and evidence. | no |
+
+The snow textures are not computed while you play. They are generated ahead of
+time on the modder's machine and the game simply loads finished PNGs, which is
+why the toolchain can afford to parse 3D meshes and supersample without costing
+the game a frame.
+
 ## Validate
 
 Run:

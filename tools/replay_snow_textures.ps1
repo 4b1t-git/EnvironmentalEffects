@@ -17,6 +17,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$modRoot = Join-Path $projectRoot 'mod'
 $manifestPath = Join-Path $projectRoot 'assets\snow_texture_manifest.json'
 
 if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
@@ -33,7 +34,7 @@ $count = 0
 foreach ($property in $manifest.assets.PSObject.Properties) {
     $id = $property.Name
     $entry = $property.Value
-    $outputPath = Join-Path $projectRoot ($entry.output -replace '/', '\')
+    $outputPath = Join-Path $modRoot ($entry.output -replace '/', '\')
     $recipePath = Join-Path $projectRoot ($entry.recipe -replace '/', '\')
 
     if (-not (Test-Path -LiteralPath $entry.sourcePath -PathType Leaf)) {

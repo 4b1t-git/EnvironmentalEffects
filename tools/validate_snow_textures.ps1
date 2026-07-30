@@ -14,13 +14,14 @@ Set-StrictMode -Version 2.0
 Add-Type -AssemblyName System.Drawing
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$modRoot = Join-Path $projectRoot 'mod'
 $manifestPath = Join-Path $projectRoot 'assets\snow_texture_manifest.json'
 $specPath = Join-Path $PSScriptRoot 'snow_assets.json'
 $generatorPath = Join-Path $PSScriptRoot 'generate_snow_textures.ps1'
 $replayPath = Join-Path $PSScriptRoot 'replay_snow_textures.ps1'
-$modelPath = Join-Path $projectRoot '42\media\scripts\models_EnvironmentalWeapons.txt'
-$profilePath = Join-Path $projectRoot '42\media\lua\shared\EnvironmentalWeapons\EW_Profiles.lua'
-$debugPath = Join-Path $projectRoot '42\media\lua\client\EnvironmentalWeapons\EW_DebugProbe.lua'
+$modelPath = Join-Path $modRoot '42\media\scripts\models_EnvironmentalWeapons.txt'
+$profilePath = Join-Path $modRoot '42\media\lua\shared\EnvironmentalWeapons\EW_Profiles.lua'
+$debugPath = Join-Path $modRoot '42\media\lua\client\EnvironmentalWeapons\EW_DebugProbe.lua'
 
 foreach ($file in @($manifestPath, $specPath, $generatorPath, $replayPath,
         $modelPath, $profilePath, $debugPath)) {
@@ -53,7 +54,9 @@ $reports = @()
 foreach ($property in $manifest.assets.PSObject.Properties) {
     $id = $property.Name
     $entry = $property.Value
-    $outputPath = Join-Path $projectRoot ($entry.output -replace '/', '\')
+    # output is relative to the mod root because it ships; recipe is relative to
+    # the project root because a frozen recipe is tooling data and never ships.
+    $outputPath = Join-Path $modRoot ($entry.output -replace '/', '\')
     $recipePath = Join-Path $projectRoot ($entry.recipe -replace '/', '\')
 
     foreach ($file in @($entry.sourcePath, $outputPath, $recipePath)) {

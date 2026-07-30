@@ -69,6 +69,7 @@ them shows the refined mask.
 
 | File | Responsibility | Key invariant |
 | --- | --- | --- |
+| `mod/` | The deliverable; everything else is toolchain | Only this is mirrored, zipped and installed |
 | `EW_Config.lua` | Rates, thresholds, debug gate | Development build currently uses `DEBUG = true` |
 | `EW_State.lua` | Versioned per-item modData and original visual snapshot | Never replace the item |
 | `EW_Simulation.lua` | Pure elapsed-game-minute snow math | Clamp to 0-100 |
@@ -115,8 +116,10 @@ them shows the refined mask.
 
 ## Exact validation commands
 
-Run from `work/EnvironmentalWeapons`, then again from the canonical or installed
-tree after syncing:
+Run from `work/EnvironmentalWeapons` (the project root, where the toolchain
+lives). Validation runs once against the source; the canonical and installed
+trees are then proved byte-identical to it, which is stronger than re-running
+the same checks against copies.
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/replay_snow_textures.ps1

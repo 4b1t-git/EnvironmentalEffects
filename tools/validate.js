@@ -3,6 +3,10 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const root = path.resolve(__dirname, "..");
+// `mod` is the deliverable: exactly what gets mirrored, zipped and installed.
+// Everything else in the project is toolchain that never reaches a player.
+const modRoot = path.join(root, "mod");
+const resolve = rel => path.join(rel.startsWith("42/") ? modRoot : root, rel);
 const required = [
   "42/mod.info",
   "42/media/lua/client/EnvironmentalWeapons/EW_Controller.lua",
@@ -25,10 +29,10 @@ const required = [
   "tools/preview_snow_textures.js",
 ];
 for (const rel of required) {
-  if (!fs.existsSync(path.join(root, rel))) throw new Error(`Missing ${rel}`);
+  if (!fs.existsSync(resolve(rel))) throw new Error(`Missing ${rel}`);
 }
 const luaFiles = required.filter(x => x.endsWith(".lua"));
-const joined = luaFiles.map(x => fs.readFileSync(path.join(root, x), "utf8")).join("\n");
+const joined = luaFiles.map(x => fs.readFileSync(resolve(x), "utf8")).join("\n");
 if (/\bOnTick\b/.test(joined)) throw new Error("OnTick is forbidden");
 if (/sendClientCommand|sendServerCommand|OnClientCommand|OnServerCommand/.test(joined)) {
   throw new Error("Networking code is forbidden in the single-player slice");
@@ -48,11 +52,10 @@ const rainWiring = [
   ["42/media/lua/shared/EnvironmentalWeapons/EW_Simulation.lua", /sample\.rainIntensity/],
 ];
 for (const [rel, pattern] of rainWiring) {
-  const body = fs.readFileSync(path.join(root, rel), "utf8");
+  const body = fs.readFileSync(resolve(rel), "utf8");
   if (!pattern.test(body)) throw new Error(`Rain melt wiring missing in ${rel}`);
 }
-const models = fs.readFileSync(path.join(root,
-  "42/media/scripts/models_EnvironmentalWeapons.txt"), "utf8");
+const models = fs.readFileSync(resolve("42/media/scripts/models_EnvironmentalWeapons.txt"), "utf8");
 for (const reference of [
   "EW_HuntingRifle_SnowLight",
   "weapons/firearm/MSR788_Rifle",
@@ -63,13 +66,11 @@ for (const reference of [
 if (/model EW_HuntingRifle_SnowLight_World\b/.test(models)) {
   throw new Error("Legacy world model must not be registered");
 }
-const profiles = fs.readFileSync(path.join(root,
-  "42/media/lua/shared/EnvironmentalWeapons/EW_Profiles.lua"), "utf8");
+const profiles = fs.readFileSync(resolve("42/media/lua/shared/EnvironmentalWeapons/EW_Profiles.lua"), "utf8");
 if (!/\[1\]\s*=\s*\{[\s\S]*?worldModel\s*=\s*nil/.test(profiles)) {
   throw new Error("Hunting Rifle Stage 1 must use HandWeapon world fallback");
 }
-const debugProbe = fs.readFileSync(path.join(root,
-  "42/media/lua/client/EnvironmentalWeapons/EW_DebugProbe.lua"), "utf8");
+const debugProbe = fs.readFileSync(resolve("42/media/lua/client/EnvironmentalWeapons/EW_DebugProbe.lua"), "utf8");
 if (!/if not Config\.DEBUG then return end/.test(debugProbe)) {
   throw new Error("Debug probe is not fail-closed behind Config.DEBUG");
 }
@@ -77,10 +78,8 @@ if (!/if not Config\.DEBUG then return end/.test(debugProbe)) {
 // The accumulation rate is expressed as "one stage per tick", so the configured
 // minutesPerStage has to equal the controller's actual interval or every stage
 // silently takes the wrong amount of game time.
-const config = fs.readFileSync(path.join(root,
-  "42/media/lua/shared/EnvironmentalWeapons/EW_Config.lua"), "utf8");
-const controller = fs.readFileSync(path.join(root,
-  "42/media/lua/client/EnvironmentalWeapons/EW_Controller.lua"), "utf8");
+const config = fs.readFileSync(resolve("42/media/lua/shared/EnvironmentalWeapons/EW_Config.lua"), "utf8");
+const controller = fs.readFileSync(resolve("42/media/lua/client/EnvironmentalWeapons/EW_Controller.lua"), "utf8");
 const eventInterval = { EveryTenMinutes: 10, EveryHours: 60, EveryDays: 1440 };
 const updateEvent = /UPDATE_EVENT\s*=\s*"(\w+)"/.exec(config);
 if (!updateEvent) throw new Error("Config.UPDATE_EVENT is missing");
@@ -133,7 +132,7 @@ for (const asset of spec.assets) {
   }
 }
 for (const [id, entry] of Object.entries(textureManifest.assets)) {
-  const texture = fs.readFileSync(path.join(root, entry.output));
+  const texture = fs.readFileSync(path.join(modRoot, entry.output));
   const recipe = fs.readFileSync(path.join(root, entry.recipe));
   if (!recipe.equals(texture)) {
     throw new Error(`${id}: frozen recipe differs from delivered texture`);
@@ -155,8 +154,7 @@ for (const [id, entry] of Object.entries(textureManifest.assets)) {
 if (/byWeaponSprite/.test(profiles)) {
   throw new Error("Generic WeaponSprite profile fallback is forbidden");
 }
-const adapter = fs.readFileSync(path.join(root,
-  "42/media/lua/client/EnvironmentalWeapons/EW_VisualAdapter.lua"), "utf8");
+const adapter = fs.readFileSync(resolve("42/media/lua/client/EnvironmentalWeapons/EW_VisualAdapter.lua"), "utf8");
 if (/safeCall\(item,\s*"setWeaponSprite",\s*state\.original\.weaponSprite\)/s.test(adapter)) {
   throw new Error("Original WeaponSprite restore must be nil-guarded");
 }
@@ -183,8 +181,7 @@ if (!/resetModelNextFrame/.test(adapter)) {
 if (!/Exposure\.attachedToBody/.test(adapter)) {
   throw new Error("Slung weapons would not be refreshed on a stage change");
 }
-const exposure = fs.readFileSync(path.join(root,
-  "42/media/lua/client/EnvironmentalWeapons/EW_Exposure.lua"), "utf8");
+const exposure = fs.readFileSync(resolve("42/media/lua/client/EnvironmentalWeapons/EW_Exposure.lua"), "utf8");
 if (!/Exposure\.attachedToBody\s*=\s*attachedToBody/.test(exposure)) {
   throw new Error("EW_Exposure must export attachedToBody for the visual adapter");
 }
@@ -201,12 +198,12 @@ function walk(dir) {
     if (entry.isDirectory() && EXCLUDED_DIRECTORIES.has(entry.name)) continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) walk(full);
-    else files.push(path.relative(root, full).replaceAll("\\", "/"));
+    else files.push(path.relative(modRoot, full).replaceAll("\\", "/"));
   }
 }
-walk(root);
+walk(modRoot);
 const manifest = files.filter(x => x !== "artifact_manifest.json").sort().map(rel => {
-  const data = fs.readFileSync(path.join(root, rel));
+  const data = fs.readFileSync(path.join(modRoot, rel));
   return { path: rel, bytes: data.length, sha256: crypto.createHash("sha256").update(data).digest("hex") };
 });
 fs.writeFileSync(path.join(root, "artifact_manifest.json"), JSON.stringify({

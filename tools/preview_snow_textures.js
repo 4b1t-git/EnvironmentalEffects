@@ -14,6 +14,7 @@ const path = require("node:path");
 const zlib = require("node:zlib");
 
 const root = path.resolve(__dirname, "..");
+const modRoot = path.join(root, "mod");
 const spec = JSON.parse(fs.readFileSync(path.join(__dirname, "snow_assets.json"), "utf8"));
 
 // Contact sheets live OUTSIDE the mod tree, in a sibling directory. They are
@@ -287,7 +288,7 @@ let lastBase = null;
 for (const asset of spec.assets) {
   const mesh = parseMesh(asset.mesh);
   const base = `${asset.mesh}|${asset.source}`;
-  const deliveredPath = path.join(root, asset.output);
+  const deliveredPath = path.join(modRoot, asset.output);
   const previewPath = path.join(PREVIEW_ROOT, `${asset.id}.png`);
   const texturePath = fs.existsSync(deliveredPath) ? deliveredPath : previewPath;
   if (!fs.existsSync(texturePath)) {

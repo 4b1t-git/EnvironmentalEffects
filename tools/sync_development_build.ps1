@@ -7,8 +7,12 @@ Set-StrictMode -Version 2.0
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$sourceRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd('\')
-$workspaceRoot = [IO.Path]::GetFullPath((Split-Path -Parent (Split-Path -Parent $sourceRoot))).TrimEnd('\')
+# The project holds the toolchain and the deliverable side by side. Only `mod`
+# is mirrored, zipped and installed: a player never receives the generator, the
+# validators, the tests or the frozen recipes.
+$projectRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot)).TrimEnd('\')
+$sourceRoot = [IO.Path]::GetFullPath((Join-Path $projectRoot 'mod')).TrimEnd('\')
+$workspaceRoot = [IO.Path]::GetFullPath((Split-Path -Parent (Split-Path -Parent $projectRoot))).TrimEnd('\')
 $canonicalRoot = Join-Path $workspaceRoot 'outputs\EnvironmentalWeapons'
 $outputsRoot = Join-Path $workspaceRoot 'outputs'
 $zipPath = Join-Path $outputsRoot 'EnvironmentalWeapons.zip'
@@ -153,8 +157,12 @@ function Invoke-Checked([string]$Executable, [string[]]$Arguments) {
     }
 }
 
-function Invoke-TreeValidation([string]$Root, [bool]$Regenerate) {
-    Push-Location -LiteralPath $Root
+# Validation runs once, against the project, because the toolchain only exists
+# there. The canonical and installed trees are then proved byte-identical to the
+# validated source, which is a stronger statement than re-running the same checks
+# against copies of it -- and three times faster.
+function Invoke-ProjectValidation([bool]$Regenerate) {
+    Push-Location -LiteralPath $projectRoot
     try {
         if ($Regenerate) {
             Invoke-Checked 'powershell.exe' @(
@@ -252,9 +260,11 @@ function Get-TreeHash($Records) {
 # Read from the canonical texture manifest rather than restating hashes here,
 # so a texture change touches one file instead of several scripts.
 function Get-TextureSummary {
-    $manifestFile = Join-Path $canonicalRoot 'assets\snow_texture_manifest.json'
+    # The texture manifest is produced evidence about the build, not mod content,
+    # so it lives with the toolchain rather than being shipped to players.
+    $manifestFile = Join-Path $projectRoot 'assets\snow_texture_manifest.json'
     if (-not (Test-Path -LiteralPath $manifestFile -PathType Leaf)) {
-        throw "Canonical texture manifest is absent: $manifestFile"
+        throw "Texture manifest is absent: $manifestFile"
     }
     $textureManifest = Get-Content -Raw -LiteralPath $manifestFile | ConvertFrom-Json
     $summary = [ordered]@{}
@@ -318,7 +328,7 @@ function Assert-BuildHashes {
     Write-Host "zip_sha256=$zipHash"
 }
 
-Assert-ExactPath $sourceRoot (Join-Path $workspaceRoot 'work\EnvironmentalWeapons') 'Source'
+Assert-ExactPath $sourceRoot (Join-Path $workspaceRoot 'work\EnvironmentalWeapons\mod') 'Source'
 Assert-ExactPath $canonicalRoot (Join-Path $workspaceRoot 'outputs\EnvironmentalWeapons') 'Canonical'
 Assert-ExactPath $installRoot 'C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons' 'Install'
 Assert-NotReparsePoint $sourceRoot 'Source'
@@ -330,19 +340,17 @@ Assert-ModId $installRoot $false
 
 if ($Apply) {
     Write-Host 'mode=APPLY'
-    Invoke-TreeValidation $sourceRoot $true
+    Invoke-ProjectValidation $true
     Sync-ExactTree $sourceRoot $canonicalRoot $canonicalRoot
-    Invoke-TreeValidation $canonicalRoot $false
     Assert-TreeParity $sourceRoot $canonicalRoot 'work_output_parity'
     New-SafeZip
     Assert-ZipParity
     Write-BuildHashes
     Sync-ExactTree $canonicalRoot $installRoot $installRoot
-    Invoke-TreeValidation $installRoot $false
 }
 else {
     Write-Host 'mode=DRY_RUN'
-    Invoke-TreeValidation $sourceRoot $false
+    Invoke-ProjectValidation $false
 }
 
 Assert-TreeParity $sourceRoot $canonicalRoot 'work_output_parity'

@@ -36,7 +36,11 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 Add-Type -AssemblyName System.Drawing
 
+# The project holds the toolchain; `mod` holds only what ships to the game.
+# Asset `output` paths are relative to the mod root, `recipe` paths to the
+# project root, because a frozen recipe is tooling data and never ships.
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$modRoot = Join-Path $projectRoot 'mod'
 $specPath = Join-Path $PSScriptRoot 'snow_assets.json'
 $manifestPath = Join-Path $projectRoot 'assets\snow_texture_manifest.json'
 
@@ -939,7 +943,7 @@ foreach ($asset in $spec.assets) {
         Write-Warning "$($asset.id) is not visually verified; writing a preview and refusing to freeze."
     }
     else {
-        $outputPath = Join-Path $projectRoot ($asset.output -replace '/', '\')
+        $outputPath = Join-Path $modRoot ($asset.output -replace '/', '\')
     }
 
     $sourceBitmap = [System.Drawing.Bitmap]::new($asset.source)
