@@ -4,10 +4,8 @@ Development test scaffold for Project Zomboid 42.20, single-player only. This
 package is not a release build and currently ships with `DEBUG = true`.
 
 Start with [HANDOFF.md](HANDOFF.md) for the current status, evidence, guardrails,
-and next task. A paste-ready Claude brief is in
-[CLAUDE_CONTINUATION_PROMPT.md](CLAUDE_CONTINUATION_PROMPT.md).
-[WORKSHOP.md](WORKSHOP.md) holds the store description and what still blocks
-publication.
+and next task. [WORKSHOP.md](WORKSHOP.md) holds the store description and what
+still blocks publication.
 
 The first enabled profile is `Base.HuntingRifle`. Snow state is simulated and
 persisted per unique item, using one deterministic development texture per stage
@@ -184,6 +182,6 @@ vanilla pixels:
 Detail retention rose from 46-78% to 73-91% of the vanilla baseline.
 
 This development build is installed at
-`C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons`. The editable source remains
+`C:\Users\4b1t2\Zomboid\mods\EnvironmentalEffects`. The editable source remains
 `work/EnvironmentalWeapons`; use the continuation workflow above so the
 canonical output, ZIP, hash manifest, and same-ID installed tree stay identical.
