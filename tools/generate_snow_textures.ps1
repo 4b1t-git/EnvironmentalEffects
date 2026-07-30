@@ -75,6 +75,21 @@ public static class EwSnowMask
     const double MaxAlpha = 0.95;
     const double UpFacingThreshold = 0.34;
 
+    // A barrel is a cylinder, and on a cylinder the set of points at a given
+    // surface angle is a circle, which unwraps to a STRAIGHT LINE in UV. So a
+    // purely smooth up-facing gate cuts the barrel with a ruler-straight snow
+    // edge, while irregular geometry like a stock gets a natural boundary for
+    // free. Multiplying by noise does not help: it scales the value but leaves
+    // the iso-line where it was. The boundary itself has to be perturbed, so
+    // jitter is added to the up value BEFORE the gate.
+    //
+    // Applied to the gate only. Thickness taper and every placement statistic
+    // keep using the true surface value, so this changes where snow ends, not
+    // what the mask claims about it.
+    const double UpJitter = 0.20;
+    const double UpJitterScale = 2.2;       // relative to noiseBase
+    const uint UpJitterSeed = 0x3C7B;
+
     // A texel whose steepest owning normal points further down than this is an
     // underside and never receives the flank dusting.
     const double FlankMinRawUp = -0.10;
@@ -544,11 +559,21 @@ public static class EwSnowMask
                 int o = y * Size + x;
                 if (upness[o] >= UpFacingThreshold) upFacing++;
                 double n = Fbm((x + 0.5) / Size * noiseBase, (y + 0.5) / Size * noiseBase, 0);
+
+                // Ragged the boundary, so a cylindrical barrel does not get a
+                // straight snow line. Stage-independent, so nesting still holds.
+                double jitter = (Fbm((x + 0.5) / Size * noiseBase * UpJitterScale,
+                    (y + 0.5) / Size * noiseBase * UpJitterScale, UpJitterSeed) - 0.5)
+                    * 2.0 * UpJitter;
+                double gatedUp = upness[o] + jitter;
+                if (gatedUp < 0) gatedUp = 0;
+                if (gatedUp > 1) gatedUp = 1;
+
                 // Recesses and cold metal reach the threshold sooner, so snow takes
                 // hold in the crevices and on the barrel before the bare stock does.
                 double affinity = (1.0 + CreviceBoost * surface.Crevice[o])
                     * (1.0 + MetalBoost * surface.Metalness[o]);
-                field[o] = upness[o] * (NoiseFloor + NoiseGain * n) * affinity;
+                field[o] = gatedUp * (NoiseFloor + NoiseGain * n) * affinity;
             }
         }
         if (upFacing == 0) throw new Exception("no up-facing texels found; the axis is wrong");
