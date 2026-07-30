@@ -17,6 +17,13 @@ textures are derivatives of the installed vanilla art. The project has always
 carried this as "pending release-rights review", and it decides whether this can
 reach the Workshop at all or stays a personal build.
 
+## Publication
+
+[WORKSHOP.md](WORKSHOP.md) carries the paste-ready store description and the
+blocker checklist. The build cannot be uploaded as it stands: asset rights are
+unresolved, `DEBUG = true`, `mod.info` still says "Development Test", there is no
+multiplayer and no poster.
+
 ## Quick path
 
 1. Read `tools/snow_assets.json` (reviewed intent) and

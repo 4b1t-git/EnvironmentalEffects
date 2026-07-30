@@ -6,6 +6,8 @@ package is not a release build and currently ships with `DEBUG = true`.
 Start with [HANDOFF.md](HANDOFF.md) for the current status, evidence, guardrails,
 and next task. A paste-ready Claude brief is in
 [CLAUDE_CONTINUATION_PROMPT.md](CLAUDE_CONTINUATION_PROMPT.md).
+[WORKSHOP.md](WORKSHOP.md) holds the store description and what still blocks
+publication.
 
 The first enabled profile is `Base.HuntingRifle`. Snow state is simulated and
 persisted per unique item, using one deterministic development texture per stage
