@@ -82,14 +82,28 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
         $opaquePixels = 0
         $transparentPixels = 0
         $changedRgbPixels = 0
-        # A core is identified by ABSOLUTE output luma, not by how far it rose.
-        # Lift depends on whatever was underneath, so it cannot separate a full
-        # drift over dark metal from a faint fleck over dark metal.
+        # A core needs BOTH tests, and each one alone is provably insufficient.
+        #
+        # Absolute luma alone is not portable. It is safe on the Hunting Rifle only
+        # because that art peaks at luma 149, but D_E_Pistol has 8203 vanilla texels
+        # already at or above 190 and DoubleBarrelShotgun has 344, so a faint
+        # dusting there would be counted as solid snow and the brightness assertion
+        # would pass with no snow present. 1911_Pistol peaks at 189.0, one level
+        # from tripping, which shows how thin that margin is.
+        #
+        # Lift alone is not sufficient either: it cannot separate a full drift over
+        # dark metal from a faint fleck over dark metal.
+        #
+        # Requiring both means a genuine drift core registers (bright result, large
+        # rise), a dusting does not (small rise), and vanilla that was already snow
+        # bright does not (no rise) -- correctly, because snow there is invisible
+        # anyway and must not count toward "the snow reads clearly".
         $coreTexels = 0
         $coreLumaSum = 0.0
         $coreSatSum = 0.0
         $dustingTexels = 0
         $coreLumaFloor = 190
+        $coreLiftFloor = 25
         $dustingLift = 20
 
         for ($y = 0; $y -lt 256; $y++) {
@@ -103,7 +117,8 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
                     $changedRgbPixels++
                     $sourceLuma = 0.299 * $sourcePixel.R + 0.587 * $sourcePixel.G + 0.114 * $sourcePixel.B
                     $outputLuma = 0.299 * $outputPixel.R + 0.587 * $outputPixel.G + 0.114 * $outputPixel.B
-                    if ($outputLuma -ge $coreLumaFloor) {
+                    $lift = $outputLuma - $sourceLuma
+                    if ($outputLuma -ge $coreLumaFloor -and $lift -ge $coreLiftFloor) {
                         $coreTexels++
                         $coreLumaSum += $outputLuma
                         $maxChannel = [Math]::Max($outputPixel.R, [Math]::Max($outputPixel.G, $outputPixel.B))
@@ -112,7 +127,7 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
                             $coreSatSum += (($maxChannel - $minChannel) / $maxChannel)
                         }
                     }
-                    elseif (($outputLuma - $sourceLuma) -ge $dustingLift) {
+                    elseif ($lift -ge $dustingLift) {
                         $dustingTexels++
                     }
                 }

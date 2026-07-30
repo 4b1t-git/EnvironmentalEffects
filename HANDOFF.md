@@ -43,7 +43,7 @@ The open task is in-game confirmation of the natural cycle and of stages 2-4.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Logic suite | 46 assertions pass |
+| Logic suite | 54 assertions pass |
 | Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons` |
 | Release status | Development test, not publishable |
 
@@ -91,6 +91,8 @@ them shows the refined mask.
 | Snow holds on a frozen weapon outdoors in clear weather | Pure logic tests |
 | Rain strips snow even below freezing, one stage per tick | Pure logic tests |
 | A stage change refreshes held and slung weapons, in any pose | Static validator + user report |
+| A schema bump preserves the vanilla snapshot, snow and stage | Pure logic tests |
+| The slot probe runs only for profiled items | Pure logic tests |
 | A trace of rain below the intensity gate does not strip snow | Pure logic tests |
 | A coalesced or skipped tick advances the right amount | Pure logic tests |
 | Indoor and warm-weather melting clamps safely | Pure logic tests |
@@ -134,7 +136,7 @@ Required results:
 - regeneration `PASS`;
 - visual validation: 256×256, zero transparent pixels, drift-core luma ≥ 205,
   drift-core saturation ≤ 0.06, up-facing share ≥ 0.68;
-- pure logic: 46 assertions;
+- pure logic: 54 assertions;
 - static validator `PASS`;
 - work/canonical/installed file counts and SHA-256 values match;
 - ZIP entries all start with `EnvironmentalWeapons/`, contain no `..`, absolute
@@ -164,10 +166,11 @@ work/output/install byte mismatch.
 | --- | --- |
 | Exact local vanilla `MSR788_Rifle.png` | `c4f0b2271056779f214831d61a44a5a41fcf1b797515e6e7b8658a4f6ac0d9d4` |
 | Exact local vanilla `MSR788_Rifle.x` mesh | `8bfd63c6b9e4b53b3778a91cfa568df97b5093099553f58d43090b91ddbbcda2` |
-| Stage 1 derivative | `2803d14984aeecd49ec4865e17f7bd3631f512dfe6cc35ec0365daeccabcd21d` |
-| Stage 2 derivative | `2ce41244d1d654f173324eabdd78c62a926750f7a788113644fabff9d39b022c` |
-| Stage 3 derivative | `af75a9e89f634ce83f4a703d57b67c7417bd9b00e860cd8516e3d589ccc736e6` |
-| Stage 4 derivative | `cc468a73dac512c0aaa123bb8c27ae588f94dda86ad14ba450666f715039081e` |
+| Stage 1 derivative | `ea96b12ac63a6e3016801f91238a61f4d1ecdb710bc89a2e39b43638fda0d7b2` |
+| Stage 2 derivative | `36c88536d73b1a502c7a0235bb1315afa2bd368dba48d851bbf2b015cb79bd7c` |
+| Stage 3 derivative | `062e7fbe3d87bb8b114c2074e0252c1631e69cbb92c6ca05c2f6eb03bb13fcf1` |
+| Stage 4 derivative | `8a5c5b441210ce6d11b5a8f414e7fe3829048342290a2187091a7834fad87065` |
+| Retired pre-review Stage 1-4 | `2803d149…`, `2ce41244…`, `af75a9e8…`, `cc468a73…` |
 | Retired flat-snow Stage 1-4 | `c5014e50…`, `0e86fc39…`, `c4b4a01d…`, `ead78dc3…` |
 | Retired Stage 1, user-confirmed in game | `7e2165ed202823e53ca546aff7ba3b60be15641f95ee4737b8af9272274d7d04` |
 | Retired top-only Stage 1 | `dc3568ce60d03146a5f08653eff21c610b390904b1e9f3e458e9d757585c3bd9` |
@@ -222,6 +225,10 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | Exposure defined as "in hands" only | A rifle slung on the back collected nothing though it is fully in the weather, and a snowy rifle stowed in a bag stayed snowy forever because melt was also hands-only | Hands and body slots accumulate; anything in a container thaws |
 | Stage change invisible while seated | `resetEquippedHandsModels` does not reach the rendered model in a seated or lying animation state, so the change only appeared after standing up | Also request `resetModelNextFrame`, the deferred full rebuild vanilla uses for appearance changes |
 | Stage change invisible on a slung weapon | The refresh was gated on the item being in hands, so a weapon on the back is drawn on the character but never got refreshed at all | Refresh whenever the item is rendered on the character, hands or body slot |
+| `upness` averaged over all subsamples | Diluted every texel on a UV island edge by up to 16x (11.5% of owned texels; 437 fell under the up-facing threshold), so snow visibly retreated along the seams | Normalize by the subsamples a triangle owns |
+| Core classified by absolute luma alone | Portable only by accident: D_E_Pistol has 8203 vanilla texels already above the floor and DoubleBarrelShotgun 344, so a dusting there counted as solid snow and the brightness assertion passed vacuously. A texel with zero snow scored as a core | Require both a bright result and a real rise above vanilla |
+| Crevice blur reading unowned atlas space | The gutter averages luma 69 against the surface's 62, inflating apparent recess depth within the blur radius of every seam | Weighted blur over owned texels only |
+| Snapshotting channels that are never restored | staticModel, worldStaticModel, modelIndex and textureName had zero readers but were persisted into every save, and ARCHITECTURE.md claimed a restore guarantee that did not exist | Capture only what the adapter restores |
 | Snow surviving freezing rain | Melt was gated on temperature alone, so after snowfall stopped at sub-zero a downpour left snow pinned at 100% forever | Rain is its own melt trigger, independent of temperature |
 | Unconditional `resetEquippedHandsModels` | Harmless with hands-only tracking, but once stowed weapons are reconciled it would restart the held weapon's models whenever a bagged weapon changed stage | Refresh only when the changed item is actually in hand |
 

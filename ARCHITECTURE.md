@@ -84,8 +84,15 @@ deliberately `nil`. Dropped rifles therefore use the engine's specialized
 attachment while retaining the custom WeaponSprite texture. A missing asset
 causes no visual mutation. The adapter owns
 only `setWeaponSprite`, `setWorldStaticModel`, `setTexture`, and the model
-refresh calls. It snapshots the original sprite, model
-index, static/world overrides, and icon name before any possible mutation.
+refresh calls.
+
+Before any possible mutation the state snapshots exactly the channels the adapter
+restores: the original `WeaponSprite`, and whether an adapter-owned
+`worldStaticModel` override existed. Earlier versions also captured the static
+model, model index and icon name, which read as extra safety but were never
+restored from, so they were removed rather than left implying a guarantee that did
+not exist. Icon restore uses a runtime snapshot of the item's texture, falling
+back to the ScriptItem's normal texture.
 
 ## Making a stage change visible
 

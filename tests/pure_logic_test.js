@@ -69,6 +69,19 @@ function classify({ inHands, attachedSlot }) {
   return Number(attachedSlot ?? -1) >= 0;
 }
 
+// EW_State.ensure schema handling. The point under test is that a schema bump
+// must carry the existing snapshot forward instead of re-reading the item, which
+// by then may already be wearing a snow sprite.
+function ensureState(existing, itemSprite, schema) {
+  if (existing && existing.schema === schema) return existing;
+  return {
+    schema,
+    snow: existing ? existing.snow : 0,
+    stage: existing ? existing.stage : 0,
+    original: existing ? existing.original : { weaponSprite: itemSprite },
+  };
+}
+
 // EW_Controller elapsed-minute gate.
 class ExposureClock {
   constructor() { this.lastHours = null; this.previous = new Set(); }
@@ -196,6 +209,37 @@ check(clock.update(4 + 1 / 6, ["rifle"]).rifle, 0, "re-observation after a gap c
 // ---- Profiles are keyed by exact FullType ----
 check(findProfile("Base.HuntingRifle"), "rifle", "declared profile resolves");
 check(findProfile("Other.CopyWithHuntingRifleSprite"), null, "a shared sprite does not enable an item");
+
+// ---- A schema bump must not overwrite the vanilla snapshot ----
+// Without this, a rifle already wearing snow re-snapshots "EW_..._SnowHeavy" as
+// its original and can never be restored to vanilla again.
+const snowedState = {
+  schema: 1, snow: 75, stage: 3,
+  original: { weaponSprite: "HuntingRifle" },
+};
+const migrated = ensureState(snowedState, "EW_HuntingRifle_SnowHeavy", 2);
+check(migrated.original.weaponSprite, "HuntingRifle", "schema bump keeps the vanilla sprite");
+check(migrated.snow, 75, "schema bump keeps accumulated snow");
+check(migrated.stage, 3, "schema bump keeps the current stage");
+check(migrated.schema, 2, "schema bump records the new version");
+check(ensureState(null, "HuntingRifle", 1).original.weaponSprite, "HuntingRifle",
+  "a first-time capture still reads the item");
+check(ensureState(snowedState, "ignored", 1), snowedState, "a matching schema is returned untouched");
+
+// ---- Exposure must not evaluate the slot probe for unprofiled items ----
+// The probe costs engine calls, so it has to run only after the profile check.
+let probeCalls = 0;
+function recordLike(fullType, isExposed, out) {
+  if (findProfile(fullType) === null) return;
+  out.push(isExposed());
+}
+const recorded = [];
+const countingProbe = () => { probeCalls++; return true; };
+for (const t of ["Other.Bandage", "Other.Nails", "Base.HuntingRifle", "Other.Water"]) {
+  recordLike(t, countingProbe, recorded);
+}
+check(probeCalls, 1, "slot probe runs once, only for the profiled item");
+check(recorded, [true], "only the profiled item is recorded");
 
 // ---- Legacy world-model migration ----
 check(migrateLegacyWorld("EW_HuntingRifle_SnowLight_World", "EW_HuntingRifle_SnowLight_World"),

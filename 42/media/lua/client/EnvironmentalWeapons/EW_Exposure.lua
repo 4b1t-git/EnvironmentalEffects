@@ -37,7 +37,11 @@ function Exposure.resolve(player)
     local square = player:getSquare()
     local outside = square ~= nil and square:isOutside()
 
-    local function record(item, exposed)
+    -- `exposed` is a thunk, not a value. Passing attachedToBody(item) directly
+    -- meant Lua evaluated it for every item in the inventory before the profile
+    -- check could reject it, paying two pcalls per carried item every tick for
+    -- items that can never match a profile.
+    local function record(item, isExposed)
         -- Deduplicated by Lua object identity, which matters for two-handed
         -- rifles that report the same instance in both hands.
         if not item or seen[item] then return end
@@ -45,10 +49,12 @@ function Exposure.resolve(player)
         seen[item] = true
         result[#result + 1] = {
             item = item,
-            exposed = exposed,
+            exposed = isExposed(item),
             outside = outside,
         }
     end
+
+    local function alwaysExposed() return true end
 
     -- Hands first and explicitly. It is the case that must never be missed, and
     -- handling it here does not depend on how the inventory enumerates equipped
@@ -58,8 +64,8 @@ function Exposure.resolve(player)
     if okPrimary then primary = valuePrimary end
     local okSecondary, valueSecondary = pcall(function() return player:getSecondaryHandItem() end)
     if okSecondary then secondary = valueSecondary end
-    record(primary, true)
-    record(secondary, true)
+    record(primary, alwaysExposed)
+    record(secondary, alwaysExposed)
 
     -- Then everything carried. A weapon slung on the back or holstered is out in
     -- the weather just as much as one in hand, and a weapon stowed in a bag is
@@ -76,7 +82,7 @@ function Exposure.resolve(player)
         for index = 0, size - 1 do
             local okItem, item = pcall(function() return items:get(index) end)
             if okItem and item then
-                record(item, attachedToBody(item))
+                record(item, attachedToBody)
                 walk(itemContainer(item), depth + 1)
             end
         end

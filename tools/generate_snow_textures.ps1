@@ -402,20 +402,28 @@ public static class EwSnowMask
         {
             for (int x = 0; x < Size; x++)
             {
-                double sum = 0, cover = 0, raw = -2, rawCount = 0;
+                double sum = 0, raw = -2;
+                int cover = 0;
                 for (int sy = 0; sy < Super; sy++)
                 {
                     for (int sx = 0; sx < Super; sx++)
                     {
                         int o = (y * Super + sy) * SuperSize + (x * Super + sx);
+                        if (!superUsed[o]) continue;
                         sum += superUp[o];
-                        if (superUsed[o]) cover += 1;
-                        if (superRaw[o] > raw) { raw = superRaw[o]; rawCount++; }
+                        cover++;
+                        if (superRaw[o] > raw) raw = superRaw[o];
                     }
                 }
-                upness[y * Size + x] = sum / (Super * Super);
-                used[y * Size + x] = cover / (Super * Super);
-                rawUp[y * Size + x] = rawCount > 0 ? raw : -2;   // -2 marks unowned space
+                int target = y * Size + x;
+                // Normalize by the subsamples a triangle actually owns. Dividing by
+                // the full subsample count diluted every texel sitting on a UV
+                // island edge: 11.5% of owned texels on the Hunting Rifle, by up to
+                // 16x, which pushed them under the up-facing threshold and made
+                // snow visibly retreat along the seams.
+                upness[target] = cover > 0 ? sum / cover : 0;
+                used[target] = cover / (double)(Super * Super);
+                rawUp[target] = cover > 0 ? raw : -2;   // -2 marks unowned space
             }
         }
     }
@@ -429,7 +437,12 @@ public static class EwSnowMask
         public double[] Metalness;
     }
 
-    static Surface AnalyseSurface(byte[] bgra)
+    // `used` is required: the local average a texel is compared against must be
+    // built from surface only. Atlas space no triangle owns holds unrelated pixels
+    // (on the Hunting Rifle they average luma 69 against the surface's 62), so
+    // including them inflated the apparent recess depth within the blur radius of
+    // every UV seam and packed snow along the seams for no physical reason.
+    static Surface AnalyseSurface(byte[] bgra, double[] used)
     {
         var luma = new double[Size * Size];
         var metalness = new double[Size * Size];
@@ -445,47 +458,50 @@ public static class EwSnowMask
             metalness[o] = 1.0 - t;
         }
 
-        // Separable box blur gives the local average this texel is compared against.
-        var horizontal = new double[Size * Size];
+        // Separable box blur over owned texels only. Weight and value are carried
+        // separately so the second pass can still divide by the true owned count.
+        var horizontalValue = new double[Size * Size];
+        var horizontalWeight = new double[Size * Size];
         for (int y = 0; y < Size; y++)
         {
             for (int x = 0; x < Size; x++)
             {
-                double sum = 0; int n = 0;
+                double sum = 0, weight = 0;
                 for (int dx = -CreviceBlurRadius; dx <= CreviceBlurRadius; dx++)
                 {
                     int nx = x + dx;
                     if (nx < 0 || nx >= Size) continue;
-                    sum += luma[y * Size + nx];
-                    n++;
+                    int n = y * Size + nx;
+                    if (used[n] <= 0) continue;
+                    sum += luma[n];
+                    weight += 1;
                 }
-                horizontal[y * Size + x] = sum / n;
-            }
-        }
-        var blurred = new double[Size * Size];
-        for (int y = 0; y < Size; y++)
-        {
-            for (int x = 0; x < Size; x++)
-            {
-                double sum = 0; int n = 0;
-                for (int dy = -CreviceBlurRadius; dy <= CreviceBlurRadius; dy++)
-                {
-                    int ny = y + dy;
-                    if (ny < 0 || ny >= Size) continue;
-                    sum += horizontal[ny * Size + x];
-                    n++;
-                }
-                blurred[y * Size + x] = sum / n;
+                horizontalValue[y * Size + x] = sum;
+                horizontalWeight[y * Size + x] = weight;
             }
         }
 
         var crevice = new double[Size * Size];
-        for (int o = 0; o < Size * Size; o++)
+        for (int y = 0; y < Size; y++)
         {
-            double depth = (blurred[o] - luma[o]) / CreviceRange;
-            if (depth < 0) depth = 0;
-            if (depth > 1) depth = 1;
-            crevice[o] = depth;
+            for (int x = 0; x < Size; x++)
+            {
+                int o = y * Size + x;
+                if (used[o] <= 0) continue;   // gutter has no recess to speak of
+                double sum = 0, weight = 0;
+                for (int dy = -CreviceBlurRadius; dy <= CreviceBlurRadius; dy++)
+                {
+                    int ny = y + dy;
+                    if (ny < 0 || ny >= Size) continue;
+                    sum += horizontalValue[ny * Size + x];
+                    weight += horizontalWeight[ny * Size + x];
+                }
+                if (weight <= 0) continue;
+                double depth = ((sum / weight) - luma[o]) / CreviceRange;
+                if (depth < 0) depth = 0;
+                if (depth > 1) depth = 1;
+                crevice[o] = depth;
+            }
         }
 
         return new Surface { Luma = luma, Crevice = crevice, Metalness = metalness };
@@ -503,7 +519,9 @@ public static class EwSnowMask
         public int FlankTexels;
     }
 
-    static SnowMask BuildMask(string meshText, Surface surface,
+    // The surface analysis needs the coverage mask, and the mask needs the mesh, so
+    // the order is fixed: parse, rasterize coverage, analyse surface, then build.
+    static SnowMask BuildMask(string meshText, byte[] bgra, out Surface surface,
         int upAxis, int upSign, bool flipV,
         double targetUpCoverage, double noiseBase, double edgeSoftness,
         double flankCoverage, double flankMaxAlpha)
@@ -511,6 +529,7 @@ public static class EwSnowMask
         string meshInfo = ParseMesh(meshText);
         double[] upness, used, rawUp;
         BuildUpness(upAxis, upSign, flipV, out upness, out used, out rawUp);
+        surface = AnalyseSurface(bgra, used);
 
         var field = new double[Size * Size];
         int upFacing = 0;
@@ -653,8 +672,8 @@ public static class EwSnowMask
         double targetUpCoverage, double noiseBase, double edgeSoftness,
         double flankCoverage, double flankMaxAlpha)
     {
-        Surface surface = AnalyseSurface(bgra);
-        SnowMask mask = BuildMask(meshText, surface, upAxis, upSign, flipV,
+        Surface surface;
+        SnowMask mask = BuildMask(meshText, bgra, out surface, upAxis, upSign, flipV,
             targetUpCoverage, noiseBase, edgeSoftness, flankCoverage, flankMaxAlpha);
         double[] alpha = mask.Alpha;
         double[] upness = mask.Upness;
