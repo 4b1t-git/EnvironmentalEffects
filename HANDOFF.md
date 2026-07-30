@@ -57,7 +57,8 @@ multiplayer and no poster.
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
 | Logic suite | 64 assertions pass; 76 textures validated |
-| Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons` |
+| Mod identity | `id=EnvironmentalEffects`, frozen 2026-07-30 while unpublished |
+| Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalEffects` |
 | Release status | Development test, not publishable |
 
 ## Visual evidence
@@ -253,7 +254,7 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | Absolute coverage band 8-55% of the atlas | Same defect: T_Carabine at 5.3% of its atlas was 31% of its own area | Measure coverage against the weapon's owned atlas area |
 | `upShare` floors disagreeing between validators | validate.js kept 0.68 while the PowerShell validator moved to 0.45, so the stricter one rejected a valid M16 stage 4 | Both use the density ratio plus a matching 0.45 floor |
 | Accumulation rate scaled by snowfall intensity | Build 42.20 reports precipitation intensity far below 1.0 during snow, so the nominal 8-hours-to-full became 20+ game hours and the mod looked broken: the user watched for hours and never left stage 1 | Intensity gates accumulation; the rate is a fixed one stage per tick |
-| Ground weapons simulated but never redrawn | The state advanced correctly and showed the right stage once picked up, but the square kept drawing the old model: no character refresh reaches an IsoWorldInventoryObject | Mark the world object dirty the way vanilla does |
+| Ground weapons simulated but never redrawn | The state advances correctly and shows the right stage once picked up, but the square keeps drawing the old model: no character refresh reaches an IsoWorldInventoryObject. Marking the object dirty (`invalidateRenderChunkLevel` + `setSquareChanged`) was tried and **measured not to fix the 3D case**: the model instance is built when the item lands and is never re-read from its WeaponSprite | Accepted limitation, documented in `EW_VisualAdapter.lua` and in the store description. The dirty calls are kept because they are correct for sprite-drawn world items and cost nothing |
 | Dropped weapons never simulated | Exposure walked only the player's inventory, so a rifle dropped indoors kept its snow forever and one left out in a blizzard collected none | Bounded sweep of nearby squares, each item judged by its own square |
 | Exposure defined as "in hands" only | A rifle slung on the back collected nothing though it is fully in the weather, and a snowy rifle stowed in a bag stayed snowy forever because melt was also hands-only | Hands and body slots accumulate; anything in a container thaws |
 | Stage change invisible while seated | `resetEquippedHandsModels` does not reach the rendered model in a seated or lying animation state, so the change only appeared after standing up | Also request `resetModelNextFrame`, the deferred full rebuild vanilla uses for appearance changes |
@@ -303,6 +304,8 @@ reviewed. Do not upload or publish the texture, seed, or package.
 6. Finish single-player v1.
 7. Add multiplayer synchronization later; it remains pinned, not forgotten.
 
-## Copyable next-task prompt
-
-Use the exact prompt in `CLAUDE_CONTINUATION_PROMPT.md`.
+There is no separate copyable brief. This document is the brief: the status
+table, the guardrails, and the prioritized tasks above are what a new session
+needs. A standalone prompt file existed and was deleted on 2026-07-30 because it
+had drifted into describing a Stage-1-only, one-weapon scope that stopped being
+true many commits earlier.

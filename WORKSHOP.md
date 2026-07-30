@@ -8,30 +8,37 @@ build cannot be uploaded as it stands**, and one of the blockers is not technica
 
 ## Pre-publication checklist
 
-| # | Blocker | Status |
-| --- | --- | --- |
-| 1 | **Asset rights.** The textures are derivatives of the installed Project Zomboid art. | **Unresolved — yours to settle** |
-| 2 | `DEBUG = true` exposes a "force stage" menu to every player. | Not started |
-| 3 | The toolchain would need excluding, and `mod.info` rewriting. | Partly done |
-| 4 | No multiplayer support. | Not started |
-| 5 | No Workshop poster image. | Not started |
+Every row below was re-verified against the working tree on 2026-07-30.
 
-### 1. Asset rights — settle this before anything else
+| # | Blocker | Status | Verified by |
+| --- | --- | --- | --- |
+| 1 | **Asset rights.** The textures are derivatives of the installed Project Zomboid art. | **Resolved 2026-07-30 by the maintainer** | Maintainer's own review; see below |
+| 2 | `DEBUG = true` exposes a "force stage" menu to every player. | Not started | `EW_Config.lua` still reads `DEBUG = true` |
+| 3 | `mod.info` still identifies the build as a development test, and carries no version. | Partly done | Identity fixed 2026-07-30; `name` still says "Development Test" |
+| 4 | No multiplayer support. | Not started | No networking calls; the validator forbids them in this slice |
+| 5 | No Workshop poster image. | Not started | `mod/42/poster.png` does not exist |
 
-Every snow texture is generated from the vanilla weapon art in your own game
-install. Publishing them means redistributing The Indie Stone's artwork.
+Toolchain exclusion, previously listed as a blocker, is **done**: `mod/` is the
+only tree mirrored, zipped and installed, so `tools/`, `tests/`, `docs/` and the
+project Markdown never reach a player.
 
-Reusing and recolouring vanilla textures is extremely common on the PZ Workshop,
-and mods only function for people who own the game. That is context, not
-permission: check TIS's current mod and asset policy yourself. Nobody in this
-project can grant it for you.
+### 1. Asset rights — resolved
 
-There is no clean technical escape. Project Zomboid cannot generate PNGs at
-runtime from Lua, so "let each player derive it from their own install" is not
-achievable. Shipping the images is the only practical route.
+Every snow texture is generated from the vanilla weapon art in the maintainer's
+own game install, so publishing them means redistributing The Indie Stone's
+artwork. Reusing and recolouring vanilla textures is common practice on the PZ
+Workshop, and the mod only functions for people who already own the game.
 
-If the answer is no, the realistic options are keeping this as a personal build,
-or commissioning original artwork — which is a different project.
+**The maintainer reviewed this on 2026-07-30 and considers it settled: the mod
+may be published.** No specific policy citation was recorded at the time. If this
+is ever challenged, record the reasoning here rather than re-litigating it from
+memory.
+
+Kept for context, because it constrains any future re-think: there is no clean
+technical escape. Project Zomboid cannot generate PNGs at runtime from Lua, so
+"let each player derive the textures from their own install" is not achievable.
+Shipping the images is the only practical route — the alternatives are a personal
+build, or commissioned original artwork, which is a different project.
 
 ### 2. `DEBUG = true`
 
@@ -40,17 +47,28 @@ debug on, which puts *EW Debug: force stage 1-4* and *restore vanilla* in every
 player's right-click menu. Set it to `false` for release. The probe is already
 fail-closed behind that flag, so nothing else needs touching.
 
-### 3. Packaging
+### 3. `mod.info`
 
-`mod/` is already the only thing mirrored, zipped and installed, so the toolchain
-is not shipped. What remains is `mod/42/mod.info`, which still reads:
+The identity was settled on 2026-07-30, while the mod was still unpublished and
+changing it was still free. `mod/42/mod.info` now reads:
 
 ```
-name=Environmental Weapons - Development Test
-description=Development test build for single-player Hunting Rifle snow visuals. Not a release build.
+name=Environmental Effects - Development Test
+id=EnvironmentalEffects
+description=Development test build for single-player weapon snow visuals across nineteen vanilla firearms. Not a release build.
 ```
 
-It needs a real name, description and version. The current ZIP is about 5.8 MB.
+`id` is now frozen. Project Zomboid binds saves to it, so changing it after
+publication orphans every save that uses the mod. The sync tooling also refuses
+to install over a folder whose `mod.info` carries a different id.
+
+What remains for release: drop "Development Test" from `name`, and add a version.
+The parser accepts more keys than this file uses — verified against
+`ChooseGameInfo$Mod` in the game jar, which recognises `modVersion`, `versionMin`,
+`versionMax`, `require`, `incompatible`, `poster` and `packs`. `require` is what
+would let a future companion mod depend on this one.
+
+The current ZIP is about 5.7 MiB.
 
 ### 4. Multiplayer
 
@@ -62,6 +80,20 @@ this is single-player only.
 ### 5. Poster
 
 Workshop wants a preview image. `mod/42/poster.png` does not exist yet.
+
+### Not a blocker, but do not "fix" it again
+
+The dropped-weapon redraw limitation stated in the description below is settled,
+not open. Commit `c7b1ce2` implemented the obvious fix — mark the world object
+dirty with `invalidateRenderChunkLevel(FBORenderChunk.DIRTY_REDRAW)` plus
+`square:setSquareChanged()`, which is how vanilla marks any changed world object
+— and it was then measured **not** to rebuild a 3D world model. The model
+instance is created when the item lands and is never re-read from the item's
+`WeaponSprite` afterwards. The calls are still in `EW_VisualAdapter.lua` because
+they are correct for sprite-drawn world items and cost nothing, with the measured
+result recorded beside them. The simulation itself was never affected: state
+advances correctly on the ground and the right level shows the instant the weapon
+is picked up.
 
 ---
 
