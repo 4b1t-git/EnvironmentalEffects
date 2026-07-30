@@ -152,15 +152,35 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
     if ($transparentPixels -ne 0) { throw "$id`: introduces transparency on $transparentPixels pixels" }
     if ($opaquePixels -ne 65536) { throw "$id`: opaque pixel count mismatch: $opaquePixels" }
 
-    # Deliberately no per-stage coverage band. Stage 1 is a dusting and stage 4
-    # is nearly buried, so any fixed band would either reject a valid stage or
-    # wave through a broken one. The progression is checked for monotonicity
-    # after this loop instead, which is the property that actually matters.
-    if ($coverage -lt 8 -or $coverage -gt 55) { throw "$id`: coverage implausible: $coverage%" }
+    # Coverage is measured against the area the weapon actually occupies in its
+    # atlas, not against the whole 256x256. Atlas utilization varies enormously
+    # between weapons -- T_Carabine owns 11261 texels against M16's 35158 -- so an
+    # absolute band is really a measure of how big the weapon is, and it rejected
+    # a perfectly good T_Carabine at 5.3% of atlas that was 31% of its own area.
+    #
+    # This is a sanity rail, not a quality gate: the real checks are core share,
+    # density ratio, and the stage-to-stage nesting proof below. Values above 100
+    # are expected, because changed texels include the bleed into gutter space
+    # while the denominator counts owned surface only.
+    $ownedTexels = [double]$entry.upFacingTexels + [double]$entry.flankEligibleTexels
+    if ($ownedTexels -le 0) { throw "$id`: manifest reports no owned surface" }
+    $ownedCoverage = [Math]::Round(100 * $changedRgbPixels / $ownedTexels, 1)
+    if ($ownedCoverage -lt 20 -or $ownedCoverage -gt 130) {
+        throw "$id`: coverage implausible: $ownedCoverage% of the weapon's own atlas area"
+    }
 
     # These encode why the first asset was invisible at gameplay zoom: it was
     # mid-grey and brown rather than neutral white.
-    if ($coreTexels -lt 3000) { throw "$id`: too little solid snow: $coreTexels core texels" }
+    # Relative, not absolute. An absolute count is a property of how much atlas a
+    # weapon occupies, not of whether its snow is solid: JS14 has 4255 up-facing
+    # texels against the Hunting Rifle's 13313, so a floor tuned on the rifle
+    # rejected a perfectly good JS14 texture. What matters is that the snow is
+    # mostly solid rather than all soft fringe.
+    $coreShare = if ($changedRgbPixels -gt 0) { $coreTexels / $changedRgbPixels } else { 0 }
+    if ($coreTexels -lt 200) { throw "$id`: essentially no solid snow: $coreTexels core texels" }
+    if ($coreShare -lt 0.25) {
+        throw "$id`: snow is mostly soft fringe: $([Math]::Round(100 * $coreShare, 1))% of changed texels are cores"
+    }
     if ($coreLuma -lt 205) { throw "$id`: snow core is too dark to read: $coreLuma" }
     if ($coreSat -gt 0.06) { throw "$id`: snow core is tinted rather than neutral: $coreSat" }
 
@@ -196,6 +216,7 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
         SourcePath = $entry.sourcePath
         OutputSha256 = $outputHash
         CoveragePercent = $coverage
+        OwnedCoveragePercent = $ownedCoverage
         CoreTexels = $coreTexels
         CoreSnowLuma = $coreLuma
         CoreSnowSaturation = $coreSat
@@ -260,34 +281,36 @@ $profile = Get-Content -Raw -LiteralPath $profilePath
 $debugProbe = Get-Content -Raw -LiteralPath $debugPath
 
 # Every delivered texture must be reachable: registered on a model and selected
-# by a stage. An orphan texture ships bytes the game never loads.
-$stageModelNames = @{ 1 = 'EW_HuntingRifle_SnowLight'; 2 = 'EW_HuntingRifle_SnowMedium';
-    3 = 'EW_HuntingRifle_SnowHeavy'; 4 = 'EW_HuntingRifle_SnowFull' }
+# by a stage. An orphan texture ships bytes the game never loads. Model names come
+# from the spec rather than a table here, so adding a weapon does not require
+# editing this validator.
+$specById = @{}
+foreach ($asset in $spec.assets) { $specById[$asset.id] = $asset }
+
 foreach ($report in $reports) {
+    $asset = $specById[$report.Asset]
+    if (-not $asset) { throw "No spec entry for $($report.Asset)" }
     $textureName = [IO.Path]::GetFileNameWithoutExtension($report.OutputPath)
     if (-not $models.Contains("texture = weapons/firearm/$textureName")) {
         throw "Texture is not registered on any model: $textureName"
     }
-    $modelName = $stageModelNames[$report.Stage]
-    if (-not $modelName) { throw "No model name mapped for stage $($report.Stage)" }
-    if (-not $models.Contains("model $modelName")) {
-        throw "Model missing for stage $($report.Stage): $modelName"
+    if (-not $asset.modelName) { throw "$($report.Asset): spec has no modelName" }
+    if (-not $models.Contains("model $($asset.modelName)")) {
+        throw "Model missing for $($report.Asset): $($asset.modelName)"
     }
-    if (-not $profile.Contains("equippedModel = `"$modelName`"")) {
-        throw "Profile does not select $modelName for stage $($report.Stage)"
+    if (-not $profile.Contains("equippedModel = `"$($asset.modelName)`"")) {
+        throw "Profile does not select $($asset.modelName) for stage $($report.Stage)"
     }
-}
-if (-not $models.Contains('mesh = weapons/firearm/MSR788_Rifle')) {
-    throw 'Vanilla mesh reference missing'
 }
 if ($models.Contains('model EW_HuntingRifle_SnowLight_World')) {
     throw 'Legacy world model is still registered'
 }
 # Firearms must never carry a WorldStaticModel: it forces the generic atlas
-# branch and stands the dropped rifle upright.
+# branch and stands the dropped weapon upright. Five slots per profiled weapon.
+$weaponCount = @($spec.assets | ForEach-Object { $_.fullType } | Sort-Object -Unique).Count
 $worldNilCount = ([regex]::Matches($profile, 'worldModel\s*=\s*nil')).Count
-if ($worldNilCount -lt 5) {
-    throw "All five stage slots must leave worldModel nil; found $worldNilCount"
+if ($worldNilCount -lt (5 * $weaponCount)) {
+    throw "Expected $(5 * $weaponCount) worldModel=nil slots for $weaponCount weapons; found $worldNilCount"
 }
 if ($profile -match 'worldModel\s*=\s*"') {
     throw 'A stage sets a world model; firearms must use the HandWeapon fallback'

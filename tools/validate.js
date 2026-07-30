@@ -27,6 +27,7 @@ const required = [
   "tools/replay_snow_textures.ps1",
   "tools/validate_snow_textures.ps1",
   "tools/preview_snow_textures.js",
+  "tools/generate_mod_wiring.js",
 ];
 for (const rel of required) {
   if (!fs.existsSync(resolve(rel))) throw new Error(`Missing ${rel}`);
@@ -141,7 +142,14 @@ for (const [id, entry] of Object.entries(textureManifest.assets)) {
   if (entry.outputSha256 !== textureSha) {
     throw new Error(`${id}: manifest outputSha256 ${entry.outputSha256} != texture ${textureSha}`);
   }
-  if (!(entry.upShare >= 0.68)) {
+  // Density, not share, is the placement invariant that survives a four-stage
+  // progression: a heavily covered weapon legitimately carries flank mass. This
+  // floor must match validate_snow_textures.ps1; they disagreed once (0.68 here
+  // against 0.45 there) and the stricter one rejected a valid stage 4.
+  if (!(entry.densityRatio >= 1.3)) {
+    throw new Error(`${id}: up-facing snow is not denser than flank snow: ${entry.densityRatio}`);
+  }
+  if (!(entry.upShare >= 0.45)) {
     throw new Error(`${id}: snow is not concentrated on up-facing surfaces: ${entry.upShare}`);
   }
   if (!(entry.coreSnowLuma >= 205)) {

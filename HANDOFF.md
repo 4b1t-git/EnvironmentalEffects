@@ -36,7 +36,7 @@ reach the Workshop at all or stays a personal build.
 | --- | --- |
 | Game target | Project Zomboid 42.20 stable, single-player |
 | Multiplayer | Explicitly pinned for later |
-| Enabled weapon | `Base.HuntingRifle` only |
+| Enabled weapons | 7 firearms: HuntingRifle, AssaultRifle, AssaultRifle2, JS14_Rifle, L92_Carbine, VarmintRifle, TrapperCarbine |
 | Vanilla visual source | `weapons/firearm/MSR788_Rifle`, 256×256 texture |
 | Visual coverage | All four stages present; stage 0 is vanilla |
 | Equipped visual | Confirmed in game by the user, all four stages |
@@ -49,7 +49,7 @@ reach the Workshop at all or stays a personal build.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Logic suite | 54 assertions pass |
+| Logic suite | 54 assertions pass; 28 textures validated |
 | Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons` |
 | Release status | Development test, not publishable |
 
@@ -70,6 +70,7 @@ them shows the refined mask.
 | File | Responsibility | Key invariant |
 | --- | --- | --- |
 | `mod/` | The deliverable; everything else is toolchain | Only this is mirrored, zipped and installed |
+| `tools/generate_mod_wiring.js` | Generates model blocks and EW_Profiles.lua from the spec | Attachments copied verbatim from the vanilla ModelScript |
 | `EW_Config.lua` | Rates, thresholds, debug gate | Development build currently uses `DEBUG = true` |
 | `EW_State.lua` | Versioned per-item modData and original visual snapshot | Never replace the item |
 | `EW_Simulation.lua` | Pure elapsed-game-minute snow math | Clamp to 0-100 |
@@ -232,6 +233,9 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | Fourth noise octave | Sat at 3.2 texels per cycle, the atlas Nyquist limit, so it aliased into speckle rather than adding shape | Three octaves |
 | Literal sparkle cutoff (`fbm >= 0.88`) | A 3-octave fbm sum almost never reaches it, so only 2-14 crystals appeared and the feature could not be judged | Threshold bisected to a target density, like every other threshold |
 | Raw-luma stage monotonicity | Drift shadows legitimately darken texels, and those bands move as drifts grow, so the assertion flagged correct output | Assert nesting on the snow mask, not on raw luma |
+| Absolute `coreTexels >= 3000` | A property of how much atlas a weapon occupies, not of snow quality: JS14 owns 4255 up-facing texels against the Hunting Rifle's 13313 and was rejected at 2136 cores | Require cores to be >=25% of changed texels |
+| Absolute coverage band 8-55% of the atlas | Same defect: T_Carabine at 5.3% of its atlas was 31% of its own area | Measure coverage against the weapon's owned atlas area |
+| `upShare` floors disagreeing between validators | validate.js kept 0.68 while the PowerShell validator moved to 0.45, so the stricter one rejected a valid M16 stage 4 | Both use the density ratio plus a matching 0.45 floor |
 | Accumulation rate scaled by snowfall intensity | Build 42.20 reports precipitation intensity far below 1.0 during snow, so the nominal 8-hours-to-full became 20+ game hours and the mod looked broken: the user watched for hours and never left stage 1 | Intensity gates accumulation; the rate is a fixed one stage per tick |
 | Exposure defined as "in hands" only | A rifle slung on the back collected nothing though it is fully in the weather, and a snowy rifle stowed in a bag stayed snowy forever because melt was also hands-only | Hands and body slots accumulate; anything in a container thaws |
 | Stage change invisible while seated | `resetEquippedHandsModels` does not reach the rendered model in a seated or lying animation state, so the change only appeared after standing up | Also request `resetModelNextFrame`, the deferred full rebuild vanilla uses for appearance changes |
