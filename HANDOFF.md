@@ -36,7 +36,7 @@ reach the Workshop at all or stays a personal build.
 | --- | --- |
 | Game target | Project Zomboid 42.20 stable, single-player |
 | Multiplayer | Explicitly pinned for later |
-| Enabled weapons | 8 firearms: HuntingRifle, MSR7T_Rifle, AssaultRifle, AssaultRifle2, JS14_Rifle, L92_Carbine, VarmintRifle, TrapperCarbine |
+| Enabled weapons | **19 firearms** — every vanilla firearm whose texture is 256x256 and whose mesh is 1:1 indexed |
 | Vanilla visual source | `weapons/firearm/MSR788_Rifle`, 256×256 texture |
 | Visual coverage | All four stages present; stage 0 is vanilla |
 | Equipped visual | Confirmed in game by the user, all four stages |
@@ -49,7 +49,7 @@ reach the Workshop at all or stays a personal build.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Logic suite | 59 assertions pass; 32 textures validated |
+| Logic suite | 59 assertions pass; 76 textures validated |
 | Installed path | `C:\Users\4b1t2\Zomboid\mods\EnvironmentalWeapons` |
 | Release status | Development test, not publishable |
 
@@ -234,6 +234,7 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | Fourth noise octave | Sat at 3.2 texels per cycle, the atlas Nyquist limit, so it aliased into speckle rather than adding shape | Three octaves |
 | Literal sparkle cutoff (`fbm >= 0.88`) | A 3-octave fbm sum almost never reaches it, so only 2-14 crystals appeared and the feature could not be judged | Threshold bisected to a target density, like every other threshold |
 | Raw-luma stage monotonicity | Drift shadows legitimately darken texels, and those bands move as drifts grow, so the assertion flagged correct output | Assert nesting on the snow mask, not on raw luma |
+| Assuming every vanilla firearm texture is RGB | PumpAction_Shotgun and M9_Pistol are RGBA with a few hundred semi-transparent edge texels. Forcing alpha to 255 hardened antialiased edges, and a 1:1 GDI+ transfer of an RGBA image is not bit-exact, so the generator and validator counted differently | Preserve source alpha; treat the changed-texel cross-check as a bound, not an exactness claim |
 | Saturating the up-facing region at high stages | With targetUpCoverage at 0.96 the top of a UV island filled completely, and once an island is full the visible snow edge is no longer the mask but the edge of the geometry -- straight by definition on a barrel. Two rounds of boundary jitter did nothing because they were raggedizing an edge that was not the one being seen | Ceiling the coverage below saturation so holes always remain |
 | Smooth up-facing gate on a cylinder | A barrel is a cylinder, so the set of points at a given surface angle is a circle, which unwraps to a STRAIGHT LINE in UV: snow ended at a ruler-straight edge along the handguard while irregular geometry got a natural boundary. Multiplying by noise scales the value but leaves the iso-line where it is | Jitter the up value before the gate, so the boundary itself is perturbed |
 | Absolute `coreTexels >= 3000` | A property of how much atlas a weapon occupies, not of snow quality: JS14 owns 4255 up-facing texels against the Hunting Rifle's 13313 and was rejected at 2136 cores | Require cores to be >=25% of changed texels |
@@ -272,13 +273,12 @@ reviewed. Do not upload or publish the texture, seed, or package.
    screenshots in `docs/evidence`.
 3. Revalidate save/load and restore in a disposable single-player save, watching
    for visible popping at the stage thresholds.
-4. Remaining firearms, in the order surveyed: shotguns (Shotgun, ShotgunSawnoff,
-   DoubleBarrelShotgun, DoubleBarrelShotgunSawnoff, JS3T_Shotgun), then pistols
-   and revolvers (Pistol, Pistol2, Pistol3, Revolver, Revolver_Long,
-   Revolver_Short). Expect to retune noiseBase for the handguns: they pack a much
-   smaller object into the same 256x256 atlas, so drifts land at a different
-   physical scale. Three weapons stay blocked on texture size: Revolver_CapGun
-   and Rifle_CapGun at 64x64, L94_Rifle at 2048x2048.
+4. Three firearms remain blocked on the generator's fixed 256x256 assumption:
+   Revolver_CapGun and Rifle_CapGun at 64x64, L94_Rifle at 2048x2048. Making the
+   size dynamic is contained work, but the normal buffer supersamples 4x, so a
+   2048 atlas would need an 8192x8192 buffer (~500 MB) unless the supersample
+   factor drops for large textures. L94_Rifle is worth it; the two toy guns are
+   not.
 5. Decide whether attachments should carry snow. Scopes are the strong case: they
    mount on top, so they are the most exposed part of the rifle, and a pristine
    black scope on a snowed rifle is the most visible inconsistency left. Only

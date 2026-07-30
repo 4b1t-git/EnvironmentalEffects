@@ -885,8 +885,20 @@ public static class EwSnowMask
             bgra[o * 4 + 1] = (byte)ng;
             bgra[o * 4 + 2] = (byte)nr;
         }
-        // The vanilla sources have no alpha channel; never introduce transparency.
-        for (int o = 0; o < Size * Size; o++) bgra[o * 4 + 3] = 255;
+        // Source alpha is preserved, never overwritten. Most vanilla firearm
+        // textures are RGB, where LockBits reports alpha 255 anyway, but
+        // PumpAction_Shotgun and M9_Pistol are RGBA with a few hundred
+        // semi-transparent edge texels. Forcing those to 255 hardened antialiased
+        // edges and made the generator's changed-texel count disagree with an
+        // independent measurement against the source.
+        //
+        // Only the colour channels above are written, so alpha already carries
+        // through untouched; this loop exists to count what is there.
+        int semiTransparent = 0;
+        for (int o = 0; o < Size * Size; o++)
+        {
+            if (bgra[o * 4 + 3] != 255) semiTransparent++;
+        }
 
         double upShare = snowMass > 0 ? snowMassUp / snowMass : 0;
         double coreLuma = coreTexels > 0 ? coreLumaSum / coreTexels : 0;
@@ -925,6 +937,7 @@ public static class EwSnowMask
             "changedTexels=" + changed,
             "coveragePercent=" + Inv(100.0 * changed / (Size * Size), 4),
             "coreTexels=" + coreTexels,
+            "semiTransparentTexels=" + semiTransparent,
             "shadowTexels=" + shadowTexels,
             "sparkleTexels=" + sparkleTexels,
             "upShare=" + Inv(upShare, 4),
@@ -1014,6 +1027,15 @@ foreach ($asset in $spec.assets) {
                     [Runtime.InteropServices.Marshal]::Copy(
                         [IntPtr]::Add($data.Scan0, $y * $data.Stride),
                         $buffer, $y * 256 * 4, 256 * 4)
+                }
+                # Alpha is taken from the source pixel by pixel, not from
+                # whatever the GDI+ copy happens to leave in the canvas. That
+                # semantics differs between 24bpp and 32bpp sources and is not
+                # worth depending on for a correctness invariant.
+                for ($y = 0; $y -lt 256; $y++) {
+                    for ($x = 0; $x -lt 256; $x++) {
+                        $buffer[(($y * 256) + $x) * 4 + 3] = $sourceBitmap.GetPixel($x, $y).A
+                    }
                 }
                 $report = [EwSnowMask]::Composite(
                     $buffer, $meshText,
@@ -1117,6 +1139,7 @@ if ($WriteManifest) {
             "      `"changedTexels`": $($m['changedTexels']),",
             "      `"coveragePercent`": $($m['coveragePercent']),",
             "      `"coreTexels`": $($m['coreTexels']),",
+            "      `"semiTransparentTexels`": $($m['semiTransparentTexels']),",
             "      `"shadowTexels`": $($m['shadowTexels']),",
             "      `"sparkleTexels`": $($m['sparkleTexels']),",
             "      `"upShare`": $($m['upShare']),",

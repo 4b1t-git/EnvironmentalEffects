@@ -46,9 +46,19 @@ local function refreshCharacterVisual(player, item)
 end
 
 -- A weapon lying on the ground is an IsoWorldInventoryObject, not something drawn
--- on the character, so none of the character refresh calls reach it: its snow
--- changed in state but the square kept drawing the old model until the item was
--- picked up. Vanilla marks a changed world object dirty exactly this way.
+-- on the character, so none of the character refresh calls reach it.
+--
+-- MEASURED LIMITATION: marking the object dirty this way, which is how vanilla
+-- marks any changed world object, does NOT rebuild a 3D world model. The model
+-- instance is created when the item lands and is not re-read from the item's
+-- WeaponSprite afterwards, so a dropped weapon keeps the appearance it had when
+-- it was dropped until it is picked up again. Vanilla itself never changes the
+-- sprite of an item already on the ground, so there is no established pattern to
+-- copy. The simulation is unaffected: state advances correctly and the right
+-- stage shows the moment the weapon is picked up.
+--
+-- The calls are kept because they are correct for sprite-drawn world items and
+-- cost nothing, not because they fix the 3D case.
 local function refreshGroundVisual(worldObject, square)
     if not worldObject then return false end
     local refreshed = false

@@ -126,11 +126,20 @@ the pose changes. A stage change happens at most once per controller tick, so th
 cost is irrelevant.
 
 A weapon lying on the ground is an `IsoWorldInventoryObject`, so none of those
-character calls reach it: its snow advanced in state but the square kept drawing
-the old model until the item was picked up. That one is marked dirty the way
-vanilla marks any changed world object, with
-`invalidateRenderChunkLevel(FBORenderChunk.DIRTY_REDRAW)` plus
+character calls reach it. It is marked dirty the way vanilla marks any changed
+world object, with `invalidateRenderChunkLevel(FBORenderChunk.DIRTY_REDRAW)` plus
 `square:setSquareChanged()`.
+
+**That does not rebuild a 3D world model, and it was measured not to.** The model
+instance is created when the item lands and is not re-read from the item's
+WeaponSprite afterwards, so a dropped weapon keeps the appearance it had when it
+was dropped. Vanilla never changes the sprite of an item already on the ground,
+so there is no pattern to copy. The only mechanism that would work is removing
+the world object and re-adding the item, which recreates the wrapper -- and whose
+failure mode is destroying the player's weapon, so it is deliberately not done.
+
+The simulation is unaffected: snow advances and retreats correctly on a dropped
+weapon, and the right stage appears the moment it is picked up.
 
 A weapon is either carried or on the ground, never both, so exactly one of the
 two refresh paths applies per item.

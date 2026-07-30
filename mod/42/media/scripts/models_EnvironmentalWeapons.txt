@@ -344,6 +344,202 @@ module Base
         }
     }
 
+    model EW_DoubleBarrelShotgun_SnowLight
+    {
+        mesh = weapons/firearm/JS_2000,
+        texture = weapons/firearm/EW_JS_2000_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.4531 0.0205,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1604 -0.042,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2204,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.4634 0.0268,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.69,
+        }
+    }
+
+    model EW_DoubleBarrelShotgun_SnowMedium
+    {
+        mesh = weapons/firearm/JS_2000,
+        texture = weapons/firearm/EW_JS_2000_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.4531 0.0205,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1604 -0.042,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2204,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.4634 0.0268,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.69,
+        }
+    }
+
+    model EW_DoubleBarrelShotgun_SnowHeavy
+    {
+        mesh = weapons/firearm/JS_2000,
+        texture = weapons/firearm/EW_JS_2000_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.4531 0.0205,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1604 -0.042,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2204,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.4634 0.0268,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.69,
+        }
+    }
+
+    model EW_DoubleBarrelShotgun_SnowFull
+    {
+        mesh = weapons/firearm/JS_2000,
+        texture = weapons/firearm/EW_JS_2000_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.4531 0.0205,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1604 -0.042,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2204,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.4634 0.0268,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.69,
+        }
+    }
+
+    model EW_ShotgunDoubleBarrelSawn_SnowLight
+    {
+        mesh = weapons/firearm/JS_2000_Sawn,
+        texture = weapons/firearm/EW_JS_2000_Sawn_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.3138 0.0198,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_ShotgunDoubleBarrelSawn_SnowMedium
+    {
+        mesh = weapons/firearm/JS_2000_Sawn,
+        texture = weapons/firearm/EW_JS_2000_Sawn_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.3138 0.0198,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_ShotgunDoubleBarrelSawn_SnowHeavy
+    {
+        mesh = weapons/firearm/JS_2000_Sawn,
+        texture = weapons/firearm/EW_JS_2000_Sawn_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.3138 0.0198,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_ShotgunDoubleBarrelSawn_SnowFull
+    {
+        mesh = weapons/firearm/JS_2000_Sawn,
+        texture = weapons/firearm/EW_JS_2000_Sawn_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.3138 0.0198,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0143 0.2 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
     model EW_HuntingRifle_SnowLight
     {
         mesh = weapons/firearm/MSR788_Rifle,
@@ -668,6 +864,94 @@ module Base
         }
     }
 
+    model EW_JS3T_Shotgun_SnowLight
+    {
+        mesh = weapons/firearm/JS-3T_Tactical_Shotgun,
+        texture = weapons/firearm/EW_JS3T_Tactical_Shotgun_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.3822 0.025,
+            rotate = -90.0 0.0 -180.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.067 0.0339,
+            rotate = -180.0 0.0 180.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = 0.02 0.13 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_JS3T_Shotgun_SnowMedium
+    {
+        mesh = weapons/firearm/JS-3T_Tactical_Shotgun,
+        texture = weapons/firearm/EW_JS3T_Tactical_Shotgun_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.3822 0.025,
+            rotate = -90.0 0.0 -180.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.067 0.0339,
+            rotate = -180.0 0.0 180.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = 0.02 0.13 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_JS3T_Shotgun_SnowHeavy
+    {
+        mesh = weapons/firearm/JS-3T_Tactical_Shotgun,
+        texture = weapons/firearm/EW_JS3T_Tactical_Shotgun_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.3822 0.025,
+            rotate = -90.0 0.0 -180.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.067 0.0339,
+            rotate = -180.0 0.0 180.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = 0.02 0.13 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_JS3T_Shotgun_SnowFull
+    {
+        mesh = weapons/firearm/JS-3T_Tactical_Shotgun,
+        texture = weapons/firearm/EW_JS3T_Tactical_Shotgun_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.3822 0.025,
+            rotate = -90.0 0.0 -180.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.067 0.0339,
+            rotate = -180.0 0.0 180.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = 0.02 0.13 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
     model EW_L92_Carbine_SnowLight
     {
         mesh = weapons/firearm/L92_Carbine,
@@ -928,6 +1212,1190 @@ module Base
         attachment world
         {
             offset = 0.012 0.15 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_Handgun03_SnowLight
+    {
+        mesh = weapons/firearm/M9_Pistol,
+        texture = weapons/firearm/EW_M9_Pistol_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.1443 -0.0279,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.044 -0.04,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.85,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0973 0.0048,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.6699,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0503 -0.0458,
+            rotate = 180.0 0.0 -180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0915 -0.0053,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.875,
+        }
+        attachment world
+        {
+            offset = -0.009 0.062 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun03_SnowMedium
+    {
+        mesh = weapons/firearm/M9_Pistol,
+        texture = weapons/firearm/EW_M9_Pistol_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.1443 -0.0279,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.044 -0.04,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.85,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0973 0.0048,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.6699,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0503 -0.0458,
+            rotate = 180.0 0.0 -180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0915 -0.0053,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.875,
+        }
+        attachment world
+        {
+            offset = -0.009 0.062 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun03_SnowHeavy
+    {
+        mesh = weapons/firearm/M9_Pistol,
+        texture = weapons/firearm/EW_M9_Pistol_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.1443 -0.0279,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.044 -0.04,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.85,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0973 0.0048,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.6699,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0503 -0.0458,
+            rotate = 180.0 0.0 -180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0915 -0.0053,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.875,
+        }
+        attachment world
+        {
+            offset = -0.009 0.062 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun03_SnowFull
+    {
+        mesh = weapons/firearm/M9_Pistol,
+        texture = weapons/firearm/EW_M9_Pistol_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.1443 -0.0279,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.044 -0.04,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.85,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0973 0.0048,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.6699,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0503 -0.0458,
+            rotate = 180.0 0.0 -180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0915 -0.0053,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.875,
+        }
+        attachment world
+        {
+            offset = -0.009 0.062 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun02_SnowLight
+    {
+        mesh = weapons/firearm/1911_Pistol,
+        texture = weapons/firearm/EW_1911_Pistol_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.1432 -0.0225,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.0571 -0.0358,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.86,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0997 0.0132,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.038 -0.0426,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun02_SnowMedium
+    {
+        mesh = weapons/firearm/1911_Pistol,
+        texture = weapons/firearm/EW_1911_Pistol_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.1432 -0.0225,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.0571 -0.0358,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.86,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0997 0.0132,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.038 -0.0426,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun02_SnowHeavy
+    {
+        mesh = weapons/firearm/1911_Pistol,
+        texture = weapons/firearm/EW_1911_Pistol_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.1432 -0.0225,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.0571 -0.0358,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.86,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0997 0.0132,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.038 -0.0426,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun02_SnowFull
+    {
+        mesh = weapons/firearm/1911_Pistol,
+        texture = weapons/firearm/EW_1911_Pistol_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.1432 -0.0225,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.0571 -0.0358,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.86,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0997 0.0132,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.038 -0.0426,
+            rotate = 180.0 0.0 180.0,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0 0.09 0.008,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun_SnowLight
+    {
+        mesh = weapons/firearm/D_E_Pistol,
+        texture = weapons/firearm/EW_D_E_Pistol_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.1466 -0.0236,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.044 -0.04,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0953 0.0227,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0324 -0.0495,
+            rotate = 180.0 0.0 -180.0,
+            scale = 1.285,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0968 0.0141,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = -0.011 0.067 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun_SnowMedium
+    {
+        mesh = weapons/firearm/D_E_Pistol,
+        texture = weapons/firearm/EW_D_E_Pistol_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.1466 -0.0236,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.044 -0.04,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0953 0.0227,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0324 -0.0495,
+            rotate = 180.0 0.0 -180.0,
+            scale = 1.285,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0968 0.0141,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = -0.011 0.067 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun_SnowHeavy
+    {
+        mesh = weapons/firearm/D_E_Pistol,
+        texture = weapons/firearm/EW_D_E_Pistol_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.1466 -0.0236,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.044 -0.04,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0953 0.0227,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0324 -0.0495,
+            rotate = 180.0 0.0 -180.0,
+            scale = 1.285,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0968 0.0141,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = -0.011 0.067 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Handgun_SnowFull
+    {
+        mesh = weapons/firearm/D_E_Pistol,
+        texture = weapons/firearm/EW_D_E_Pistol_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.1466 -0.0236,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.001 0.044 -0.04,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment gunlight
+        {
+            offset = 0.0 0.0953 0.0227,
+            rotate = 0.0 0.0 0.0,
+            scale = 0.775,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0324 -0.0495,
+            rotate = 180.0 0.0 -180.0,
+            scale = 1.285,
+        }
+        attachment laser
+        {
+            offset = 0.0 0.0968 0.0141,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = -0.011 0.067 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+
+    model EW_Revolver_SnowLight
+    {
+        mesh = weapons/firearm/M625_Revolver,
+        texture = weapons/firearm/EW_M625_Revolver_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.1444 -0.0297,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0573 -0.0502,
+            rotate = -180.0 0.0 -180.0,
+            scale = 0.845,
+        }
+        attachment reddot
+        {
+            offset = 0.0006 0.067 -0.0386,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.5363,
+        }
+        attachment world
+        {
+            offset = -0.0136 0.069 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_SnowMedium
+    {
+        mesh = weapons/firearm/M625_Revolver,
+        texture = weapons/firearm/EW_M625_Revolver_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.1444 -0.0297,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0573 -0.0502,
+            rotate = -180.0 0.0 -180.0,
+            scale = 0.845,
+        }
+        attachment reddot
+        {
+            offset = 0.0006 0.067 -0.0386,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.5363,
+        }
+        attachment world
+        {
+            offset = -0.0136 0.069 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_SnowHeavy
+    {
+        mesh = weapons/firearm/M625_Revolver,
+        texture = weapons/firearm/EW_M625_Revolver_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.1444 -0.0297,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0573 -0.0502,
+            rotate = -180.0 0.0 -180.0,
+            scale = 0.845,
+        }
+        attachment reddot
+        {
+            offset = 0.0006 0.067 -0.0386,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.5363,
+        }
+        attachment world
+        {
+            offset = -0.0136 0.069 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_SnowFull
+    {
+        mesh = weapons/firearm/M625_Revolver,
+        texture = weapons/firearm/EW_M625_Revolver_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.1444 -0.0297,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0573 -0.0502,
+            rotate = -180.0 0.0 -180.0,
+            scale = 0.845,
+        }
+        attachment reddot
+        {
+            offset = 0.0006 0.067 -0.0386,
+            rotate = 1.0 1.0 1.0,
+            scale = 0.5363,
+        }
+        attachment world
+        {
+            offset = -0.0136 0.069 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Long_SnowLight
+    {
+        mesh = weapons/firearm/Magnum_Revolver,
+        texture = weapons/firearm/EW_Magnum_Revolver_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.1734 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0575 -0.0433,
+            rotate = 0.0 180.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.0515 -0.0308,
+            rotate = 0.0 0.0 0.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = -0.0128 0.081 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Long_SnowMedium
+    {
+        mesh = weapons/firearm/Magnum_Revolver,
+        texture = weapons/firearm/EW_Magnum_Revolver_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.1734 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0575 -0.0433,
+            rotate = 0.0 180.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.0515 -0.0308,
+            rotate = 0.0 0.0 0.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = -0.0128 0.081 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Long_SnowHeavy
+    {
+        mesh = weapons/firearm/Magnum_Revolver,
+        texture = weapons/firearm/EW_Magnum_Revolver_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.1734 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0575 -0.0433,
+            rotate = 0.0 180.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.0515 -0.0308,
+            rotate = 0.0 0.0 0.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = -0.0128 0.081 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Long_SnowFull
+    {
+        mesh = weapons/firearm/Magnum_Revolver,
+        texture = weapons/firearm/EW_Magnum_Revolver_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.1734 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0575 -0.0433,
+            rotate = 0.0 180.0 0.0,
+        }
+        attachment reddot
+        {
+            offset = 0.0 0.0515 -0.0308,
+            rotate = 0.0 0.0 0.0,
+            scale = 1.0,
+        }
+        attachment world
+        {
+            offset = -0.0128 0.081 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Short_SnowLight
+    {
+        mesh = weapons/firearm/M36_Revolver,
+        texture = weapons/firearm/EW_M36_Revolver_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.1129 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0464 -0.0452,
+            rotate = 180.0 -0.2502 180.0,
+            scale = 0.89,
+        }
+        attachment world
+        {
+            offset = -0.0119 0.058 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Short_SnowMedium
+    {
+        mesh = weapons/firearm/M36_Revolver,
+        texture = weapons/firearm/EW_M36_Revolver_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.1129 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0464 -0.0452,
+            rotate = 180.0 -0.2502 180.0,
+            scale = 0.89,
+        }
+        attachment world
+        {
+            offset = -0.0119 0.058 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Short_SnowHeavy
+    {
+        mesh = weapons/firearm/M36_Revolver,
+        texture = weapons/firearm/EW_M36_Revolver_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.1129 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0464 -0.0452,
+            rotate = 180.0 -0.2502 180.0,
+            scale = 0.89,
+        }
+        attachment world
+        {
+            offset = -0.0119 0.058 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Revolver_Short_SnowFull
+    {
+        mesh = weapons/firearm/M36_Revolver,
+        texture = weapons/firearm/EW_M36_Revolver_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.1129 -0.0271,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0464 -0.0452,
+            rotate = 180.0 -0.2502 180.0,
+            scale = 0.89,
+        }
+        attachment world
+        {
+            offset = -0.0119 0.058 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0542 0.0363 0.0009,
+            rotate = 90.0038 0.2177 -90.9911,
+        }
+    }
+
+    model EW_Shotgun_SnowLight
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.4461 0.0262,
+            rotate = -90.0 0.0 180.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0379 0.0402,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.0426 0.0499,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1776 -0.0445,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2998,
+        }
+        attachment world
+        {
+            offset = 0.0158 0.166 0.0,
+            rotate = -180.0 1.0 -180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.3732 0.0254,
+            rotate = -180.0 0.0 -180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_Shotgun_SnowMedium
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.4461 0.0262,
+            rotate = -90.0 0.0 180.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0379 0.0402,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.0426 0.0499,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1776 -0.0445,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2998,
+        }
+        attachment world
+        {
+            offset = 0.0158 0.166 0.0,
+            rotate = -180.0 1.0 -180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.3732 0.0254,
+            rotate = -180.0 0.0 -180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_Shotgun_SnowHeavy
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.4461 0.0262,
+            rotate = -90.0 0.0 180.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0379 0.0402,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.0426 0.0499,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1776 -0.0445,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2998,
+        }
+        attachment world
+        {
+            offset = 0.0158 0.166 0.0,
+            rotate = -180.0 1.0 -180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.3732 0.0254,
+            rotate = -180.0 0.0 -180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_Shotgun_SnowFull
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.4461 0.0262,
+            rotate = -90.0 0.0 180.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0379 0.0402,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.0426 0.0499,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.1776 -0.0445,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.2998,
+        }
+        attachment world
+        {
+            offset = 0.0158 0.166 0.0,
+            rotate = -180.0 1.0 -180.0,
+        }
+        attachment choketube
+        {
+            offset = 0.0 0.3732 0.0254,
+            rotate = -180.0 0.0 -180.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = 0.0 0.0 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_ShotgunSawnOff_SnowLight
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun_Sawn,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_Sawn_SnowLight,
+        attachment muzzle
+        {
+            offset = 0.0 0.3249 0.0267,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0434 0.0426,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.053 0.0498,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.154 -0.041,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.13,
+        }
+        attachment world
+        {
+            offset = 0.0152 0.1 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_ShotgunSawnOff_SnowMedium
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun_Sawn,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_Sawn_SnowMedium,
+        attachment muzzle
+        {
+            offset = 0.0 0.3249 0.0267,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0434 0.0426,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.053 0.0498,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.154 -0.041,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.13,
+        }
+        attachment world
+        {
+            offset = 0.0152 0.1 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_ShotgunSawnOff_SnowHeavy
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun_Sawn,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_Sawn_SnowHeavy,
+        attachment muzzle
+        {
+            offset = 0.0 0.3249 0.0267,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0434 0.0426,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.053 0.0498,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.154 -0.041,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.13,
+        }
+        attachment world
+        {
+            offset = 0.0152 0.1 0.0,
+            rotate = 180.0 0.0 180.0,
+        }
+    }
+
+    model EW_ShotgunSawnOff_SnowFull
+    {
+        mesh = weapons/firearm/PumpAction_Shotgun_Sawn,
+        texture = weapons/firearm/EW_PumpAction_Shotgun_Sawn_SnowFull,
+        attachment muzzle
+        {
+            offset = 0.0 0.3249 0.0267,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment scope
+        {
+            offset = 0.0 0.0434 0.0426,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment scope2
+        {
+            offset = 0.0 0.053 0.0498,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment recoilpad
+        {
+            offset = 0.0 -0.154 -0.041,
+            rotate = 10.0 0.0 0.0,
+            scale = 1.13,
+        }
+        attachment world
+        {
+            offset = 0.0152 0.1 0.0,
             rotate = 180.0 0.0 180.0,
         }
     }
