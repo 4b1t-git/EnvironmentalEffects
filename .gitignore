@@ -19,3 +19,8 @@ docs/preview/
 # In-game screenshots. Evidence for the maintainer, not source, and not ours to
 # redistribute.
 docs/evidence/*.png
+
+# Build output: written by tools/validate.js on every run and read by nothing.
+# It is part of the delivered tree but derived from it, so tracking it only means
+# every sync dirties the working tree for no information.
+artifact_manifest.json
