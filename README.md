@@ -134,7 +134,7 @@ a top-only mask leaves the rifle looking bare whenever the camera sees its side 
 most obviously when it is slung on the character's back. Undersides are excluded;
 snow does not hold there.
 
-The four stages differ only in `targetUpCoverage` (0.46 / 0.66 / 0.84 / 0.96),
+The four stages differ only in `targetUpCoverage` (0.46 / 0.62 / 0.74 / 0.84),
 `flankCoverage` (0.05 / 0.15 / 0.30 / 0.36) and `flankMaxAlpha` (0.45 / 0.55 /
 0.78 / 0.90). `noiseBase` and `edgeSoftness` are identical on purpose: the mask
 keeps one noise field and only lowers the threshold, so each stage's snow is a
@@ -142,6 +142,12 @@ strict superset of the previous stage's. Re-rolling the field per stage would
 make snow appear in different places between stages, which reads in game as snow
 teleporting the moment a threshold is crossed.
 `tools/validate_snow_textures.ps1` proves that nesting texel by texel.
+
+Coverage never reaches 1.0 at any stage. Once the up-facing region of a UV island
+is fully covered the visible snow edge stops being the mask boundary and becomes
+the edge of the geometry, which on a cylinder like a barrel or handguard is a
+straight line by definition. Keeping a margin of holes is what makes the
+transition read as organic rather than as a cut.
 
 Even at stage 4 the wood stays recognizable. Burying the weapon completely would
 make every snowed weapon a white blob and cost the player the ability to identify

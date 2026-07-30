@@ -86,8 +86,15 @@ public static class EwSnowMask
     // Applied to the gate only. Thickness taper and every placement statistic
     // keep using the true surface value, so this changes where snow ends, not
     // what the mask claims about it.
-    const double UpJitter = 0.20;
-    const double UpJitterScale = 2.2;       // relative to noiseBase
+    // Expressed in TEXELS of boundary displacement, not in units of the up value,
+    // and multiplied by the local gradient to get there. A fixed value jitter
+    // moves the edge by jitter/gradient, so the same number produced 0.7 texels on
+    // the Hunting Rifle (gradient 0.296) and 1.7 on the M16 (gradient 0.121) --
+    // both invisible, and inconsistent between weapons. Scaling by the gradient
+    // makes the displacement the same everywhere and bounds it to a real distance
+    // along the surface instead of an arbitrary change in surface angle.
+    const double BoundaryRaggedness = 5.0;   // texels, peak displacement
+    const double UpJitterScale = 2.2;        // relative to noiseBase
     const uint UpJitterSeed = 0x3C7B;
 
     // A texel whose steepest owning normal points further down than this is an
@@ -562,9 +569,21 @@ public static class EwSnowMask
 
                 // Ragged the boundary, so a cylindrical barrel does not get a
                 // straight snow line. Stage-independent, so nesting still holds.
+                //
+                // The local gradient converts the requested texel displacement
+                // into the equivalent change in up value, so the edge wanders by
+                // the same distance no matter how sharply the surface turns.
+                int left = x > 0 ? o - 1 : o;
+                int right = x < Size - 1 ? o + 1 : o;
+                int above = y > 0 ? o - Size : o;
+                int below = y < Size - 1 ? o + Size : o;
+                double gx = (upness[right] - upness[left]) / 2.0;
+                double gy = (upness[below] - upness[above]) / 2.0;
+                double gradient = Math.Sqrt(gx * gx + gy * gy);
+
                 double jitter = (Fbm((x + 0.5) / Size * noiseBase * UpJitterScale,
                     (y + 0.5) / Size * noiseBase * UpJitterScale, UpJitterSeed) - 0.5)
-                    * 2.0 * UpJitter;
+                    * 2.0 * BoundaryRaggedness * gradient;
                 double gatedUp = upness[o] + jitter;
                 if (gatedUp < 0) gatedUp = 0;
                 if (gatedUp > 1) gatedUp = 1;
