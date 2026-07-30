@@ -125,6 +125,16 @@ immediately when it can; the deferred one guarantees the change is not stuck unt
 the pose changes. A stage change happens at most once per controller tick, so the
 cost is irrelevant.
 
+A weapon lying on the ground is an `IsoWorldInventoryObject`, so none of those
+character calls reach it: its snow advanced in state but the square kept drawing
+the old model until the item was picked up. That one is marked dirty the way
+vanilla marks any changed world object, with
+`invalidateRenderChunkLevel(FBORenderChunk.DIRTY_REDRAW)` plus
+`square:setSquareChanged()`.
+
+A weapon is either carried or on the ground, never both, so exactly one of the
+two refresh paths applies per item.
+
 A weapon stowed inside a container is not rendered and is deliberately not
 refreshed; equipping it triggers the engine's own rebuild.
 

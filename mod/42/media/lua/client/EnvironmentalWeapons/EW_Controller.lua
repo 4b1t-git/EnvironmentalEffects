@@ -44,7 +44,8 @@ function Controller.update()
             exposed = exposure.exposed,
         }, Config.Snow)
         state.stage = StageResolver.resolve(state.snow, state.stage, Config.Stages)
-        VisualAdapter.reconcile(player, item, profile, state.stage, state)
+        VisualAdapter.reconcile(player, item, profile, state.stage, state,
+            exposure.worldObject, exposure.square)
     end
     Controller.previouslyTracked = trackedNow
 end

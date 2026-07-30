@@ -55,7 +55,7 @@ function Exposure.resolve(player)
     -- `itemOutside` defaults to the player's square, which is right for anything
     -- carried, and is passed explicitly for ground items so each one is judged by
     -- where it actually lies.
-    local function record(item, isExposed, itemOutside)
+    local function record(item, isExposed, itemOutside, worldObject, itemSquare)
         -- Deduplicated by Lua object identity, which matters for two-handed
         -- rifles that report the same instance in both hands.
         if not item or seen[item] then return end
@@ -65,6 +65,11 @@ function Exposure.resolve(player)
             item = item,
             exposed = isExposed(item),
             outside = itemOutside == nil and outside or itemOutside,
+            -- Carried through so the adapter can force a redraw of a weapon
+            -- lying on the ground; a world object is not rendered on the
+            -- character and never sees the hands refresh.
+            worldObject = worldObject,
+            square = itemSquare,
         }
     end
 
@@ -135,14 +140,15 @@ function Exposure.resolve(player)
                     local okCount, size = pcall(function() return objects:size() end)
                     if okCount then count = tonumber(size) or 0 end
                     for index = 0, count - 1 do
-                        local okItem, item = pcall(function()
-                            local object = objects:get(index)
-                            return object and object:getItem() or nil
+                        local object, item
+                        local okItem = pcall(function()
+                            object = objects:get(index)
+                            item = object and object:getItem() or nil
                         end)
                         -- Lying in the open is exposed by definition; the square
                         -- decides whether that means snowfall or shelter.
                         if okItem and item then
-                            record(item, alwaysExposed, groundOutside)
+                            record(item, alwaysExposed, groundOutside, object, ground)
                         end
                     end
                 end

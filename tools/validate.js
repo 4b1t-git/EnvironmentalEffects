@@ -189,6 +189,16 @@ if (!/resetModelNextFrame/.test(adapter)) {
 if (!/Exposure\.attachedToBody/.test(adapter)) {
   throw new Error("Slung weapons would not be refreshed on a stage change");
 }
+// A weapon on the ground is an IsoWorldInventoryObject; no character refresh
+// reaches it, so the square kept drawing the old model until it was picked up.
+if (!/invalidateRenderChunkLevel/.test(adapter)) {
+  throw new Error("Ground weapons would not redraw on a stage change");
+}
+const controllerBody = fs.readFileSync(resolve(
+  "42/media/lua/client/EnvironmentalWeapons/EW_Controller.lua"), "utf8");
+if (!/exposure\.worldObject/.test(controllerBody)) {
+  throw new Error("Controller does not forward the world object to the adapter");
+}
 const exposure = fs.readFileSync(resolve("42/media/lua/client/EnvironmentalWeapons/EW_Exposure.lua"), "utf8");
 // Dropped weapons must be simulated, and the sweep must stay bounded: ground
 // items are world objects on squares, so cost scales with area rather than with

@@ -45,6 +45,21 @@ local function refreshCharacterVisual(player, item)
     return true
 end
 
+-- A weapon lying on the ground is an IsoWorldInventoryObject, not something drawn
+-- on the character, so none of the character refresh calls reach it: its snow
+-- changed in state but the square kept drawing the old model until the item was
+-- picked up. Vanilla marks a changed world object dirty exactly this way.
+local function refreshGroundVisual(worldObject, square)
+    if not worldObject then return false end
+    local refreshed = false
+    local okDirty, dirty = pcall(function() return FBORenderChunk.DIRTY_REDRAW end)
+    if okDirty and dirty ~= nil then
+        if safeCall(worldObject, "invalidateRenderChunkLevel", dirty) then refreshed = true end
+    end
+    if square then safeCall(square, "setSquareChanged") end
+    return refreshed
+end
+
 local function restoreWorld(item, state)
     local original = state.original
     if original.hadWorldOverride and original.worldOverride then
@@ -96,7 +111,7 @@ local function clearLegacyWorldOverride(item, state)
     return false
 end
 
-function Adapter.reconcile(player, item, profile, stage, state)
+function Adapter.reconcile(player, item, profile, stage, state, worldObject, square)
     local slot = profile.stages[stage] or profile.stages[0]
     clearLegacyWorldOverride(item, state)
     if state.visual.requestedStage == stage
@@ -142,7 +157,14 @@ function Adapter.reconcile(player, item, profile, stage, state)
     state.visual.worldModel = slot.worldModel
     state.visual.icon = slot.icon
     local refreshed = false
-    if handsChanged then refreshed = refreshCharacterVisual(player, item) end
+    if handsChanged then
+        refreshed = refreshCharacterVisual(player, item)
+        -- A weapon is either carried or on the ground, never both, so exactly one
+        -- of these two paths applies.
+        if not refreshed then
+            refreshed = refreshGroundVisual(worldObject, square)
+        end
+    end
     Diagnostics.log(item:getFullType() .. " snow=" .. tostring(state.snow)
         .. " stage=" .. tostring(stage)
         .. " refreshed=" .. tostring(refreshed))
