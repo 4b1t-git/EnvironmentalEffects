@@ -402,12 +402,37 @@ normal changes abruptly across a hard mesh edge that is also a UV seam, so the
 mask flips from full to nothing with nothing in between, and no texture-space
 softening can bridge it -- the two sides are not adjacent in the atlas.
 
-**The fix, if it is wanted:** blur `upness` across the SURFACE using mesh
-adjacency, rather than across texels. Build the triangle adjacency once from the
-`.x` file, smooth the per-texel up value along shared edges, then rasterise. That
-crosses UV seams because it works in mesh space, and it would soften every hard
-facet edge on every weapon, not just this one. It is a real piece of work in
-`BuildUpness` and was not started.
+**Surface smoothing was built, measured, and reverted.** Weld the vertices by
+position -- which reunites the copies a UV seam splits -- average their normals,
+blend two passes along the face graph, and rasterise from those instead of the
+mesh's own normals. It compiled and ran clean on all 133 assets. It did not fix
+the artifact, and it made most weapons measurably worse:
+
+| | straight runs / longest, before | after |
+| --- | --- | --- |
+| M16 | 99 / 123 | 124 / 124 |
+| M14 | 105 / 55 | 116 / 85 |
+| Desert Eagle | 32 / 65 | 33 / 126 |
+| M9 Pistol | 45 / 49 | 38 / 105 |
+| Pump shotgun (the reported one) | 96 / 72 | 93 / 71 |
+
+The reason, which was obvious only afterwards: smoothing the normals makes the
+up field vary *evenly*, so the threshold crosses it along a clean iso-line. That
+is a straighter boundary, not a more broken one. The raggedness in this mask has
+always come from the noise, and smoothing the normals does not add any.
+
+So the target is wrong. The straight line is not caused by the up field being
+discontinuous -- it is caused by the boundary having nothing to break it up at
+the scale of a whole facet. The next thing to try is therefore about the NOISE,
+not the normals: a low-frequency component that survives at facet scale, so a
+uniformly-oriented facet still breaks into patches instead of flipping whole.
+`NoiseFloor` was already lowered to 0.20 with no effect, so the missing part is
+frequency, not amplitude.
+
+Measurement tooling for this lives in the scratchpad, not the repo: it counts
+boundary texels forming straight runs of 12 or more along a row or column. Rebuild
+it before trusting any future attempt, and treat "the numbers did not improve" as
+a stop, the way it was treated here.
 
 ## Open tasks
 
