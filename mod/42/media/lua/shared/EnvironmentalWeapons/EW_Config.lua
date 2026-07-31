@@ -1,6 +1,9 @@
 local Config = {
     SCHEMA_VERSION = 1,
-    DEBUG = true,
+    -- Release. Turning this on puts "force stage" and "force wet" in every
+    -- player's right-click menu, which on a shared server is a cheat menu for
+    -- everyone, and it enables the per-tick diagnostics.
+    DEBUG = false,
     UPDATE_EVENT = "EveryTenMinutes",
 
     Snow = {

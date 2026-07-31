@@ -40,6 +40,17 @@ technical escape. Project Zomboid cannot generate PNGs at runtime from Lua, so
 Shipping the images is the only practical route — the alternatives are a personal
 build, or commissioned original artwork, which is a different project.
 
+> **2026-07-31: blockers 2, 3, 4 and 5 are RESOLVED.** `DEBUG` is `false`,
+> `mod.info` carries the release name plus `modversion=1.0.0` and `poster`,
+> `mod/42/poster.png` exists, and multiplayer works with remote players drawn.
+> The upload folder is built by `tools/build_workshop_package.ps1` and lives at
+> `%USERPROFILE%\Zomboid\Workshop\Environmental Effects`. The sections below are
+> kept as the record of what each blocker was.
+>
+> **The one thing still unverified:** the multiplayer code has never run in a
+> live session with two players. It boots a dedicated server clean and passes
+> every validator, which proves it loads, not that it works.
+
 ### 2. `DEBUG = true`
 
 `mod/42/media/lua/shared/EnvironmentalWeapons/EW_Config.lua` currently ships with
