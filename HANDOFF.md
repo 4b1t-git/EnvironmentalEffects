@@ -293,11 +293,63 @@ reviewed. Do not upload or publish the texture, seed, or package.
 - Preserve item identity, ammo, magazine, chamber, condition, custom name,
   favorite state, and attachments.
 - Do not modify saves, vanilla files, EWTC, Gemini material, or audit outputs.
-- Do not add networking, particles, rust, wetness, frost, melee, icons, or other
-  weapons during Stage 1 refinement.
+- Do not add networking, particles, rust, frost, melee, icons, or other weapons
+  during Stage 1 refinement. Wetness shipped on 2026-07-30 and is no longer on
+  this list.
+- Nothing under `shared/` may require anything under `client/`. A dedicated
+  server loads only `shared/`, so one stray require crashes it on boot.
 - Do not install over an unknown folder. The target must be absent or contain
   `id=EnvironmentalWeapons`.
 - Keep `WorldStaticModel` unset for the Hunting Rifle snow profile.
+
+## Multiplayer
+
+Unpinned by the maintainer on 2026-07-31, who is putting the mod on a server.
+
+### What was actually tested
+
+A dedicated server was booted locally with `Mods=EnvironmentalEffects`, on its
+own config and world so nothing existing was touched, and both were deleted
+afterwards. Result: **`*** SERVER STARTED ****`**, and zero errors naming this
+mod -- no script parse error, no Lua error, no model failure. The only mod-
+related lines are `NoSuchFileException` for `media/AnimSets` and
+`media/actiongroups`, which is the engine probing for optional folders every mod
+without animations lacks.
+
+Structurally that is expected and is worth keeping true: **no file under
+`shared/` requires anything under `client/`**. A dedicated server loads only
+`shared/`, so a single stray require there would crash it on boot. There is a
+one-line check for this at the top of the require graph -- keep it that way.
+
+### What the code says will happen, and has NOT been tested live
+
+Everything that moves lives in `client/`, so the server runs none of it and
+carries no load from this mod. That is the good case, with two consequences:
+
+1. **You will not see other players' weapons change.** `Exposure.resolve` walks
+   `getPlayer()` only, so each client updates its own carried items and nobody
+   else's. A teammate standing in a blizzard with a snowed rifle looks dry to
+   you.
+2. **State is per client.** It lives in `item:getModData()` and the mod never
+   calls `transmitModData()`, so it is never sent anywhere. That is the right
+   default for a cosmetic effect -- transmitting every tracked item every ten
+   minutes for every player is real traffic for no gameplay gain -- but it means
+   the same rifle can read differently on two machines, and it is unknown
+   whether a server inventory sync overwrites the field.
+
+Unknown and only answerable in a live session with two players: whether the
+server accepts a client-side `setWeaponSprite` or reverts it, and whether the
+anti-cheat objects to it. Nothing here touches damage, condition, ammo or any
+other stat, so the exposure is cosmetic, but that is reasoning rather than
+evidence.
+
+### If remote players should see it too
+
+The shape is: keep the simulation client-side, and have each client also walk
+the players it can see rather than only itself. That needs no networking and no
+server-side Lua -- weather and exposure are derivable locally for any visible
+player -- which keeps the mod's "no networking" guardrail intact. It was not
+built, because it is a real feature and single-player was the agreed scope.
 
 ## Open tasks
 

@@ -56,6 +56,35 @@ for (const [rel, pattern] of rainWiring) {
   const body = fs.readFileSync(resolve(rel), "utf8");
   if (!pattern.test(body)) throw new Error(`Rain melt wiring missing in ${rel}`);
 }
+// Nothing under shared/ may require anything under client/.
+//
+// A dedicated server loads only shared/, so a single stray require there is a
+// crash on boot for every server running the mod -- the kind of break that
+// cannot be found in single-player at all. Verified clean against a real
+// dedicated server on 2026-07-31; this keeps it that way.
+{
+  const sharedDir = resolve("42/media/lua/shared/EnvironmentalWeapons");
+  const clientDir = resolve("42/media/lua/client/EnvironmentalWeapons");
+  const clientModules = new Set(
+    fs.readdirSync(clientDir)
+      .filter(f => f.endsWith(".lua"))
+      .map(f => f.slice(0, -4))
+  );
+  if (clientModules.size === 0) throw new Error("no client modules found to check against");
+  for (const file of fs.readdirSync(sharedDir).filter(f => f.endsWith(".lua"))) {
+    const text = fs.readFileSync(path.join(sharedDir, file), "utf8");
+    for (const m of text.matchAll(/require\s*"([^"]+)"/g)) {
+      const module = m[1].split("/").pop();
+      if (clientModules.has(module)) {
+        throw new Error(
+          `shared/${file} requires client-only ${m[1]}; a dedicated server ` +
+            `loads shared/ without client/ and would crash on boot`
+        );
+      }
+    }
+  }
+}
+
 const models = fs.readFileSync(resolve("42/media/scripts/models_EnvironmentalWeapons.txt"), "utf8");
 for (const reference of [
   "EW_HuntingRifle_SnowLight",
