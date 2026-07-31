@@ -121,13 +121,62 @@ local function clearLegacyWorldOverride(item, state)
     return false
 end
 
+-- What the item's WeaponSprite is RIGHT NOW, or nil if it cannot be read.
+local function currentWeaponSprite(item)
+    if not item or not item.getWeaponSprite then return nil end
+    local ok, sprite = pcall(function() return item:getWeaponSprite() end)
+    if not ok or sprite == nil then return nil end
+    return tostring(sprite)
+end
+
 function Adapter.reconcile(player, item, profile, stage, state, worldObject, square)
     local slot = profile.stages[stage] or profile.stages[0]
     clearLegacyWorldOverride(item, state)
+
+    -- The early return has to be justified by the ITEM, not by our own record of
+    -- what we asked for.
+    --
+    -- state.visual lives in the item's modData and therefore survives a save and
+    -- reload, but the WeaponSprite it describes is a runtime override that does
+    -- not necessarily survive with it. On reload the two disagree: modData says
+    -- "WetHeavy is applied", the weapon has been handed back its vanilla sprite,
+    -- and this function returns early because the stage it was asked for is the
+    -- one it believes it already set. The weapon then renders dry forever while
+    -- the state says soaked, and because the return happens before the only
+    -- diagnostic in this function, it does it in total silence.
+    --
+    -- Comparing against the live sprite is self-correcting: it re-applies after
+    -- a reload, and equally after anything else in the game resets the sprite.
+    --
+    -- The comparison is against `appliedSprite`, which is what the item REPORTED
+    -- after the last successful set, not against the model name that was passed
+    -- in. Those two are only equal if the getter returns the setter's argument
+    -- verbatim, and if the engine decorates it at all -- a path, an extension, a
+    -- normalised case -- then comparing against the name would never match and
+    -- the model would be re-applied on every tick forever. Comparing a readback
+    -- against a readback cannot have that failure mode.
+    local spriteMatches
+    if state.visual.equippedModel == nil then
+        -- Nothing of ours is supposed to be on the item, so there is no override
+        -- that could have been lost and the cached flags are enough. Checking
+        -- here anyway would re-enter the body on every tick for every dry
+        -- weapon, since a stage with no model never records an appliedSprite.
+        spriteMatches = true
+    elseif state.visual.appliedSprite == nil then
+        -- A record written before appliedSprite existed, or a set that never
+        -- confirmed. Either way it claims a model is applied and offers no
+        -- evidence, so it is not trustworthy: re-apply once, which fills it in.
+        -- This is what un-sticks a save made by the previous build.
+        spriteMatches = false
+    else
+        spriteMatches = currentWeaponSprite(item) == state.visual.appliedSprite
+    end
+
     if state.visual.requestedStage == stage
         and state.visual.equippedModel == slot.equippedModel
         and state.visual.worldModel == slot.worldModel
-        and state.visual.icon == slot.icon then
+        and state.visual.icon == slot.icon
+        and spriteMatches then
         return
     end
 
@@ -166,6 +215,11 @@ function Adapter.reconcile(player, item, profile, stage, state, worldObject, squ
     state.visual.equippedModel = slot.equippedModel
     state.visual.worldModel = slot.worldModel
     state.visual.icon = slot.icon
+    -- Read back rather than assume. This is the value the next tick compares
+    -- against, so it has to be in whatever form the engine reports, and it is
+    -- recorded only when the set actually succeeded -- a failed set must not
+    -- leave behind a record claiming the sprite is in place.
+    state.visual.appliedSprite = handsChanged and currentWeaponSprite(item) or nil
     local refreshed = false
     if handsChanged then
         refreshed = refreshCharacterVisual(player, item)
