@@ -26,10 +26,14 @@ const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
 //
 // Alpha stays well below 1.0 even when soaked, because water is transparent and
 // the weapon has to stay visible through it.
+// Coverage is now of the whole weapon rather than of its level surfaces only, so
+// these are lower than they look: at the heaviest level a bit over half the
+// weapon carries water and the rest still shows through, which is what keeps it
+// reading as pools ON a rifle instead of a rifle made of water.
 const LEVELS = [
-  { suffix: "WetLight", stage: -1, wetCoverage: 0.30, wetMaxAlpha: 0.62 },
-  { suffix: "WetMedium", stage: -2, wetCoverage: 0.55, wetMaxAlpha: 0.80 },
-  { suffix: "WetHeavy", stage: -3, wetCoverage: 0.80, wetMaxAlpha: 0.94 },
+  { suffix: "WetLight", stage: -1, wetCoverage: 0.22, wetMaxAlpha: 0.62 },
+  { suffix: "WetMedium", stage: -2, wetCoverage: 0.40, wetMaxAlpha: 0.80 },
+  { suffix: "WetHeavy", stage: -3, wetCoverage: 0.60, wetMaxAlpha: 0.94 },
 ];
 
 const isWet = asset => asset.mode === "wet";

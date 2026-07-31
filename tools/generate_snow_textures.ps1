@@ -184,28 +184,46 @@ public static class EwSnowMask
     const double PuddleEdge = 0.13;          // wide enough that the rim survives downscaling
     const uint PuddleSeed = 0x7A9D;
 
-    // Only genuinely up-facing surfaces hold standing water. This is stricter
-    // than snow, which clings to moderate slopes; water runs off anything that
-    // is not close to level.
-    const double PuddleUpFloor = 0.62;
+    // Water goes everywhere except the undersides.
+    //
+    // An earlier pass restricted pools to near-level surfaces on the reasoning
+    // that water runs off anything steeper. Physically defensible, visually
+    // wrong: Project Zomboid's camera sees a weapon mostly from the side, so
+    // confining the effect to the top faces put nearly all of it out of view and
+    // what little showed read as staining along the barrel.
+    //
+    // Surface tension holds drops on a vertical surface too -- a rifle pulled out
+    // of the rain has water clinging all over it, not only on its spine. Only
+    // faces that point genuinely downward stay clear, which is the same rule the
+    // snow flank pass uses.
+    const double PuddleUpFloor = -0.05;
 
     // What a pool does to the pixels beneath it. Water is transparent, so the
     // substrate stays visible and merely deepens -- much less than the old wash,
     // because the pool must read as a film with the weapon under it.
-    const double PuddleDarken = 0.30;
-    const double PuddleSaturate = 0.30;
+    // Water reads by CONTRAST, not by brightness. A pool darkens what it covers
+    // and carries a bright rim; those two together are what say "liquid".
+    //
+    // Pushing the sky reflection up to 0.62 to win visibility at gameplay scale
+    // was a mistake: at that strength pools over dark wood came out near-white
+    // and the rifle looked mould-spotted or snowed, not wet. The visibility has
+    // to come from the darkening and the rim instead.
+    const double PuddleDarken = 0.44;
+    const double PuddleSaturate = 0.34;
 
     // The sky reflection is what actually sells standing water, and it is what
     // the tint version was missing entirely. Water reflects an overcast sky:
     // a cool, bright, fairly flat grey.
     const double PuddleSkyR = 0.90, PuddleSkyG = 0.95, PuddleSkyB = 1.0;
     const double PuddleSkyLuma = 168.0;
-    const double PuddleReflect = 0.62;       // how much sky the pool interior shows
+    const double PuddleReflect = 0.20;       // how much sky the pool interior shows
 
     // A bright rim where the meniscus curves. This is the single strongest cue
     // that something is a pool of liquid rather than a stain, so it is drawn
     // from the mask gradient exactly the way the snow crest is.
-    const double PuddleRimGain = 78.0;
+    // With one smooth octave there are far fewer borders, so each one carries
+    // more of the read and does not need to shout.
+    const double PuddleRimGain = 46.0;
     const double PuddleRimLow = 0.02;
     const double PuddleRimHigh = 0.22;
 
@@ -1089,12 +1107,17 @@ public static class EwSnowMask
                 owned++;
                 if (upness[o] >= UpFacingThreshold) upFacing++;
 
-                // Standing water needs a surface close to level. Anything steeper
-                // sheds it, which is why this floor sits well above the snow one.
+                // Everything but the undersides can carry water.
                 if (upness[o] < PuddleUpFloor) continue;
                 eligible++;
 
-                double n = Fbm((x + 0.5) / Size * noiseBase * PuddleNoiseScale,
+                // One smooth octave, NOT the three-octave fbm the snow mask uses.
+                // Fractal noise is self-similar by construction, so it always
+                // carries fine detail no matter how coarse the base frequency is
+                // -- which produced thousands of small blobs, each with its own
+                // bright rim, and the rifle read as mould-spotted rather than
+                // wet. A pool is one large rounded shape with a clean border.
+                double n = ValueNoise((x + 0.5) / Size * noiseBase * PuddleNoiseScale,
                     (y + 0.5) / Size * noiseBase * PuddleNoiseScale, PuddleSeed);
 
                 // Pools find the low spots first: around the bolt, the sight base,
