@@ -299,7 +299,20 @@ reviewed. Do not upload or publish the texture, seed, or package.
 
 ## Open tasks
 
-### 1. Separate the three wet levels -- REWORKED, awaiting the in-game verdict
+### 1. Wetness -- DONE, confirmed in game 2026-07-30
+
+Closed. What follows is the record of why it took four passes, because three of
+the four went after the wrong thing and the reasoning is worth not repeating.
+
+**The defect was structural, and the last change is the one that fixed it.**
+Water had a mask of its own -- a pool field over every surface but the
+undersides -- so it gathered in scattered patches. Snow builds from the top down
+and creeps onto the flanks; rain does the same. Two phenomena with different
+geometry will never look like two states of one weapon, and no amount of tuning
+coverage, alpha, darkening or rim strength changed that. `BuildWetMask` now
+delegates to `BuildMask`; only the optics differ.
+
+The three passes before it were all real bugs, and all insufficient on their own:
 
 The user's verdict on the first wet build was that the three levels "are not
 consistent like the snow". Measuring the shipped textures against the snow ones
@@ -346,12 +359,28 @@ wood came out near-white and the rifle read as mould-spotted.
 ~1000 px wide on the contact sheet and ~200 px in game. A version that looked
 correct at review size shipped completely invisible, twice.
 
-Two regression guards now exist so none of this can silently come back: both
-validators reject a wet texture whose core is brighter than vanilla, and
-`validate_snow_textures.ps1` rejects a wet level that is not at least 0.06
-deeper than the level before it.
+A fourth bug hid all of the above and is worth its own note: a reloaded weapon
+rendered dry while its state said soaked, because `state.visual` persists in
+modData and the `WeaponSprite` it describes does not. `reconcile` returned early
+against its own stale record, silently, since the return precedes the only log
+in the function. Two in-game reports were spent on textures that were never
+being applied. See the non-regression table.
 
-### 2. Scopes, as a weapon variant rather than an attachment
+Shipped values, hunting rifle:
+
+| | coverage | darkening | share on up-facing |
+| --- | --- | --- | --- |
+| WetLight | 16.7% | 0.20 | 0.94 |
+| WetMedium | 24.9% | 0.32 | 0.88 |
+| WetHeavy | 36.5% | 0.45 | 0.77 |
+
+Four regression guards now exist so none of this can silently come back. Both
+validators reject a wet texture whose core is brighter than vanilla, and one
+whose up-facing share falls below 0.35. `validate_snow_textures.ps1` rejects a
+wet level that is not at least 0.06 deeper than the level before it. And the
+adapter justifies its early return against the item's live sprite readback.
+
+### 2. Scopes, as a weapon variant rather than an attachment -- THE ONLY OPEN TASK
 
 Measured against vanilla 42.20, and it makes this much cheaper than it looks:
 
