@@ -118,7 +118,12 @@ function Convert-ToGif {
 Convert-ToGif -Source $ThumbSource -Target (Join-Path $OutDir 'preview.gif') `
     -MaxBytes 990KB -Label 'thumbnail (preview.gif)' -Crop '760:760:555:180'
 
-# The description image has a far looser budget, so it keeps the wider shot;
-# only the letterbox comes off.
+# 2 MB, not 4. The earlier figure was assumed; Steam states the real one when it
+# rejects the upload: "Las imágenes de previsualización no pueden superar los
+# 2 MB". Images attached to the description body go through the same cap as the
+# preview -- looser than the item thumbnail's 1 MB, but nothing like 4.
+#
+# Only the letterbox comes off; this one keeps the wide shot, since the
+# description shows it large.
 Convert-ToGif -Source $PageSource -Target (Join-Path $OutDir 'page.gif') `
-    -MaxBytes 4MB -Label 'description (page.gif)' -Crop '1920:1000:0:40'
+    -MaxBytes 1900KB -Label 'description (page.gif)' -Crop '1920:1000:0:40'
