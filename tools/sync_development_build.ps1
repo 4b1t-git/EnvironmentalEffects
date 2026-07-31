@@ -17,7 +17,7 @@ $workspaceRoot = [IO.Path]::GetFullPath((Split-Path -Parent (Split-Path -Parent 
 # once and every derived path, ZIP prefix and identity check reads it from here.
 # The id in the Assert-ExactPath calls below is deliberately spelled out rather
 # than interpolated: it is the guard that catches an accidental edit of this line.
-$modId = 'EnvironmentalEffects'
+$modId = 'WeatherEffects'
 $canonicalRoot = Join-Path $workspaceRoot "outputs\$modId"
 $outputsRoot = Join-Path $workspaceRoot 'outputs'
 $zipPath = Join-Path $outputsRoot "$modId.zip"
@@ -348,8 +348,8 @@ function Assert-BuildHashes {
 }
 
 Assert-ExactPath $sourceRoot (Join-Path $workspaceRoot 'work\EnvironmentalWeapons\mod') 'Source'
-Assert-ExactPath $canonicalRoot (Join-Path $workspaceRoot 'outputs\EnvironmentalEffects') 'Canonical'
-Assert-ExactPath $installRoot (Join-Path $env:USERPROFILE 'Zomboid\mods\EnvironmentalEffects') 'Install'
+Assert-ExactPath $canonicalRoot (Join-Path $workspaceRoot 'outputs\WeatherEffects') 'Canonical'
+Assert-ExactPath $installRoot (Join-Path $env:USERPROFILE 'Zomboid\mods\WeatherEffects') 'Install'
 Assert-NotReparsePoint $sourceRoot 'Source'
 Assert-NotReparsePoint $canonicalRoot 'Canonical'
 Assert-NotReparsePoint $installRoot 'Install'

@@ -60,24 +60,35 @@ fail-closed behind that flag, so nothing else needs touching.
 
 ### 3. `mod.info`
 
-The identity was settled on 2026-07-30, while the mod was still unpublished and
-changing it was still free. `mod/42/mod.info` now reads:
+Renamed to **WeatherEffects** on 2026-07-31, which was the last moment it was
+free: the mod was still unpublished, so no save anywhere referenced the old id.
+`mod/42/mod.info` now reads:
 
 ```
-name=Environmental Effects - Development Test
-id=EnvironmentalEffects
-description=Development test build for single-player weapon snow visuals across nineteen vanilla firearms. Not a release build.
+name=WeatherEffects
+id=WeatherEffects
+author=4b1t
+modversion=1.0.0
+poster=poster.png
+versionMin=42.0.0
+description=...
 ```
 
-`id` is now frozen. Project Zomboid binds saves to it, so changing it after
-publication orphans every save that uses the mod. The sync tooling also refuses
-to install over a folder whose `mod.info` carries a different id.
+**`id` is frozen from publication onward.** Project Zomboid binds saves to it,
+so changing it after upload orphans every save that uses the mod. The sync
+tooling refuses to install over a folder whose `mod.info` carries a different
+id, which is what turned this rename into a deliberate migration rather than an
+accident: `outputs/`, the ZIP, the hash manifest and the install folder all had
+to be renamed together, and the canonical tree's `mod.info` stamped, before sync
+would proceed.
 
-What remains for release: drop "Development Test" from `name`, and add a version.
-The parser accepts more keys than this file uses — verified against
-`ChooseGameInfo$Mod` in the game jar, which recognises `modVersion`, `versionMin`,
-`versionMax`, `require`, `incompatible`, `poster` and `packs`. `require` is what
-would let a future companion mod depend on this one.
+`versionMin` fills the `ZomboidVersion` column in the game's mod screen, which
+read `** - **` without it, and `author` fills the Author row, which was blank.
+Both were copied from the maintainer's other published mod. The parser accepts
+more keys than this file uses — verified against `ChooseGameInfo$Mod` in the
+game jar, which recognises `modVersion`, `versionMin`, `versionMax`, `require`,
+`incompatible`, `poster` and `packs`. `require` is what would let a future
+companion mod depend on this one.
 
 The current ZIP is about 5.7 MiB.
 

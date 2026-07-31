@@ -367,7 +367,7 @@ const manifest = files.filter(x => x !== "artifact_manifest.json").sort().map(re
   return { path: rel, bytes: data.length, sha256: crypto.createHash("sha256").update(data).digest("hex") };
 });
 fs.writeFileSync(path.join(root, "artifact_manifest.json"), JSON.stringify({
-  artifact: "EnvironmentalEffects",
+  artifact: "WeatherEffects",
   target: "Project Zomboid 42.20 single-player",
   files: manifest,
 }, null, 2) + "\n");

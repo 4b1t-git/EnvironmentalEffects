@@ -59,8 +59,8 @@ multiplayer and no poster.
 | Wetness | Implemented and seen in game 2026-07-30. One signed axis: +100 snowed, 0 dry, -100 soaked. 57 wet textures, 3 levels per weapon. **Visible, but the three levels are too close together** -- see the open tasks below |
 | Judging textures | **Always** run `tools/gameplay_scale_preview.ps1` on the contact sheet. Review size is ~5x play size and hides everything |
 | Logic suite | 80 assertions pass; 133 textures validated |
-| Mod identity | `id=EnvironmentalEffects`, frozen 2026-07-30 while unpublished |
-| Installed path | `%USERPROFILE%\Zomboid\mods\EnvironmentalEffects` |
+| Mod identity | `id=WeatherEffects`, renamed 2026-07-31 while still unpublished |
+| Installed path | `%USERPROFILE%\Zomboid\mods\WeatherEffects` |
 | Release status | Development test, not publishable |
 
 ## Visual evidence
@@ -309,7 +309,7 @@ Unpinned by the maintainer on 2026-07-31, who is putting the mod on a server.
 
 ### What was actually tested
 
-A dedicated server was booted locally with `Mods=EnvironmentalEffects`, on its
+A dedicated server was booted locally with `Mods=WeatherEffects`, on its
 own config and world so nothing existing was touched, and both were deleted
 afterwards. Result: **`*** SERVER STARTED ****`**, and zero errors naming this
 mod -- no script parse error, no Lua error, no model failure. The only mod-

@@ -24,8 +24,8 @@ as a previous build of this same mod.
 #>
 [CmdletBinding()]
 param(
-    [string]$Title = "Environmental Effects",
-    [string]$ModId = "EnvironmentalEffects",
+    [string]$Title = "WeatherEffects",
+    [string]$ModId = "WeatherEffects",
     [switch]$Apply
 )
 
