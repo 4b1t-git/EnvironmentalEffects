@@ -56,9 +56,36 @@ using System.Globalization;
 
 public static class EwSnowMask
 {
-    public const int Size = 256;
-    const int Super = 4;                 // supersample factor for the normal buffer
-    const int SuperSize = Size * Super;
+    // Atlas edge in texels, set per asset by Configure before anything reads it.
+    //
+    // This was `const int Size = 256`, which is why three vanilla firearms were
+    // never covered: the L94 Rifle's atlas is 2048 and the two cap guns' are 64.
+    // It is referenced in seventy-seven places, and every one of them is a plain
+    // read, so turning the constant into a field assigned once per asset reaches
+    // all of them without touching any.
+    public static int Size = 256;
+
+    // Supersample factor for the normal buffer, adaptive because it squares.
+    //
+    // A flat 4 costs 8192x8192 buffers on a 2048 atlas -- about 600 MB across
+    // the three arrays -- which is the reason the L94 was written off as "not
+    // worth it". Large atlases already have the texel density that supersampling
+    // exists to fake, so dropping to 2 there costs nothing visible and brings it
+    // to roughly 150 MB. Small atlases keep the full 4 and are cheap either way.
+    static int Super = 4;
+    static int SuperSize = Size * Super;
+
+    // Called once per asset, before any buffer is allocated.
+    public static void Configure(int atlasSize)
+    {
+        if (atlasSize < 16 || atlasSize > 4096)
+            throw new Exception("implausible atlas size: " + atlasSize);
+        if ((atlasSize & (atlasSize - 1)) != 0)
+            throw new Exception("atlas size is not a power of two: " + atlasSize);
+        Size = atlasSize;
+        Super = atlasSize > 512 ? 2 : 4;
+        SuperSize = Size * Super;
+    }
 
     const uint Seed = 0x45574C31;        // "EWL1"
 
@@ -1379,36 +1406,44 @@ foreach ($asset in $spec.assets) {
 
     $sourceBitmap = [System.Drawing.Bitmap]::new($asset.source)
     try {
-        if ($sourceBitmap.Width -ne 256 -or $sourceBitmap.Height -ne 256) {
-            throw "$($asset.id): vanilla source is not 256x256"
+        # Square and a power of two; the edge itself is whatever the vanilla art
+        # uses. Demanding exactly 256 is why three firearms were never covered:
+        # the L94 Rifle ships a 2048 atlas and the two cap guns ship 64.
+        $atlas = $sourceBitmap.Width
+        if ($sourceBitmap.Width -ne $sourceBitmap.Height) {
+            throw "$($asset.id): vanilla source is not square ($($sourceBitmap.Width)x$($sourceBitmap.Height))"
         }
-        $canvas = [System.Drawing.Bitmap]::new(256, 256, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+        if ($atlas -band ($atlas - 1)) {
+            throw "$($asset.id): vanilla source edge $atlas is not a power of two"
+        }
+        [EwSnowMask]::Configure($atlas)
+        $canvas = [System.Drawing.Bitmap]::new($atlas, $atlas, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
         try {
             $graphics = [System.Drawing.Graphics]::FromImage($canvas)
             try {
                 $graphics.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceCopy
-                $graphics.DrawImage($sourceBitmap, 0, 0, 256, 256)
+                $graphics.DrawImage($sourceBitmap, 0, 0, $atlas, $atlas)
             }
             finally { $graphics.Dispose() }
 
-            $rect = [System.Drawing.Rectangle]::new(0, 0, 256, 256)
+            $rect = [System.Drawing.Rectangle]::new(0, 0, $atlas, $atlas)
             $data = $canvas.LockBits($rect,
                 [System.Drawing.Imaging.ImageLockMode]::ReadWrite,
                 [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
             try {
-                $buffer = [byte[]]::new(256 * 256 * 4)
-                for ($y = 0; $y -lt 256; $y++) {
+                $buffer = [byte[]]::new($atlas * $atlas * 4)
+                for ($y = 0; $y -lt $atlas; $y++) {
                     [Runtime.InteropServices.Marshal]::Copy(
                         [IntPtr]::Add($data.Scan0, $y * $data.Stride),
-                        $buffer, $y * 256 * 4, 256 * 4)
+                        $buffer, $y * $atlas * 4, $atlas * 4)
                 }
                 # Alpha is taken from the source pixel by pixel, not from
                 # whatever the GDI+ copy happens to leave in the canvas. That
                 # semantics differs between 24bpp and 32bpp sources and is not
                 # worth depending on for a correctness invariant.
-                for ($y = 0; $y -lt 256; $y++) {
-                    for ($x = 0; $x -lt 256; $x++) {
-                        $buffer[(($y * 256) + $x) * 4 + 3] = $sourceBitmap.GetPixel($x, $y).A
+                for ($y = 0; $y -lt $atlas; $y++) {
+                    for ($x = 0; $x -lt $atlas; $x++) {
+                        $buffer[(($y * $atlas) + $x) * 4 + 3] = $sourceBitmap.GetPixel($x, $y).A
                     }
                 }
                 # `mode` selects the phenomenon. Absent means snow, so every
@@ -1433,10 +1468,10 @@ foreach ($asset in $spec.assets) {
                 else {
                     throw "$($asset.id): unknown mode '$mode'; expected 'snow' or 'wet'"
                 }
-                for ($y = 0; $y -lt 256; $y++) {
+                for ($y = 0; $y -lt $atlas; $y++) {
                     [Runtime.InteropServices.Marshal]::Copy(
-                        $buffer, $y * 256 * 4,
-                        [IntPtr]::Add($data.Scan0, $y * $data.Stride), 256 * 4)
+                        $buffer, $y * $atlas * 4,
+                        [IntPtr]::Add($data.Scan0, $y * $data.Stride), $atlas * 4)
                 }
             }
             finally { $canvas.UnlockBits($data) }
