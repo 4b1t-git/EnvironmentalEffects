@@ -308,13 +308,19 @@ for (const asset of selected) {
   const base = `${asset.mesh}|${asset.source}`;
   const deliveredPath = path.join(modRoot, asset.output);
   const previewPath = path.join(PREVIEW_ROOT, `${asset.id}.png`);
-  // The preview copy wins. A preview only exists while an asset is unverified,
-  // which is exactly when it is the version under review, and the generator
-  // leaves the previously approved copy sitting in the mod tree meanwhile.
-  // Preferring the delivered one meant a regenerated texture was reviewed as
-  // its own predecessor: a whole retune of the wet levels rendered as the pass
-  // it was replacing, with no visible difference to explain why.
-  const texturePath = fs.existsSync(previewPath) ? previewPath : deliveredPath;
+  // Which tree holds the current bytes is decided by the SPEC, the same way the
+  // generator decides where to write: unverified goes to the preview tree,
+  // verified goes to the mod tree.
+  //
+  // Preferring the delivered copy whenever it existed was wrong -- a regenerated
+  // texture got reviewed as its own predecessor, and a whole retune of the wet
+  // levels rendered as the pass it replaced. But preferring the preview copy
+  // whenever THAT existed was wrong in the other direction: preview files are
+  // never cleaned up, so months-old renders shadowed the shipped textures and a
+  // contact sheet quietly showed a mix of current and stale. Reading the flag
+  // cannot be fooled by either.
+  const useDelivered = asset.visuallyVerified === true;
+  const texturePath = useDelivered ? deliveredPath : previewPath;
   if (!fs.existsSync(texturePath)) {
     console.error(`skip ${asset.id}: no texture at ${deliveredPath} or ${previewPath}`);
     continue;
@@ -328,7 +334,7 @@ for (const asset of selected) {
     lastBase = base;
   }
   rows.push({
-    label: `${asset.id} stage ${asset.stage}${texturePath === previewPath ? " (UNVERIFIED PREVIEW)" : ""}`,
+    label: `${asset.id} stage ${asset.stage}${useDelivered ? "" : " (UNVERIFIED PREVIEW)"}`,
     data: render(mesh, derivative, asset.flipV, asset.upSign),
   });
 }
