@@ -59,7 +59,11 @@ function Convert-ToGif {
         # scaling the full frame down to a thumbnail spends most of its pixels
         # on empty snow. Cropping to the action first means the same byte
         # budget buys roughly twice the detail on the thing being advertised.
-        [string]$Crop = ""
+        [string]$Crop = "",
+        # Seconds to keep, from the start. GIF size is resolution x frames, so
+        # trading length for width is the only way to get a wide image under a
+        # fixed cap: halving the duration roughly doubles the pixels affordable.
+        [double]$Seconds = 0
     )
 
     Write-Host "=== $Label ==="
@@ -72,8 +76,10 @@ function Convert-ToGif {
             $cropStep = if ($Crop) { "crop=$Crop," } else { "" }
             $scale = "fps=$($rung.fps),${cropStep}scale=$($rung.w):-1:flags=lanczos"
 
+            $trim = if ($Seconds -gt 0) { @('-t', $Seconds) } else { @() }
+
             # Pass one: a palette derived from the actual frames.
-            & ffmpeg -y -v error -i $Source `
+            & ffmpeg -y -v error @trim -i $Source `
                 -vf "$scale,palettegen=max_colors=$($rung.colors):stats_mode=diff" `
                 $palette 2>&1 | Out-Null
             if ($LASTEXITCODE -ne 0) { throw "palettegen failed for $Label" }
@@ -81,7 +87,7 @@ function Convert-ToGif {
             # Pass two: apply it. bayer dithering keeps flat areas from banding
             # without the file-size explosion floyd_steinberg causes in GIF,
             # because ordered dithering produces far more repeatable rows.
-            & ffmpeg -y -v error -i $Source -i $palette `
+            & ffmpeg -y -v error @trim -i $Source -i $palette `
                 -lavfi "$scale [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=3" `
                 -loop 0 $Target 2>&1 | Out-Null
             if ($LASTEXITCODE -ne 0) { throw "paletteuse failed for $Label" }
@@ -125,5 +131,11 @@ Convert-ToGif -Source $ThumbSource -Target (Join-Path $OutDir 'preview.gif') `
 #
 # Only the letterbox comes off; this one keeps the wide shot, since the
 # description shows it large.
+#
+# Trimmed to 2.4 of its 4.6 seconds, and that is the point rather than a
+# sacrifice: Steam renders a description image at its own size, centred in a
+# fixed-width black container, so a 380px GIF floats small in a wide black box.
+# It has to be WIDE, and under a 2 MB cap width can only be bought with frames.
+# Half the length buys roughly double the pixels.
 Convert-ToGif -Source $PageSource -Target (Join-Path $OutDir 'page.gif') `
-    -MaxBytes 1900KB -Label 'description (page.gif)' -Crop '1920:1000:0:40'
+    -MaxBytes 1900KB -Label 'description (page.gif)' -Crop '1920:1000:0:40' -Seconds 2.4
