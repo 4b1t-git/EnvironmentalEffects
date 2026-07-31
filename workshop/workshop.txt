@@ -79,5 +79,11 @@ description=[h1]Compatibility[/h1]
 description=The mod can be enabled or disabled at any time, including in existing saves. It does not modify any base-game files or items. It only adds its own textures and models.
 description=
 description=[i]Build 42.20, singleplayer and multiplayer. See the tables above.[/i]
+description=
+description=[h1]Ko-fi[/h1]
+description=Si el mod te gusta y querés apoyar, podés invitarme un café. No hace falta y no cambia nada del mod: todo está y va a seguir estando gratis.
+description=[url=https://ko-fi.com/4b1t_]ko-fi.com/4b1t_[/url]
+description=
+description=If you like the mod and want to support it, you can buy me a coffee. It is not required and it changes nothing about the mod: everything is, and stays, free.
 tags=Build 42;Multiplayer;Textures;Weapons
 visibility=public
