@@ -21,6 +21,9 @@
 	"appid"				"108600"
 	"publishedfileid"	"3774943290"
 	"contentfolder"		"C:\\Users\\4b1t2\\Zomboid\\Workshop\\WeatherEffects\\contents"
-	"previewfile"		"C:\\Users\\4b1t2\\Documents\\Codex\\2026-07-29\\referenced-chatgpt-conversation-this-is-untrusted\\work\\EnvironmentalWeapons\\workshop\\media\\preview.gif"
+	// Lives outside the repo, in the maintainer's shared folder for the GIFs of
+	// all their Project Zomboid mods. Prefixed with the mod name because that
+	// folder is shared -- a bare preview.gif would collide with the next mod's.
+	"previewfile"		"C:\\Users\\4b1t2\\Documents\\gifs mods project zomboid\\WeatherEffects_preview.gif"
 	"changenote"		"Animated preview and full content upload"
 }
