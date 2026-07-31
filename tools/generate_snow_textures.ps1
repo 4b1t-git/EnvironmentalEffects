@@ -160,79 +160,62 @@ public static class EwSnowMask
     const double SparkleNoiseScale = 5.5;
     const uint SparkleSeedOffset = 0x9E37;
 
-    // ---- Wetness ----
+    // ---- Standing water ----
     //
-    // Water is the inverse of snow in almost every respect, which is why it gets
-    // its own composite rather than a parameter on the snow one. Snow ADDS an
-    // opaque, bright, near-neutral material on top of surfaces that face up.
-    // Water adds no material at all: it soaks the surface that is already there,
-    // making it DARKER and MORE saturated, and it reaches everywhere the rain
-    // reaches rather than only the upward faces.
+    // Discrete pools sitting ON the weapon, not a wash tinting all of it. An
+    // earlier version soaked the whole surface -- darker and more saturated
+    // everywhere -- and it read as the weapon being a different colour rather
+    // than as water on it. Standing water is a thing you can point at.
     //
-    // Wet wood goes deep brown, not grey. Darkening alone reads as shadow or
-    // soot, so saturation has to climb with it or the weapon just looks dirty.
-    const double WetDarken = 0.36;
-    const double WetSaturate = 0.42;
+    // So this behaves much more like the snow mask than like a tint: pools
+    // collect where a surface faces up, they are discrete, and they leave the
+    // rest of the weapon completely untouched.
+    //
+    // Pools need to be bigger and rounder than snow drifts, so the noise runs
+    // coarser and the edge is much harder. Water has surface tension; it does
+    // not fade out at its border the way a snow drift does.
+    const double PuddleNoiseScale = 0.42;    // coarser than the snow field
+    const double PuddleEdge = 0.045;         // hard rim: water holds an edge
+    const uint PuddleSeed = 0x7A9D;
 
-    // Snow settles on top; water runs down and collects underneath and in every
-    // recess. Reusing the same mesh normal with the sign flipped is what makes a
-    // wet weapon read as a different phenomenon rather than as grey snow.
-    const double WetLowBoost = 0.60;
-    const double WetCreviceBoost = 0.85;
+    // Only genuinely up-facing surfaces hold standing water. This is stricter
+    // than snow, which clings to moderate slopes; water runs off anything that
+    // is not close to level.
+    const double PuddleUpFloor = 0.62;
 
-    // A wet surface reflects the sky, and Project Zomboid's camera is fixed, so
-    // the highlight can be painted where an upward face would catch light.
-    // Restrained deliberately: too much and steel reads as polished plastic.
-    // Narrow on purpose. A barrel is a cylinder, so a large share of it reads as
-    // up-facing; a wide highlight lit the whole top half and turned black steel
-    // into mid grey, which looks dusty rather than wet. Wet steel stays black
-    // and carries a thin bright line along its crown.
-    const double WetSpecular = 20.0;
-    const double WetSpecularUpFloor = 0.80;
+    // What a pool does to the pixels beneath it. Water is transparent, so the
+    // substrate stays visible and merely deepens -- much less than the old wash,
+    // because the pool must read as a film with the weapon under it.
+    const double PuddleDarken = 0.20;
+    const double PuddleSaturate = 0.26;
 
-    // Water beads on metal and soaks into wood. The droplet field is only allowed
-    // to act where the surface is metallic, so a stock darkens evenly while a
-    // barrel breaks into discrete beads.
-    const double WetDropletScale = 7.5;
-    const double WetDropletDensity = 0.14;
-    const double WetDropletGain = 0.45;
-    const uint WetDropletSeed = 0x3C7B;
+    // The sky reflection is what actually sells standing water, and it is what
+    // the tint version was missing entirely. Water reflects an overcast sky:
+    // a cool, bright, fairly flat grey.
+    const double PuddleSkyR = 0.90, PuddleSkyG = 0.95, PuddleSkyB = 1.0;
+    const double PuddleSkyLuma = 168.0;
+    const double PuddleReflect = 0.34;       // how much sky the pool interior shows
 
-    // Absolute floor on the wet result. Below this a dark barrel would crush to
+    // A bright rim where the meniscus curves. This is the single strongest cue
+    // that something is a pool of liquid rather than a stain, so it is drawn
+    // from the mask gradient exactly the way the snow crest is.
+    const double PuddleRimGain = 52.0;
+    const double PuddleRimLow = 0.06;
+    const double PuddleRimHigh = 0.40;
+
+    // Pools gather in recesses first: around the bolt, the sight base, the
+    // trigger guard. Same crevice proxy the snow mask uses.
+    const double PuddleCreviceBoost = 0.90;
+
+    // Fine beading OUTSIDE the pools, so a weapon is not either flooded or bone
+    // dry. Sparse and small; the pools carry the effect.
+    const double BeadScale = 9.0;
+    const double BeadGain = 0.30;
+    const uint BeadSeed = 0x3C7B;
+
+    // Absolute floor on the result. Below this a dark barrel would crush to
     // black and lose the machining that makes it readable.
     const double WetLumaFloor = 26.0;
-
-    // Darkening only works where there is brightness to remove. The M9 Pistol is
-    // very nearly black across its whole atlas, so scaling its luma down changed
-    // almost nothing before hitting the floor -- and that is physically right:
-    // water on a dark surface does not read as darker, it reads as SHINY. The
-    // film reflects light instead of deepening the colour.
-    //
-    // What water always does is raise local contrast. Which direction it raises
-    // it in depends on the substrate, so the two effects trade off against how
-    // much headroom the vanilla pixel has above the floor.
-    const double WetDarkenRange = 90.0;      // luma above the floor for full darkening
-    const double WetDarkSheenBoost = 0.9;    // extra sheen once darkening cannot act
-
-    // Directional sheen alone was not enough on the near-black weapons, because
-    // it only reaches surfaces that face up. A film of water over matte black
-    // lifts the WHOLE surface: it turns matte black into wet black, which is
-    // lighter everywhere, not just along the top. Applied in inverse proportion
-    // to headroom, so it does nothing to wood and carries the effect on steel.
-    const double WetDarkLift = 7.5;
-
-    // Wood soaks; metal does not. Water spreads through a stock evenly, but on
-    // steel it beads and runs, so most of the metal's wetness has to come from
-    // the pooling mask rather than from the uniform base. At a flat base share
-    // the barrel came out an even pale grey that read as dust, not water.
-    const double WetMetalBeadShare = 0.62;
-
-    // How much of the effect is applied uniformly across the whole wetted area
-    // versus following the pooling mask. This is the difference between "wet"
-    // and "stained": rain does not fall in patches on a rifle held in the open,
-    // so a mask that leaves dry islands next to soaked ones reads as spilled oil.
-    // The mask decides where water GATHERS, not whether it arrived.
-    const double WetBaseShare = 0.58;
 
     // Reset per asset by ParseMesh; the batch loop is strictly sequential.
     static double[][] _v, _n, _t;
@@ -662,6 +645,7 @@ public static class EwSnowMask
         public double[] Alpha;
         public double[] Upness;
         public double[] Used;
+        public double[] Beads;   // wet only: scattered droplets outside the pools
         public string MeshInfo;
         public double Threshold;
         public int UpFacingTexels;
@@ -1088,77 +1072,77 @@ public static class EwSnowMask
         surface = AnalyseSurface(bgra, used);
 
         var field = new double[Size * Size];
-        int owned = 0, upFacing = 0;
+        int owned = 0, upFacing = 0, eligible = 0;
         for (int y = 0; y < Size; y++)
         {
             for (int x = 0; x < Size; x++)
             {
                 int o = y * Size + x;
+                field[o] = -1;
                 if (used[o] <= 0) continue;
                 owned++;
                 if (upness[o] >= UpFacingThreshold) upFacing++;
 
-                double n = Fbm((x + 0.5) / Size * noiseBase, (y + 0.5) / Size * noiseBase, 0);
+                // Standing water needs a surface close to level. Anything steeper
+                // sheds it, which is why this floor sits well above the snow one.
+                if (upness[o] < PuddleUpFloor) continue;
+                eligible++;
 
-                // Where water gathers: recesses first, then the downward faces it
-                // runs onto. There is no up-facing gate at all, because rain wets
-                // every surface it can reach -- it simply pools in some of them.
-                double affinity = (1.0 + WetCreviceBoost * surface.Crevice[o])
-                    * (1.0 + WetLowBoost * (1.0 - upness[o]));
+                double n = Fbm((x + 0.5) / Size * noiseBase * PuddleNoiseScale,
+                    (y + 0.5) / Size * noiseBase * PuddleNoiseScale, PuddleSeed);
+
+                // Pools find the low spots first: around the bolt, the sight base,
+                // the trigger guard.
+                double affinity = 1.0 + PuddleCreviceBoost * surface.Crevice[o];
                 if (affinity > AffinityCeiling) affinity = AffinityCeiling;
-                field[o] = (NoiseFloor + NoiseGain * n) * affinity;
+                field[o] = n * affinity;
             }
         }
         if (owned == 0) throw new Exception("no owned texels found; the mesh or UV layout is wrong");
+        if (eligible == 0) throw new Exception("no level surface found to hold standing water");
 
-        // Same bisection discipline as the snow mask, but measured against the
-        // weapon's whole owned area rather than its up-facing share.
-        double lo = 0.0, hi = 3.0, threshold = 0.5;
+        // Coverage is of the surface that can actually hold water, not of the
+        // whole weapon: a pistol with almost no level area must not be forced to
+        // flood its flanks to satisfy a number.
+        double lo = 0.0, hi = 2.0, threshold = 0.5;
         for (int iter = 0; iter < 60; iter++)
         {
             threshold = 0.5 * (lo + hi);
             int hit = 0;
             for (int o = 0; o < field.Length; o++)
             {
-                if (used[o] <= 0) continue;
-                if (SmoothStep(field[o], threshold, threshold + edgeSoftness) > 0.5) hit++;
+                if (field[o] < 0) continue;
+                if (SmoothStep(field[o], threshold, threshold + PuddleEdge) > 0.5) hit++;
             }
-            if ((double)hit / owned > wetCoverage) lo = threshold; else hi = threshold;
+            if ((double)hit / eligible > wetCoverage) lo = threshold; else hi = threshold;
         }
 
         var alpha = new double[Size * Size];
         for (int o = 0; o < field.Length; o++)
         {
-            if (used[o] <= 0) continue;
-            double pooling = SmoothStep(field[o], threshold, threshold + edgeSoftness);
+            if (field[o] < 0) continue;
+            // Hard rim, unlike a snow drift: water has surface tension and holds
+            // a defined edge instead of fading out.
+            alpha[o] = wetMaxAlpha * SmoothStep(field[o], threshold, threshold + PuddleEdge);
+        }
 
-            // Everything the rain reaches is damp; the mask only adds the extra
-            // where it runs together. Without the base share this produced dry
-            // islands beside soaked ones, which reads as staining, not weather.
-            //
-            // Metal gets much less of that uniform base, because water beads on
-            // it instead of soaking in: its wetness comes from where the drops
-            // actually sit.
-            double baseShare = WetBaseShare * (1.0 - WetMetalBeadShare * surface.Metalness[o]);
-            double wet = baseShare + (1.0 - baseShare) * pooling;
-
-            // Beading on metal. The droplet field only subtracts, so it breaks a
-            // metallic surface into discrete beads while leaving wood continuous.
-            double bead = 1.0;
-            if (surface.Metalness[o] > 0)
-            {
-                double d = Fbm((o % Size + 0.5) / Size * noiseBase * WetDropletScale,
-                    (o / Size + 0.5) / Size * noiseBase * WetDropletScale, WetDropletSeed);
-                double gap = 1.0 - WetDropletGain * surface.Metalness[o];
-                bead = gap + (1.0 - gap) * SmoothStep(d, 0.5 - WetDropletDensity, 0.5 + WetDropletDensity);
-            }
-            alpha[o] = wetMaxAlpha * wet * bead;
+        // Scattered beads everywhere else, so a weapon is not either flooded or
+        // bone dry. Deliberately far below pool strength; the pools carry this.
+        var beads = new double[Size * Size];
+        for (int o = 0; o < Size * Size; o++)
+        {
+            if (used[o] <= 0 || alpha[o] > 0) continue;
+            if (upness[o] < FlankMinRawUp) continue;   // undersides stay clear
+            double d = Fbm((o % Size + 0.5) / Size * noiseBase * BeadScale,
+                (o / Size + 0.5) / Size * noiseBase * BeadScale, BeadSeed);
+            if (d < 0.62) continue;
+            beads[o] = wetMaxAlpha * BeadGain * (d - 0.62) / 0.38;
         }
 
         return new SnowMask {
             Alpha = alpha, Upness = upness, Used = used, MeshInfo = meshInfo,
             Threshold = threshold, UpFacingTexels = upFacing,
-            FlankThreshold = 0, FlankTexels = owned
+            FlankThreshold = 0, FlankTexels = eligible, Beads = beads
         };
     }
 
@@ -1185,43 +1169,63 @@ public static class EwSnowMask
         // then described nothing at all.
         double solidAlpha = 0.75 * wetMaxAlpha;
 
+        // The rim is drawn from the gradient of the pool mask, the same way the
+        // snow crest is drawn from the gradient of the drift mask. It is the
+        // single strongest cue that separates a pool of liquid from a stain.
+        double[] beads = mask.Beads;
+        var rim = new double[Size * Size];
+        for (int y = 0; y < Size; y++)
+        {
+            for (int x = 0; x < Size; x++)
+            {
+                int o = y * Size + x;
+                int left = x > 0 ? o - 1 : o;
+                int right = x < Size - 1 ? o + 1 : o;
+                int up = y > 0 ? o - Size : o;
+                int down = y < Size - 1 ? o + Size : o;
+                double gx = alpha[right] - alpha[left];
+                double gy = alpha[down] - alpha[up];
+                rim[o] = Math.Sqrt(gx * gx + gy * gy);
+            }
+        }
+
         for (int o = 0; o < Size * Size; o++)
         {
             double a = alpha[o];
-            if (a <= 0) continue;
+            double bead = beads != null ? beads[o] : 0;
+            if (a <= 0 && bead <= 0) continue;
+            if (a <= 0) a = bead;
 
             int b = bgra[o * 4], g = bgra[o * 4 + 1], r = bgra[o * 4 + 2];
             double srcLuma = surface.Luma[o];
 
-            // Saturate around the pixel's own grey, then darken. Order matters:
-            // saturating after darkening would amplify quantisation on already
-            // dark texels and produce coloured speckle on the barrel.
-            double gain = 1.0 + WetSaturate * a;
+            // Water is transparent, so the substrate stays visible and merely
+            // deepens. Saturate around the pixel's own grey first: saturating
+            // after darkening amplifies quantisation on dark texels and produces
+            // coloured speckle on the barrel.
+            double gain = 1.0 + PuddleSaturate * a;
             double wr = srcLuma + (r - srcLuma) * gain;
             double wg = srcLuma + (g - srcLuma) * gain;
             double wb = srcLuma + (b - srcLuma) * gain;
 
-            // How much room this pixel has to be darkened at all. Near-black
-            // steel has none, so the effect shifts into sheen instead.
-            double headroom = (srcLuma - WetLumaFloor) / WetDarkenRange;
-            if (headroom < 0) headroom = 0;
-            if (headroom > 1) headroom = 1;
-
-            double darken = 1.0 - WetDarken * a * headroom;
+            double darken = 1.0 - PuddleDarken * a;
             wr *= darken; wg *= darken; wb *= darken;
 
-            // Matte black becomes wet black: lighter across the whole surface.
-            double lift = WetDarkLift * a * (1.0 - headroom);
-            wr += lift; wg += lift; wb += lift * 1.04;
+            // The sky in the water. This is the part a colour tint cannot do:
+            // a pool does not take the colour of what is under it, it shows what
+            // is above it. Mixed in rather than added, so a pool over black steel
+            // and a pool over pale wood both read as the same substance.
+            double reflect = PuddleReflect * a;
+            wr = wr * (1 - reflect) + PuddleSkyLuma * PuddleSkyR * reflect;
+            wg = wg * (1 - reflect) + PuddleSkyLuma * PuddleSkyG * reflect;
+            wb = wb * (1 - reflect) + PuddleSkyLuma * PuddleSkyB * reflect;
 
-            // The sheen an upward-facing wet surface shows under an overcast sky,
-            // amplified exactly where darkening ran out of room.
-            if (upness[o] >= WetSpecularUpFloor)
+            // Bright meniscus along the edge where the surface curves.
+            double edge = SmoothStep(rim[o], PuddleRimLow, PuddleRimHigh);
+            if (edge > 0)
             {
-                double sheen = WetSpecular * a
-                    * (upness[o] - WetSpecularUpFloor) / (1.0 - WetSpecularUpFloor)
-                    * (1.0 + WetDarkSheenBoost * (1.0 - headroom));
-                wr += sheen; wg += sheen; wb += sheen * 1.06;   // leans faintly cool
+                double lip = PuddleRimGain * edge;
+                wr += lip * PuddleSkyR; wg += lip * PuddleSkyG; wb += lip * PuddleSkyB;
                 specularTexels++;
             }
 

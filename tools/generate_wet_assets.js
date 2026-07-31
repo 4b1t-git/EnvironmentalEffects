@@ -16,17 +16,20 @@ const path = require("node:path");
 const specPath = path.join(__dirname, "snow_assets.json");
 const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
 
-// Three levels, mirroring EW_Config's wetThresholds. Coverage is measured
-// against the weapon's whole owned atlas area, not its up-facing share: rain
-// reaches every surface, so "half wet" means half the weapon, not half its top.
+// Three levels, mirroring EW_Config's wetThresholds.
 //
-// Alpha stays below 1.0 even when soaked. Water darkens what is underneath; it
-// never replaces it, and a weapon whose machining has vanished into flat brown
-// has stopped being readable at gameplay zoom.
+// Coverage is of the surface that can actually HOLD standing water -- the
+// near-level area -- not of the whole weapon. These are pools you can point at,
+// so the numbers are far lower than a film would use: at the lightest level a
+// few puddles have gathered in the recesses, at the heaviest they have run
+// together across most of the level surface but still stop short of flooding it.
+//
+// Alpha stays well below 1.0 even when soaked, because water is transparent and
+// the weapon has to stay visible through it.
 const LEVELS = [
-  { suffix: "WetLight", stage: -1, wetCoverage: 0.42, wetMaxAlpha: 0.46 },
-  { suffix: "WetMedium", stage: -2, wetCoverage: 0.70, wetMaxAlpha: 0.68 },
-  { suffix: "WetHeavy", stage: -3, wetCoverage: 0.93, wetMaxAlpha: 0.86 },
+  { suffix: "WetLight", stage: -1, wetCoverage: 0.16, wetMaxAlpha: 0.55 },
+  { suffix: "WetMedium", stage: -2, wetCoverage: 0.38, wetMaxAlpha: 0.72 },
+  { suffix: "WetHeavy", stage: -3, wetCoverage: 0.66, wetMaxAlpha: 0.88 },
 ];
 
 const isWet = asset => asset.mode === "wet";
