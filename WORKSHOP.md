@@ -1,5 +1,36 @@
 # Workshop release notes
 
+> **Upload with SteamCMD, not with the in-game uploader.**
+>
+> Published 2026-07-31 as item **3774943290**. The in-game uploader created the
+> item and then failed its content upload four times in a row with
+> `failed to update workshop item, result=8`. Result 8 is Steam's
+> file-not-found, which is misleading: every file was present, the structure
+> matched a mod that uploads fine from the same machine, all four tags are in
+> the game's own `media/WorkshopTags.txt`, and the preview was inside the 1 MB
+> and dimension limits. The game's own `validateContents()` passed each time --
+> that is why the item got created at all.
+>
+> SteamCMD uploaded the same folder on the first attempt, content and animated
+> preview together. The cause of the in-game failure is still unknown; what is
+> known is that it is not the package.
+>
+> ```
+> C:\steamcmd\steamcmd.exe +login <user> +workshop_build_item "<repo>\work\EnvironmentalWeapons\workshop\weathereffects_workshop.vdf" +quit
+> ```
+>
+> Inside an already-open `Steam>` prompt, drop the `+` prefixes and the
+> executable: `workshop_build_item "<path to vdf>"`.
+>
+> The VDF deliberately carries no `title`, `description` or `visibility`.
+> SteamCMD leaves out what it is not given, so a tool run cannot overwrite the
+> store page. It also means the page title must be edited on Steam directly --
+> the in-game uploader rewrote `workshop.txt` with its own stale copy at one
+> point, so it is not a reliable source of truth for the page text.
+>
+> An animated preview is the other reason SteamCMD is required: the in-game
+> uploader flattens a GIF to a still frame.
+
 Two things in one file: the player-facing description, ready to paste, and the
 checklist of what still blocks publication. Read the checklist first — **this
 build cannot be uploaded as it stands**, and one of the blockers is not technical.
