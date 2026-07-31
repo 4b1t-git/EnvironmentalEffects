@@ -142,21 +142,40 @@ for (const [id, entry] of Object.entries(textureManifest.assets)) {
   if (entry.outputSha256 !== textureSha) {
     throw new Error(`${id}: manifest outputSha256 ${entry.outputSha256} != texture ${textureSha}`);
   }
-  // Density, not share, is the placement invariant that survives a four-stage
-  // progression: a heavily covered weapon legitimately carries flank mass. This
-  // floor must match validate_snow_textures.ps1; they disagreed once (0.68 here
-  // against 0.45 there) and the stricter one rejected a valid stage 4.
-  if (!(entry.densityRatio >= 1.3)) {
-    throw new Error(`${id}: up-facing snow is not denser than flank snow: ${entry.densityRatio}`);
-  }
-  if (!(entry.upShare >= 0.45)) {
-    throw new Error(`${id}: snow is not concentrated on up-facing surfaces: ${entry.upShare}`);
-  }
-  if (!(entry.coreSnowSaturation <= 0.06)) {
-    throw new Error(`${id}: snow core is tinted rather than neutral: ${entry.coreSnowSaturation}`);
-  }
-  if (!(entry.coreSnowLuma >= 205)) {
-    throw new Error(`${id}: snow core is too dark to read: ${entry.coreSnowLuma}`);
+  // Snow and wetness get separate assertions rather than one loosened set.
+  // Snow must be bright and neutral; wet must be darker or shinier than the
+  // vanilla pixels and is usually saturated. Relaxing the snow bounds until
+  // both fitted would have thrown away the guarantee that snow reads as snow.
+  if (entry.mode === "wet") {
+    // No placement assertion here on purpose. Rain reaches every surface, so
+    // there is no up-facing concentration to prove -- the equivalent invariant
+    // is that the pixels moved relative to what was underneath them.
+    if (!(entry.relativeLumaShift > 0)) {
+      throw new Error(`${id}: wet texture records no shift from vanilla: ${entry.relativeLumaShift}`);
+    }
+    if (!(entry.coreWetSaturation > 0)) {
+      throw new Error(`${id}: wet texture lost all colour: ${entry.coreWetSaturation}`);
+    }
+    if (!(entry.coreTexels > 0)) {
+      throw new Error(`${id}: wet texture has no wetted core`);
+    }
+  } else {
+    // Density, not share, is the placement invariant that survives a four-stage
+    // progression: a heavily covered weapon legitimately carries flank mass. This
+    // floor must match validate_snow_textures.ps1; they disagreed once (0.68 here
+    // against 0.45 there) and the stricter one rejected a valid stage 4.
+    if (!(entry.densityRatio >= 1.3)) {
+      throw new Error(`${id}: up-facing snow is not denser than flank snow: ${entry.densityRatio}`);
+    }
+    if (!(entry.upShare >= 0.45)) {
+      throw new Error(`${id}: snow is not concentrated on up-facing surfaces: ${entry.upShare}`);
+    }
+    if (!(entry.coreSnowSaturation <= 0.06)) {
+      throw new Error(`${id}: snow core is tinted rather than neutral: ${entry.coreSnowSaturation}`);
+    }
+    if (!(entry.coreSnowLuma >= 205)) {
+      throw new Error(`${id}: snow core is too dark to read: ${entry.coreSnowLuma}`);
+    }
   }
   if (entry.outputIntroducesTransparency !== false) {
     throw new Error(`${id}: manifest admits introduced transparency`);

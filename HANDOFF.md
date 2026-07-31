@@ -56,7 +56,8 @@ multiplayer and no poster.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Logic suite | 64 assertions pass; 76 textures validated |
+| Wetness | Implemented 2026-07-30, **not yet confirmed in game**. One signed axis: +100 snowed, 0 dry, -100 soaked. 57 wet textures, 3 levels per weapon |
+| Logic suite | 80 assertions pass; 133 textures validated |
 | Mod identity | `id=EnvironmentalEffects`, frozen 2026-07-30 while unpublished |
 | Installed path | `%USERPROFILE%\Zomboid\mods\EnvironmentalEffects` |
 | Release status | Development test, not publishable |
@@ -217,6 +218,15 @@ reviewed. Do not upload or publish the texture, seed, or package.
 
 | Rejected or fixed approach | Why it failed | Rule |
 | --- | --- | --- |
+| Two separate mods for snow and rain | A weapon has ONE `WeaponSprite`, so something must arbitrate which phenomenon draws, and that arbiter is shared logic. Worse, each mod snapshots the "original" visual to restore later: whichever ran second would capture the first one's texture as vanilla and write that corruption into the save. Mod load order is not guaranteed either | One mod, one state, sandbox options for the player's choice |
+| Wetness as a second independent axis | Snow x wet x mud would be 4x3x3 = 36 textures per weapon, 684 total | One SIGNED axis: +snow, 0 dry, -wet. States are mutually exclusive, which the existing "rain strips snow" rule already made physically true |
+| Darkening as the universal wet effect | Water on a DARK surface does not read as darker, it reads as shiny; the M9 Pistol is near-black across its atlas and had no headroom to darken before hitting the luma floor. The assertion demanding "darker than vanilla" rejected a correct texture | Scale darkening by how much headroom the vanilla pixel has, and shift into sheen where it runs out |
+| Absolute luma-shift assertion for wetness | Not portable: a shift of 3 on the M16's near-black receiver is a visible change, the same 3 on a pale stock is nothing | Assert the shift RELATIVE to the vanilla luma underneath, scaled by the level |
+| Wide specular highlight on wet metal | A barrel is a cylinder, so a large share of it reads as up-facing; a highlight with a 0.55 floor and a 2.6x dark boost lit the whole top half and turned black steel mid-grey, which looks dusty rather than wet | Narrow the highlight to the crown (0.80 floor) and carry dark surfaces with a small uniform lift instead |
+| Uniform wet base share on every material | Wood soaks evenly but metal beads. A flat base share made barrels an even pale grey | Metal takes most of its wetness from the pooling mask, wood from the uniform base |
+| One fixed metric list in the texture manifest | The wet composite reports specular counts and no flank threshold; the snow composite the reverse. A fixed list emitted `"flankThreshold": ,` and produced unparseable JSON | The manifest emits whatever metrics the running composite actually reported |
+| Sorting stages -3..4 as one progression | Compared the most soaked texture against the least snowed one. On the wet side -3 is the DEEPEST level, so signed order runs backwards | Group by weapon AND mode, order by magnitude. Only snow proves texel nesting |
+| Debug probe hard-coded to `Base.HuntingRifle` | Quietly stopped covering eighteen of the nineteen supported firearms once the roster grew | The probe offers itself for any profiled item |
 | Rejected generative image | Did not meet the required vanilla-aligned visual direction | Never reuse or copy it |
 | FireAxe-first slice | User chose firearms first | Continue with Hunting Rifle |
 | Generic WeaponSprite profile fallback | Could enable unrelated items | Match exact FullType or explicit FullType alias |

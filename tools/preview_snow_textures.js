@@ -286,11 +286,24 @@ function render(mesh, tex, flipV, upSign) {
   return img;
 }
 
+// An optional substring filter, because the full sheet is 171 rows and judging
+// one weapon's progression means being able to see its rows side by side.
+//   node tools/preview_snow_textures.js out.png 84 30 MSR788
+// argv[2..4] are the existing output path, yaw and elevation; the filter takes
+// the next free slot rather than displacing them.
+const filter = process.argv[5] || null;
+const selected = filter
+  ? spec.assets.filter(a => a.id.includes(filter))
+  : spec.assets;
+if (filter && selected.length === 0) {
+  throw new Error(`no asset id contains ${filter}`);
+}
+
 const rows = [];
 // One vanilla row per mesh+source, not per asset: the stages of a weapon share
 // both, and at four stages across many weapons half the sheet would be repeats.
 let lastBase = null;
-for (const asset of spec.assets) {
+for (const asset of selected) {
   const mesh = parseMesh(asset.mesh);
   const base = `${asset.mesh}|${asset.source}`;
   const deliveredPath = path.join(modRoot, asset.output);

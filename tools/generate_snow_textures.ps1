@@ -160,6 +160,80 @@ public static class EwSnowMask
     const double SparkleNoiseScale = 5.5;
     const uint SparkleSeedOffset = 0x9E37;
 
+    // ---- Wetness ----
+    //
+    // Water is the inverse of snow in almost every respect, which is why it gets
+    // its own composite rather than a parameter on the snow one. Snow ADDS an
+    // opaque, bright, near-neutral material on top of surfaces that face up.
+    // Water adds no material at all: it soaks the surface that is already there,
+    // making it DARKER and MORE saturated, and it reaches everywhere the rain
+    // reaches rather than only the upward faces.
+    //
+    // Wet wood goes deep brown, not grey. Darkening alone reads as shadow or
+    // soot, so saturation has to climb with it or the weapon just looks dirty.
+    const double WetDarken = 0.36;
+    const double WetSaturate = 0.42;
+
+    // Snow settles on top; water runs down and collects underneath and in every
+    // recess. Reusing the same mesh normal with the sign flipped is what makes a
+    // wet weapon read as a different phenomenon rather than as grey snow.
+    const double WetLowBoost = 0.60;
+    const double WetCreviceBoost = 0.85;
+
+    // A wet surface reflects the sky, and Project Zomboid's camera is fixed, so
+    // the highlight can be painted where an upward face would catch light.
+    // Restrained deliberately: too much and steel reads as polished plastic.
+    // Narrow on purpose. A barrel is a cylinder, so a large share of it reads as
+    // up-facing; a wide highlight lit the whole top half and turned black steel
+    // into mid grey, which looks dusty rather than wet. Wet steel stays black
+    // and carries a thin bright line along its crown.
+    const double WetSpecular = 20.0;
+    const double WetSpecularUpFloor = 0.80;
+
+    // Water beads on metal and soaks into wood. The droplet field is only allowed
+    // to act where the surface is metallic, so a stock darkens evenly while a
+    // barrel breaks into discrete beads.
+    const double WetDropletScale = 7.5;
+    const double WetDropletDensity = 0.14;
+    const double WetDropletGain = 0.45;
+    const uint WetDropletSeed = 0x3C7B;
+
+    // Absolute floor on the wet result. Below this a dark barrel would crush to
+    // black and lose the machining that makes it readable.
+    const double WetLumaFloor = 26.0;
+
+    // Darkening only works where there is brightness to remove. The M9 Pistol is
+    // very nearly black across its whole atlas, so scaling its luma down changed
+    // almost nothing before hitting the floor -- and that is physically right:
+    // water on a dark surface does not read as darker, it reads as SHINY. The
+    // film reflects light instead of deepening the colour.
+    //
+    // What water always does is raise local contrast. Which direction it raises
+    // it in depends on the substrate, so the two effects trade off against how
+    // much headroom the vanilla pixel has above the floor.
+    const double WetDarkenRange = 90.0;      // luma above the floor for full darkening
+    const double WetDarkSheenBoost = 0.9;    // extra sheen once darkening cannot act
+
+    // Directional sheen alone was not enough on the near-black weapons, because
+    // it only reaches surfaces that face up. A film of water over matte black
+    // lifts the WHOLE surface: it turns matte black into wet black, which is
+    // lighter everywhere, not just along the top. Applied in inverse proportion
+    // to headroom, so it does nothing to wood and carries the effect on steel.
+    const double WetDarkLift = 7.5;
+
+    // Wood soaks; metal does not. Water spreads through a stock evenly, but on
+    // steel it beads and runs, so most of the metal's wetness has to come from
+    // the pooling mask rather than from the uniform base. At a flat base share
+    // the barrel came out an even pale grey that read as dust, not water.
+    const double WetMetalBeadShare = 0.62;
+
+    // How much of the effect is applied uniformly across the whole wetted area
+    // versus following the pooling mask. This is the difference between "wet"
+    // and "stained": rain does not fall in patches on a rifle held in the open,
+    // so a mask that leaves dry islands next to soaked ones reads as spilled oil.
+    // The mask decides where water GATHERS, not whether it arrived.
+    const double WetBaseShare = 0.58;
+
     // Reset per asset by ParseMesh; the batch loop is strictly sequential.
     static double[][] _v, _n, _t;
     static int[][] _f;
@@ -999,6 +1073,249 @@ public static class EwSnowMask
             "coreSnowSaturation=" + Inv(coreSat, 4)
         });
     }
+
+    // Builds the wet mask. Deliberately NOT a mode flag on BuildMask: the two
+    // masks share only their noise and their surface analysis, and every gate in
+    // between is reversed. Folding them together would produce a function whose
+    // every branch depends on which phenomenon it is drawing.
+    static SnowMask BuildWetMask(string meshText, byte[] bgra, out Surface surface,
+        int upAxis, int upSign, bool flipV,
+        double wetCoverage, double noiseBase, double edgeSoftness, double wetMaxAlpha)
+    {
+        string meshInfo = ParseMesh(meshText);
+        double[] upness, used, rawUp;
+        BuildUpness(upAxis, upSign, flipV, out upness, out used, out rawUp);
+        surface = AnalyseSurface(bgra, used);
+
+        var field = new double[Size * Size];
+        int owned = 0, upFacing = 0;
+        for (int y = 0; y < Size; y++)
+        {
+            for (int x = 0; x < Size; x++)
+            {
+                int o = y * Size + x;
+                if (used[o] <= 0) continue;
+                owned++;
+                if (upness[o] >= UpFacingThreshold) upFacing++;
+
+                double n = Fbm((x + 0.5) / Size * noiseBase, (y + 0.5) / Size * noiseBase, 0);
+
+                // Where water gathers: recesses first, then the downward faces it
+                // runs onto. There is no up-facing gate at all, because rain wets
+                // every surface it can reach -- it simply pools in some of them.
+                double affinity = (1.0 + WetCreviceBoost * surface.Crevice[o])
+                    * (1.0 + WetLowBoost * (1.0 - upness[o]));
+                if (affinity > AffinityCeiling) affinity = AffinityCeiling;
+                field[o] = (NoiseFloor + NoiseGain * n) * affinity;
+            }
+        }
+        if (owned == 0) throw new Exception("no owned texels found; the mesh or UV layout is wrong");
+
+        // Same bisection discipline as the snow mask, but measured against the
+        // weapon's whole owned area rather than its up-facing share.
+        double lo = 0.0, hi = 3.0, threshold = 0.5;
+        for (int iter = 0; iter < 60; iter++)
+        {
+            threshold = 0.5 * (lo + hi);
+            int hit = 0;
+            for (int o = 0; o < field.Length; o++)
+            {
+                if (used[o] <= 0) continue;
+                if (SmoothStep(field[o], threshold, threshold + edgeSoftness) > 0.5) hit++;
+            }
+            if ((double)hit / owned > wetCoverage) lo = threshold; else hi = threshold;
+        }
+
+        var alpha = new double[Size * Size];
+        for (int o = 0; o < field.Length; o++)
+        {
+            if (used[o] <= 0) continue;
+            double pooling = SmoothStep(field[o], threshold, threshold + edgeSoftness);
+
+            // Everything the rain reaches is damp; the mask only adds the extra
+            // where it runs together. Without the base share this produced dry
+            // islands beside soaked ones, which reads as staining, not weather.
+            //
+            // Metal gets much less of that uniform base, because water beads on
+            // it instead of soaking in: its wetness comes from where the drops
+            // actually sit.
+            double baseShare = WetBaseShare * (1.0 - WetMetalBeadShare * surface.Metalness[o]);
+            double wet = baseShare + (1.0 - baseShare) * pooling;
+
+            // Beading on metal. The droplet field only subtracts, so it breaks a
+            // metallic surface into discrete beads while leaving wood continuous.
+            double bead = 1.0;
+            if (surface.Metalness[o] > 0)
+            {
+                double d = Fbm((o % Size + 0.5) / Size * noiseBase * WetDropletScale,
+                    (o / Size + 0.5) / Size * noiseBase * WetDropletScale, WetDropletSeed);
+                double gap = 1.0 - WetDropletGain * surface.Metalness[o];
+                bead = gap + (1.0 - gap) * SmoothStep(d, 0.5 - WetDropletDensity, 0.5 + WetDropletDensity);
+            }
+            alpha[o] = wetMaxAlpha * wet * bead;
+        }
+
+        return new SnowMask {
+            Alpha = alpha, Upness = upness, Used = used, MeshInfo = meshInfo,
+            Threshold = threshold, UpFacingTexels = upFacing,
+            FlankThreshold = 0, FlankTexels = owned
+        };
+    }
+
+    // Composites water over the vanilla pixels. bgra is modified in place.
+    public static string CompositeWet(byte[] bgra, string meshText,
+        int upAxis, int upSign, bool flipV,
+        double wetCoverage, double noiseBase, double edgeSoftness, double wetMaxAlpha)
+    {
+        Surface surface;
+        SnowMask mask = BuildWetMask(meshText, bgra, out surface, upAxis, upSign, flipV,
+            wetCoverage, noiseBase, edgeSoftness, wetMaxAlpha);
+        double[] alpha = mask.Alpha;
+        double[] upness = mask.Upness;
+        double[] used = mask.Used;
+
+        int changed = 0, coreTexels = 0, specularTexels = 0;
+        double wetMass = 0, coreLumaSum = 0, coreSatSum = 0;
+        double vanillaCoreLumaSum = 0, shiftSum = 0;
+
+        // "Core" means the most soaked part of THIS level, so the threshold is a
+        // fraction of the level's own alpha ceiling rather than a fixed value.
+        // An absolute 0.60 emptied the core set entirely at the lightest level,
+        // whose alpha never reaches 0.60 by construction, and the statistics
+        // then described nothing at all.
+        double solidAlpha = 0.75 * wetMaxAlpha;
+
+        for (int o = 0; o < Size * Size; o++)
+        {
+            double a = alpha[o];
+            if (a <= 0) continue;
+
+            int b = bgra[o * 4], g = bgra[o * 4 + 1], r = bgra[o * 4 + 2];
+            double srcLuma = surface.Luma[o];
+
+            // Saturate around the pixel's own grey, then darken. Order matters:
+            // saturating after darkening would amplify quantisation on already
+            // dark texels and produce coloured speckle on the barrel.
+            double gain = 1.0 + WetSaturate * a;
+            double wr = srcLuma + (r - srcLuma) * gain;
+            double wg = srcLuma + (g - srcLuma) * gain;
+            double wb = srcLuma + (b - srcLuma) * gain;
+
+            // How much room this pixel has to be darkened at all. Near-black
+            // steel has none, so the effect shifts into sheen instead.
+            double headroom = (srcLuma - WetLumaFloor) / WetDarkenRange;
+            if (headroom < 0) headroom = 0;
+            if (headroom > 1) headroom = 1;
+
+            double darken = 1.0 - WetDarken * a * headroom;
+            wr *= darken; wg *= darken; wb *= darken;
+
+            // Matte black becomes wet black: lighter across the whole surface.
+            double lift = WetDarkLift * a * (1.0 - headroom);
+            wr += lift; wg += lift; wb += lift * 1.04;
+
+            // The sheen an upward-facing wet surface shows under an overcast sky,
+            // amplified exactly where darkening ran out of room.
+            if (upness[o] >= WetSpecularUpFloor)
+            {
+                double sheen = WetSpecular * a
+                    * (upness[o] - WetSpecularUpFloor) / (1.0 - WetSpecularUpFloor)
+                    * (1.0 + WetDarkSheenBoost * (1.0 - headroom));
+                wr += sheen; wg += sheen; wb += sheen * 1.06;   // leans faintly cool
+                specularTexels++;
+            }
+
+            if (wr < WetLumaFloor) wr = WetLumaFloor;
+            if (wg < WetLumaFloor) wg = WetLumaFloor;
+            if (wb < WetLumaFloor) wb = WetLumaFloor;
+
+            int nr = (int)Math.Round(wr), ng = (int)Math.Round(wg), nb = (int)Math.Round(wb);
+            if (nr > 255) nr = 255; if (ng > 255) ng = 255; if (nb > 255) nb = 255;
+            if (nr < 0) nr = 0; if (ng < 0) ng = 0; if (nb < 0) nb = 0;
+
+            if (nr != r || ng != g || nb != b) changed++;
+            if (used[o] > 0) wetMass += a;
+
+            if (a >= solidAlpha && used[o] > 0)
+            {
+                double outLuma = 0.299 * nr + 0.587 * ng + 0.114 * nb;
+                shiftSum += Math.Abs(outLuma - srcLuma);
+                coreLumaSum += outLuma;
+                vanillaCoreLumaSum += srcLuma;
+                int mx = Math.Max(nr, Math.Max(ng, nb));
+                int mn = Math.Min(nr, Math.Min(ng, nb));
+                if (mx > 0) coreSatSum += (mx - mn) / (double)mx;
+                coreTexels++;
+            }
+
+            bgra[o * 4] = (byte)nb;
+            bgra[o * 4 + 1] = (byte)ng;
+            bgra[o * 4 + 2] = (byte)nr;
+        }
+
+        int semiTransparent = 0;
+        for (int o = 0; o < Size * Size; o++)
+        {
+            if (bgra[o * 4 + 3] != 255) semiTransparent++;
+        }
+
+        double coreLuma = coreTexels > 0 ? coreLumaSum / coreTexels : 0;
+        double coreSat = coreTexels > 0 ? coreSatSum / coreTexels : 0;
+        double vanillaCoreLuma = coreTexels > 0 ? vanillaCoreLumaSum / coreTexels : 0;
+        double darkening = vanillaCoreLuma > 0 ? 1.0 - (coreLuma / vanillaCoreLuma) : 0;
+
+        double lumaShift = coreTexels > 0 ? shiftSum / coreTexels : 0;
+
+        // Fail closed on wetness that is not visible. Absolute luma is useless
+        // here the way it is for snow, and so is demanding that the result be
+        // DARKER: on the M9 Pistol, which is near-black across its whole atlas,
+        // water correctly shows as sheen rather than as deeper black, and an
+        // assertion that insisted on darkening rejected a correct texture.
+        //
+        // What holds for every substrate is that the pixels must have MOVED. The
+        // direction is the material's business.
+        // Measured RELATIVE to the surface it is changing, and scaled to the
+        // level. An absolute shift is not portable across this weapon set: a
+        // shift of 3 on the M16's near-black receiver is a visible change, while
+        // the same 3 on a pale wooden stock is nothing. Judging both by one
+        // absolute number rejected correct dark textures and would have passed
+        // invisible pale ones.
+        double reference = vanillaCoreLuma > 20.0 ? vanillaCoreLuma : 20.0;
+        double relativeShift = lumaShift / reference;
+        //
+        // The bar is deliberately a sanity floor, not a quality bar. It catches
+        // "the effect did not apply" -- a wrong axis, an empty mask, a parameter
+        // zeroed by a typo. Whether a given level looks right is judged on the
+        // rendered contact sheet and then in game, because no single number
+        // distinguishes convincing water from a flat wash.
+        double minimumShift = 0.022 * (wetMaxAlpha / 0.46);
+        if (coreTexels == 0)
+            throw new Exception("mask produced no wet surface");
+        if (relativeShift < minimumShift)
+            throw new Exception("wet surface is indistinguishable from vanilla; relative luma shift "
+                + Inv(relativeShift, 4) + " below the " + Inv(minimumShift, 4) + " this level requires");
+        if (coreSat <= 0)
+            throw new Exception("wet surface lost all colour");
+
+        return string.Join(";", new string[] {
+            "mesh=" + mask.MeshInfo,
+            "threshold=" + Inv(mask.Threshold, 6),
+            "ownedTexels=" + mask.FlankTexels,
+            "upFacingTexels=" + mask.UpFacingTexels,
+            "changedTexels=" + changed,
+            "coveragePercent=" + Inv(100.0 * changed / (Size * Size), 4),
+            "coreTexels=" + coreTexels,
+            "semiTransparentTexels=" + semiTransparent,
+            "specularTexels=" + specularTexels,
+            "wetMass=" + Inv(wetMass, 2),
+            "coreWetLuma=" + Inv(coreLuma, 2),
+            "vanillaCoreLuma=" + Inv(vanillaCoreLuma, 2),
+            "darkeningRatio=" + Inv(darkening, 4),
+            "meanLumaShift=" + Inv(lumaShift, 2),
+            "relativeLumaShift=" + Inv(relativeShift, 4),
+            "coreWetSaturation=" + Inv(coreSat, 4)
+        });
+    }
 }
 '@ -ReferencedAssemblies System.Drawing
 
@@ -1100,12 +1417,27 @@ foreach ($asset in $spec.assets) {
                         $buffer[(($y * 256) + $x) * 4 + 3] = $sourceBitmap.GetPixel($x, $y).A
                     }
                 }
-                $report = [EwSnowMask]::Composite(
-                    $buffer, $meshText,
-                    [int]$asset.upAxis, [int]$asset.upSign, [bool]$asset.flipV,
-                    [double]$asset.targetUpCoverage, [double]$asset.noiseBase,
-                    [double]$asset.edgeSoftness, [double]$asset.flankCoverage,
-                    [double]$asset.flankMaxAlpha)
+                # `mode` selects the phenomenon. Absent means snow, so every
+                # existing spec entry keeps its exact meaning and its bytes.
+                $mode = if ($asset.PSObject.Properties['mode']) { [string]$asset.mode } else { 'snow' }
+                if ($mode -eq 'wet') {
+                    $report = [EwSnowMask]::CompositeWet(
+                        $buffer, $meshText,
+                        [int]$asset.upAxis, [int]$asset.upSign, [bool]$asset.flipV,
+                        [double]$asset.wetCoverage, [double]$asset.noiseBase,
+                        [double]$asset.edgeSoftness, [double]$asset.wetMaxAlpha)
+                }
+                elseif ($mode -eq 'snow') {
+                    $report = [EwSnowMask]::Composite(
+                        $buffer, $meshText,
+                        [int]$asset.upAxis, [int]$asset.upSign, [bool]$asset.flipV,
+                        [double]$asset.targetUpCoverage, [double]$asset.noiseBase,
+                        [double]$asset.edgeSoftness, [double]$asset.flankCoverage,
+                        [double]$asset.flankMaxAlpha)
+                }
+                else {
+                    throw "$($asset.id): unknown mode '$mode'; expected 'snow' or 'wet'"
+                }
                 for ($y = 0; $y -lt 256; $y++) {
                     [Runtime.InteropServices.Marshal]::Copy(
                         $buffer, $y * 256 * 4,
@@ -1195,24 +1527,36 @@ if ($WriteManifest) {
             "      `"upAxis`": $($entry.asset.upAxis),",
             "      `"upSign`": $($entry.asset.upSign),",
             "      `"flipV`": $(if ($entry.asset.flipV) { 'true' } else { 'false' }),",
-            "      `"driftThreshold`": $($m['threshold']),",
-            "      `"flankThreshold`": $($m['flankThreshold']),",
-            "      `"upFacingTexels`": $($m['upFacingTexels']),",
-            "      `"flankEligibleTexels`": $($m['flankEligibleTexels']),",
-            "      `"changedTexels`": $($m['changedTexels']),",
-            "      `"coveragePercent`": $($m['coveragePercent']),",
-            "      `"coreTexels`": $($m['coreTexels']),",
-            "      `"semiTransparentTexels`": $($m['semiTransparentTexels']),",
-            "      `"shadowTexels`": $($m['shadowTexels']),",
-            "      `"sparkleTexels`": $($m['sparkleTexels']),",
-            "      `"upShare`": $($m['upShare']),",
-            "      `"upDensity`": $($m['upDensity']),",
-            "      `"flankDensity`": $($m['flankDensity']),",
-            "      `"densityRatio`": $($m['densityRatio']),",
-            "      `"coreSnowLuma`": $($m['coreSnowLuma']),",
-            "      `"coreSnowSaturation`": $($m['coreSnowSaturation']),",
+            "      `"mode`": `"$(if ($entry.asset.PSObject.Properties['mode']) { $entry.asset.mode } else { 'snow' })`",")
+
+        # Metrics are emitted from whatever the composite actually reported,
+        # rather than from a fixed list. The two phenomena measure different
+        # things -- there is no flank threshold on a wet texture and no
+        # specular count on a snowy one -- and a fixed list wrote an empty
+        # value for every field the running mode did not produce, which is
+        # not parseable JSON.
+        foreach ($key in $m.Keys) {
+            $value = $m[$key]
+            $numeric = 0.0
+            $isNumeric = [double]::TryParse($value,
+                [Globalization.NumberStyles]::Float,
+                [Globalization.CultureInfo]::InvariantCulture, [ref]$numeric)
+            if ($isNumeric) {
+                $lines += "      `"$key`": $value,"
+            }
+            else {
+                $lines += "      `"$key`": `"$value`","
+            }
+        }
+
+        $algorithm = if ($entry.asset.PSObject.Properties['mode'] -and $entry.asset.mode -eq 'wet') {
+            'EW substrate-relative wetness mask v1'
+        } else {
+            'EW mesh-normal-gated multi-scale value-noise snow mask v2'
+        }
+        $lines += @(
             '      "status": "local development derivative pending release-rights review",',
-            '      "algorithm": "EW mesh-normal-gated multi-scale value-noise snow mask v2",',
+            "      `"algorithm`": `"$algorithm`",",
             '      "seed": "0x45574c31"',
             "    }$comma")
     }

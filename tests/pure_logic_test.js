@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 
 const snow = {
   maximum: 100,
+  wetMaximum: 100,
   minutesPerStage: 10,
   percentPerStage: 25,
   scaleWithIntensity: false,
@@ -11,14 +12,19 @@ const snow = {
   accumulationMaxTemperatureC: 0.5,
   meltStartTemperatureC: 0,
 };
-const stages = { thresholds: [20, 45, 70, 90], hysteresis: 4 };
+const stages = {
+  thresholds: [20, 45, 70, 90],
+  wetThresholds: [20, 45, 70],
+  hysteresis: 4,
+};
 const TICK = snow.minutesPerStage;
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-// EW_Simulation.step
+// EW_Simulation.step. The value is a signed axis: +max snowed, 0 dry, -max soaked.
 function step(current, minutes, s) {
-  const value = clamp(Number(current) || 0, 0, snow.maximum);
+  const wetMaximum = Number(snow.wetMaximum) || 0;
+  const value = clamp(Number(current) || 0, -wetMaximum, snow.maximum);
   const elapsed = Math.max(0, Number(minutes) || 0);
   if (elapsed === 0) return value;
   const intensity = clamp(Number(s.snowIntensity) || 0, 0, 1);
@@ -34,24 +40,40 @@ function step(current, minutes, s) {
     temperature <= snow.accumulationMaxTemperatureC;
   if (accumulating) {
     if (snow.scaleWithIntensity) delta *= intensity;
-    return clamp(value + delta * exposure, 0, snow.maximum);
+    return clamp(value + delta * exposure, -wetMaximum, snow.maximum);
   }
 
   const rainedOn = exposure > 0 && s.outside &&
     (Number(s.rainIntensity) || 0) >= snow.minimumIntensity;
-  const melting = !s.outside || exposure <= 0 || rainedOn ||
+  if (rainedOn) {
+    const advance = value <= 0 ? delta * exposure : delta;
+    return clamp(value - advance, -wetMaximum, snow.maximum);
+  }
+
+  if (value < 0) return clamp(value + delta, -wetMaximum, snow.maximum);
+
+  const melting = !s.outside || exposure <= 0 ||
     temperature > snow.meltStartTemperatureC;
   if (!melting) return value;
   return clamp(value - delta, 0, snow.maximum);
 }
 
 // EW_StageResolver.resolve
-function stage(value, current) {
-  const { thresholds, hysteresis } = stages;
-  let result = clamp(current, 0, thresholds.length);
-  while (result < thresholds.length && value >= thresholds[result]) result++;
-  while (result > 0 && value < thresholds[result - 1] - hysteresis) result--;
+function ladder(magnitude, level, thresholds) {
+  let result = clamp(level, 0, thresholds.length);
+  while (result < thresholds.length && magnitude >= thresholds[result]) result++;
+  while (result > 0 && magnitude < thresholds[result - 1] - stages.hysteresis) result--;
   return result;
+}
+
+function stage(value, current) {
+  let level = Number(current) || 0;
+  if (value >= 0 && level < 0) level = 0;
+  if (value <= 0 && level > 0) level = 0;
+  const wet = stages.wetThresholds;
+  if (value >= 0 || !wet || wet.length === 0) return ladder(value, level, stages.thresholds);
+  const depth = ladder(-value, -level, wet);
+  return depth === 0 ? 0 : -depth;
 }
 
 // EW_Climate.resolveSnowIntensity
@@ -171,7 +193,54 @@ check(step(60, TICK, { ...freezingRain, rainIntensity: 0.005 }), 60,
   "a trace of rain below the gate does not strip snow");
 check(step(60, TICK, { ...freezingRain, outside: false }), 35,
   "indoors it thaws regardless of the rain outside");
-check(step(0, TICK, { ...freezingRain, temperatureC: -5 }), 0, "rain never accumulates snow");
+check(step(0, TICK, { ...freezingRain, temperatureC: -5 }), -25,
+  "rain never accumulates snow; on a dry weapon it wets instead");
+
+// ---- The signed axis: rain crosses zero into wet without stopping ----
+// The point of one axis is that there is no dry moment in the middle of a
+// downpour. A weapon with snow on it goes snowed -> dry -> wet in one continuous
+// slide, and nothing special-cases the crossing.
+let sliding = 50;
+const slide = [];
+for (let tick = 0; tick < 5; tick++) {
+  sliding = step(sliding, TICK, freezingRain);
+  slide.push(sliding);
+}
+check(slide, [25, 0, -25, -50, -75], "rain slides the axis from snowed through dry into wet");
+check(step(-100, TICK, freezingRain), -100, "soaked is the floor; rain cannot push past it");
+
+// Drying needs no warmth. A soaked weapon in a bag dries at freezing exactly as
+// it does indoors, which is why this is not gated on temperature.
+const bagged = { exposed: 0, outside: false, snowIntensity: 0, rainIntensity: 0, temperatureC: -12 };
+check(step(-100, TICK, bagged), -75, "a soaked weapon dries in the cold, one level per tick");
+let drying = -100;
+const dried = [];
+for (let tick = 0; tick < 5; tick++) {
+  drying = step(drying, TICK, bagged);
+  dried.push(drying);
+}
+check(dried, [-75, -50, -25, 0, 0], "drying stops at dry and never overshoots into snow");
+
+// A holster keeps water off most of the frame, so it wets at half rate -- but it
+// still strips snow at the full rate, because that behaviour predates wetness.
+check(step(0, TICK, { ...freezingRain, exposed: 0.5 }), -12.5,
+  "a holstered weapon wets at half rate");
+check(step(50, TICK, { ...freezingRain, exposed: 0.5 }), 25,
+  "a holstered weapon still loses snow at the full rate");
+
+// Snowfall onto a wet weapon pushes back up the same axis.
+check(step(-50, TICK, snowing), -25, "snow falling on a wet weapon drives it back toward dry");
+
+// ---- Wet stages mirror the snow ladder ----
+check(stage(-25, 0), -1, "a quarter wet enters wet stage 1");
+check(stage(-50, -1), -2, "half wet reaches wet stage 2");
+check(stage(-75, -2), -3, "three quarters wet reaches wet stage 3");
+check(stage(-100, -3), -3, "wet stage 3 is the top of the wet ladder");
+check(stage(-18, -1), -1, "hysteresis holds the wet stage just under the threshold");
+check(stage(-15, -1), 0, "past the hysteresis band the weapon reads dry again");
+check(stage(25, -2), 1, "crossing zero drops the wet stage instead of carrying it");
+check(stage(-25, 2), -1, "crossing zero the other way drops the snow stage");
+check(stage(0, -3), 0, "dry resolves to the vanilla stage from either side");
 
 // ---- Clamping ----
 check(step(90, 600, snowing), 100, "accumulation clamps at maximum");

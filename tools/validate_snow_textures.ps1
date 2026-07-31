@@ -165,6 +165,38 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
     # density ratio, and the stage-to-stage nesting proof below. Values above 100
     # are expected, because changed texels include the bleed into gutter space
     # while the denominator counts owned surface only.
+    # Wetness is a different phenomenon and gets different assertions. Snow must
+    # be bright, neutral and concentrated on up-facing surfaces; water must be
+    # darker or shinier than what it sits on and reaches everywhere, so none of
+    # the snow rails below apply to it. The pixel-level guarantees that DO apply
+    # to both -- exact hashes, dimensions and untouched alpha -- were already
+    # asserted above this point.
+    $mode = if ($entry.PSObject.Properties['mode']) { [string]$entry.mode } else { 'snow' }
+    if ($mode -eq 'wet') {
+        if ($changedRgbPixels -le 0) { throw "$id`: wet texture changed no pixels" }
+        if ([double]$entry.relativeLumaShift -le 0) {
+            throw "$id`: wet texture records no shift from vanilla: $($entry.relativeLumaShift)"
+        }
+        if ([double]$entry.coreWetSaturation -le 0) {
+            throw "$id`: wet texture lost all colour: $($entry.coreWetSaturation)"
+        }
+        if ([double]$entry.coreTexels -le 0) { throw "$id`: wet texture has no wetted core" }
+        # Same shape as the snow report on purpose: everything downstream -- the
+        # progression pass and the model/profile cross-check -- iterates one list.
+        $reports += [PSCustomObject][ordered]@{
+            Asset = $id
+            FullType = $entry.fullType
+            Stage = [int]$entry.stage
+            Mode = 'wet'
+            OutputPath = $outputPath
+            SourcePath = $entry.sourcePath
+            OutputSha256 = $outputHash
+            CoveragePercent = [double]$entry.coveragePercent
+            ChangedRgbPixels = $changedRgbPixels
+        }
+        continue
+    }
+
     $ownedTexels = [double]$entry.upFacingTexels + [double]$entry.flankEligibleTexels
     if ($ownedTexels -le 0) { throw "$id`: manifest reports no owned surface" }
     $ownedCoverage = [Math]::Round(100 * $changedRgbPixels / $ownedTexels, 1)
@@ -232,6 +264,7 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
         Asset = $id
         FullType = $entry.fullType
         Stage = [int]$entry.stage
+        Mode = 'snow'
         OutputPath = $outputPath
         SourcePath = $entry.sourcePath
         OutputSha256 = $outputHash
@@ -255,8 +288,29 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
 # vanilla), not on raw luma. Drifts cast a short shadow onto the bare surface at
 # their foot, so some texels are legitimately darker than vanilla, and as drifts
 # grow those shadow bands move. Raw-luma monotonicity would flag that as a defect.
-foreach ($group in $reports | Group-Object FullType) {
-    $ordered = @($group.Group | Sort-Object Stage)
+#
+# Snow and wet are two separate progressions on one axis, so they are grouped
+# and ordered independently. Sorting a weapon's stages -3..4 as one run compared
+# the most soaked texture against the least snowed one, which is not a
+# progression at all -- and on the wet side -3 is the DEEPEST level, so the
+# sequence has to run on magnitude rather than on signed value.
+#
+# Only the snow side proves texel nesting. Water does not accumulate as a
+# growing mask: it darkens and lifts what is already there, so a texel can
+# legitimately move in either direction between levels.
+foreach ($group in $reports | Group-Object { "$($_.FullType)|$($_.Mode)" }) {
+    $ordered = @($group.Group | Sort-Object { [Math]::Abs($_.Stage) })
+    if ($ordered[0].Mode -eq 'wet') {
+        for ($i = 1; $i -lt $ordered.Count; $i++) {
+            $previous = $ordered[$i - 1]
+            $current = $ordered[$i]
+            if ($current.ChangedRgbPixels -lt $previous.ChangedRgbPixels) {
+                throw "$($group.Name): wet level $($current.Stage) touches fewer texels than $($previous.Stage)"
+            }
+            Write-Host "progression $($group.Name) stage $($previous.Stage)->$($current.Stage): PASS (wet, $($current.ChangedRgbPixels) texels)"
+        }
+        continue
+    }
     for ($i = 1; $i -lt $ordered.Count; $i++) {
         $previous = $ordered[$i - 1]
         $current = $ordered[$i]

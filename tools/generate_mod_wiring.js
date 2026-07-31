@@ -151,7 +151,11 @@ function buildProfiles() {
     lines.push(`        enabled = true,`);
     lines.push(`        stages = {`);
     lines.push(`            [0] = { equippedModel = nil, worldModel = nil, icon = nil },`);
-    for (let stage = 1; stage <= 4; stage++) {
+    // Negative stages are wetness, positive are snow, matching the signed axis
+    // in EW_Config. Written from the most soaked to the most snowed so the table
+    // reads in the same order the value moves.
+    for (let stage = -3; stage <= 4; stage++) {
+      if (stage === 0) continue;
       const asset = stages.get(stage);
       const model = asset ? `"${asset.modelName}"` : "nil";
       lines.push(`            [${stage}] = { equippedModel = ${model}, worldModel = nil, icon = nil },`);

@@ -13,6 +13,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_AssaultRifle_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_AssaultRifle_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_AssaultRifle_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_AssaultRifle_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_AssaultRifle_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_AssaultRifle_SnowHeavy", worldModel = nil, icon = nil },
@@ -24,6 +27,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_M14_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_M14_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_M14_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_M14_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_M14_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_M14_SnowHeavy", worldModel = nil, icon = nil },
@@ -35,6 +41,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_DoubleBarrelShotgun_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_DoubleBarrelShotgun_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_DoubleBarrelShotgun_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_DoubleBarrelShotgun_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_DoubleBarrelShotgun_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_DoubleBarrelShotgun_SnowHeavy", worldModel = nil, icon = nil },
@@ -46,6 +55,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_ShotgunDoubleBarrelSawn_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_ShotgunDoubleBarrelSawn_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_ShotgunDoubleBarrelSawn_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_ShotgunDoubleBarrelSawn_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_ShotgunDoubleBarrelSawn_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_ShotgunDoubleBarrelSawn_SnowHeavy", worldModel = nil, icon = nil },
@@ -57,6 +69,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_HuntingRifle_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_HuntingRifle_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_HuntingRifle_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_HuntingRifle_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_HuntingRifle_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_HuntingRifle_SnowHeavy", worldModel = nil, icon = nil },
@@ -68,6 +83,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_JS14_Rifle_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_JS14_Rifle_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_JS14_Rifle_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_JS14_Rifle_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_JS14_Rifle_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_JS14_Rifle_SnowHeavy", worldModel = nil, icon = nil },
@@ -79,6 +97,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_JS3T_Shotgun_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_JS3T_Shotgun_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_JS3T_Shotgun_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_JS3T_Shotgun_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_JS3T_Shotgun_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_JS3T_Shotgun_SnowHeavy", worldModel = nil, icon = nil },
@@ -90,6 +111,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_L92_Carbine_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_L92_Carbine_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_L92_Carbine_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_L92_Carbine_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_L92_Carbine_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_L92_Carbine_SnowHeavy", worldModel = nil, icon = nil },
@@ -101,6 +125,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_MSR7T_Rifle_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_MSR7T_Rifle_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_MSR7T_Rifle_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_MSR7T_Rifle_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_MSR7T_Rifle_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_MSR7T_Rifle_SnowHeavy", worldModel = nil, icon = nil },
@@ -112,6 +139,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Handgun03_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Handgun03_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Handgun03_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Handgun03_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Handgun03_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Handgun03_SnowHeavy", worldModel = nil, icon = nil },
@@ -123,6 +153,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Handgun02_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Handgun02_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Handgun02_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Handgun02_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Handgun02_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Handgun02_SnowHeavy", worldModel = nil, icon = nil },
@@ -134,6 +167,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Handgun_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Handgun_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Handgun_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Handgun_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Handgun_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Handgun_SnowHeavy", worldModel = nil, icon = nil },
@@ -145,6 +181,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Revolver_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Revolver_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Revolver_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Revolver_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Revolver_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Revolver_SnowHeavy", worldModel = nil, icon = nil },
@@ -156,6 +195,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Revolver_Long_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Revolver_Long_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Revolver_Long_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Revolver_Long_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Revolver_Long_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Revolver_Long_SnowHeavy", worldModel = nil, icon = nil },
@@ -167,6 +209,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Revolver_Short_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Revolver_Short_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Revolver_Short_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Revolver_Short_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Revolver_Short_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Revolver_Short_SnowHeavy", worldModel = nil, icon = nil },
@@ -178,6 +223,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Shotgun_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Shotgun_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Shotgun_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Shotgun_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Shotgun_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Shotgun_SnowHeavy", worldModel = nil, icon = nil },
@@ -189,6 +237,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_ShotgunSawnOff_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_ShotgunSawnOff_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_ShotgunSawnOff_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_ShotgunSawnOff_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_ShotgunSawnOff_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_ShotgunSawnOff_SnowHeavy", worldModel = nil, icon = nil },
@@ -200,6 +251,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_Trapper_Carbine_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_Trapper_Carbine_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_Trapper_Carbine_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_Trapper_Carbine_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_Trapper_Carbine_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_Trapper_Carbine_SnowHeavy", worldModel = nil, icon = nil },
@@ -211,6 +265,9 @@ local profiles = {
         enabled = true,
         stages = {
             [0] = { equippedModel = nil, worldModel = nil, icon = nil },
+            [-3] = { equippedModel = "EW_VarmintRifle_WetHeavy", worldModel = nil, icon = nil },
+            [-2] = { equippedModel = "EW_VarmintRifle_WetMedium", worldModel = nil, icon = nil },
+            [-1] = { equippedModel = "EW_VarmintRifle_WetLight", worldModel = nil, icon = nil },
             [1] = { equippedModel = "EW_VarmintRifle_SnowLight", worldModel = nil, icon = nil },
             [2] = { equippedModel = "EW_VarmintRifle_SnowMedium", worldModel = nil, icon = nil },
             [3] = { equippedModel = "EW_VarmintRifle_SnowHeavy", worldModel = nil, icon = nil },
