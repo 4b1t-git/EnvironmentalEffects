@@ -56,7 +56,8 @@ multiplayer and no poster.
 | Surface detail | Lit crest, cast shadow at the drift foot, thickness taper, crevice packing, metal-first frost, sparse crystals |
 | Detail retention | 73-91% of vanilla fine detail survives under snow (was 46-78%) |
 | Debug state | `DEBUG = true` development build |
-| Wetness | Implemented 2026-07-30, **not yet confirmed in game**. One signed axis: +100 snowed, 0 dry, -100 soaked. 57 wet textures, 3 levels per weapon |
+| Wetness | Implemented and seen in game 2026-07-30. One signed axis: +100 snowed, 0 dry, -100 soaked. 57 wet textures, 3 levels per weapon. **Visible, but the three levels are too close together** -- see the open tasks below |
+| Judging textures | **Always** run `tools/gameplay_scale_preview.ps1` on the contact sheet. Review size is ~5x play size and hides everything |
 | Logic suite | 80 assertions pass; 133 textures validated |
 | Mod identity | `id=EnvironmentalEffects`, frozen 2026-07-30 while unpublished |
 | Installed path | `%USERPROFILE%\Zomboid\mods\EnvironmentalEffects` |
@@ -96,7 +97,9 @@ them shows the refined mask.
 | `tools/generate_snow_textures.ps1` | The mask algorithm; parses the vanilla mesh | Snow only where the surface normal points up |
 | `tools/replay_snow_textures.ps1` | Replays the frozen PNG bytes | Contains no algorithm; hash-gated byte copy |
 | `tools/validate_snow_textures.ps1` | Pixel properties per asset | Asserts what snow must look like, not a frozen count |
-| `tools/preview_snow_textures.js` | Contact-sheet renderer | The only reliable check on axis choice |
+| `tools/preview_snow_textures.js` | Contact-sheet renderer | The only reliable check on axis choice. Optional 5th arg filters by asset id |
+| `tools/gameplay_scale_preview.ps1` | Downsamples a sheet to on-screen weapon size | Mandatory before believing any texture change |
+| `tools/generate_wet_assets.js` | Derives the 57 wet spec entries from each weapon's stage 1 | Per-level coverage and alpha live here |
 
 ## Verified behavior
 
@@ -286,6 +289,61 @@ reviewed. Do not upload or publish the texture, seed, or package.
 - Do not install over an unknown folder. The target must be absent or contain
   `id=EnvironmentalWeapons`.
 - Keep `WorldStaticModel` unset for the Hunting Rifle snow profile.
+
+## The two open tasks, in order
+
+Both were opened by in-game screenshots on 2026-07-30 and are specified enough
+to start cold.
+
+### 1. Separate the three wet levels
+
+Wetness ships and is visible, but the user's verdict is that the three levels
+"are not consistent like the snow". They are correct, and the reason is
+structural rather than a tuning mistake:
+
+**Snow adds an opaque material of a different colour** -- white over brown wood
+and black steel -- so more snow reads as more white and the progression needs no
+explanation. **Water has no colour of its own.** It darkens what is already
+there and reflects a little light, so more water over brown wood is slightly
+darker brown wood. The phenomenon is intrinsically less legible.
+
+What is fixable: today the three levels sit within a few luma points of each
+other. The fix is to SPREAD them -- level 1 nearly imperceptible, level 3
+clearly dark and glossy -- roughly tripling the distance between them. The knobs
+are `wetCoverage` and `wetMaxAlpha` per level in `tools/generate_wet_assets.js`,
+plus `PuddleDarken` and `PuddleRimGain` in the generator.
+
+**Do not fix this by raising `PuddleReflect`.** That was tried at 0.62 and pools
+over dark wood came out near-white; the rifle read as mould-spotted or snowed.
+Water reads by contrast, not brightness.
+
+**Judge every wet change with `tools/gameplay_scale_preview.ps1`.** A rifle is
+~1000 px wide on the contact sheet and ~200 px in game. A version that looked
+correct at review size shipped completely invisible, twice.
+
+### 2. Scopes, as a weapon variant rather than an attachment
+
+Measured against vanilla 42.20, and it makes this much cheaper than it looks:
+
+- The scope ITEMS (`x2Scope`, `x4Scope`, `x8Scope`) declare only
+  `WorldStaticModel` and have **no `WeaponSprite`**. The mod works by swapping
+  `WeaponSprite`, so there is nothing on a scope to swap, and `WorldStaticModel`
+  is forbidden here anyway.
+- `HuntingRifle_Scope.png` and `VarmintRifle_Scope.png` are **not scope
+  textures**. They are textures for the rifle-WITH-scope model.
+- Therefore a mounted scope is drawn as part of the rifle's model. Feed the
+  generator the scoped mesh and snow lands on the scope **automatically**, with
+  no attachment system, no per-attachment modData, and no generator changes.
+
+So the work is: two more spec entries (`HuntingRifle_Scope`,
+`VarmintRifle_Scope`) with their seven states each, plus a condition in
+`EW_Profiles`/`EW_VisualAdapter` that picks the scoped texture set when the
+weapon currently carries a scope. Only those two rifles have a scoped variant in
+vanilla, so the other seventeen need nothing.
+
+Decision already taken by the user on 2026-07-30, for the day a scope ever does
+get its own visual: **a scope keeps its own state** when moved between weapons,
+because state lives in the item's own modData like everything else in this mod.
 
 ## Prioritized next tasks
 
