@@ -1624,12 +1624,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR788_Rifle_WetMedium",
@@ -1645,12 +1645,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR788_Rifle_WetHeavy",
@@ -1666,12 +1666,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M16_Rifle_WetLight",
@@ -1687,12 +1687,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M16_Rifle_WetMedium",
@@ -1708,12 +1708,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M16_Rifle_WetHeavy",
@@ -1729,12 +1729,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M14_Rifle_WetLight",
@@ -1750,12 +1750,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M14_Rifle_WetMedium",
@@ -1771,12 +1771,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M14_Rifle_WetHeavy",
@@ -1792,12 +1792,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS14_WetLight",
@@ -1813,12 +1813,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS14_WetMedium",
@@ -1834,12 +1834,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS14_WetHeavy",
@@ -1855,12 +1855,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_L92_Carbine_WetLight",
@@ -1876,12 +1876,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_L92_Carbine_WetMedium",
@@ -1897,12 +1897,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_L92_Carbine_WetHeavy",
@@ -1918,12 +1918,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR700_Rifle_WetLight",
@@ -1939,12 +1939,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR700_Rifle_WetMedium",
@@ -1960,12 +1960,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR700_Rifle_WetHeavy",
@@ -1981,12 +1981,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_T_Carabine_WetLight",
@@ -2002,12 +2002,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_T_Carabine_WetMedium",
@@ -2023,12 +2023,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_T_Carabine_WetHeavy",
@@ -2044,12 +2044,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR788_Rifle_Tactical_WetLight",
@@ -2065,12 +2065,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR788_Rifle_Tactical_WetMedium",
@@ -2086,12 +2086,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_MSR788_Rifle_Tactical_WetHeavy",
@@ -2107,12 +2107,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_PumpAction_Shotgun_WetLight",
@@ -2128,12 +2128,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_PumpAction_Shotgun_WetMedium",
@@ -2149,12 +2149,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_PumpAction_Shotgun_WetHeavy",
@@ -2170,12 +2170,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_PumpAction_Shotgun_Sawn_WetLight",
@@ -2191,12 +2191,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_PumpAction_Shotgun_Sawn_WetMedium",
@@ -2212,12 +2212,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_PumpAction_Shotgun_Sawn_WetHeavy",
@@ -2233,12 +2233,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS_2000_WetLight",
@@ -2254,12 +2254,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS_2000_WetMedium",
@@ -2275,12 +2275,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS_2000_WetHeavy",
@@ -2296,12 +2296,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS_2000_Sawn_WetLight",
@@ -2317,12 +2317,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS_2000_Sawn_WetMedium",
@@ -2338,12 +2338,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS_2000_Sawn_WetHeavy",
@@ -2359,12 +2359,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS3T_Tactical_Shotgun_WetLight",
@@ -2380,12 +2380,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS3T_Tactical_Shotgun_WetMedium",
@@ -2401,12 +2401,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_JS3T_Tactical_Shotgun_WetHeavy",
@@ -2422,12 +2422,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M9_Pistol_WetLight",
@@ -2443,12 +2443,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M9_Pistol_WetMedium",
@@ -2464,12 +2464,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M9_Pistol_WetHeavy",
@@ -2485,12 +2485,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_1911_Pistol_WetLight",
@@ -2506,12 +2506,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_1911_Pistol_WetMedium",
@@ -2527,12 +2527,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_1911_Pistol_WetHeavy",
@@ -2548,12 +2548,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_D_E_Pistol_WetLight",
@@ -2569,12 +2569,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_D_E_Pistol_WetMedium",
@@ -2590,12 +2590,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_D_E_Pistol_WetHeavy",
@@ -2611,12 +2611,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M625_Revolver_WetLight",
@@ -2632,12 +2632,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M625_Revolver_WetMedium",
@@ -2653,12 +2653,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M625_Revolver_WetHeavy",
@@ -2674,12 +2674,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_Magnum_Revolver_WetLight",
@@ -2695,12 +2695,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_Magnum_Revolver_WetMedium",
@@ -2716,12 +2716,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_Magnum_Revolver_WetHeavy",
@@ -2737,12 +2737,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M36_Revolver_WetLight",
@@ -2758,12 +2758,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.16,
-      "wetMaxAlpha": 0.55,
+      "wetCoverage": 0.3,
+      "wetMaxAlpha": 0.62,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M36_Revolver_WetMedium",
@@ -2779,12 +2779,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.38,
-      "wetMaxAlpha": 0.72,
+      "wetCoverage": 0.55,
+      "wetMaxAlpha": 0.8,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     },
     {
       "id": "EW_M36_Revolver_WetHeavy",
@@ -2800,12 +2800,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.66,
-      "wetMaxAlpha": 0.88,
+      "wetCoverage": 0.8,
+      "wetMaxAlpha": 0.94,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing-water pass, reviewed on the contact sheet 2026-07-30."
+      "verificationNote": "Standing-water pass, reviewed at gameplay scale 2026-07-30."
     }
   ]
 }

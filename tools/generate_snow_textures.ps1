@@ -174,8 +174,14 @@ public static class EwSnowMask
     // Pools need to be bigger and rounder than snow drifts, so the noise runs
     // coarser and the edge is much harder. Water has surface tension; it does
     // not fade out at its border the way a snow drift does.
-    const double PuddleNoiseScale = 0.42;    // coarser than the snow field
-    const double PuddleEdge = 0.045;         // hard rim: water holds an edge
+    // Very coarse, and that is the whole point. An earlier pass used 0.42 and
+    // produced pools that were clearly readable on the contact sheet and utterly
+    // invisible in a screenshot: at review size a rifle is about 1000 px wide, in
+    // game it is closer to 200, so a twenty-texel pool averages down to a single
+    // grey pixel. Few large shapes survive that reduction; many medium ones do
+    // not. tools/gameplay_scale_preview.ps1 exists to stop that mistake repeating.
+    const double PuddleNoiseScale = 0.13;
+    const double PuddleEdge = 0.13;          // wide enough that the rim survives downscaling
     const uint PuddleSeed = 0x7A9D;
 
     // Only genuinely up-facing surfaces hold standing water. This is stricter
@@ -186,22 +192,22 @@ public static class EwSnowMask
     // What a pool does to the pixels beneath it. Water is transparent, so the
     // substrate stays visible and merely deepens -- much less than the old wash,
     // because the pool must read as a film with the weapon under it.
-    const double PuddleDarken = 0.20;
-    const double PuddleSaturate = 0.26;
+    const double PuddleDarken = 0.30;
+    const double PuddleSaturate = 0.30;
 
     // The sky reflection is what actually sells standing water, and it is what
     // the tint version was missing entirely. Water reflects an overcast sky:
     // a cool, bright, fairly flat grey.
     const double PuddleSkyR = 0.90, PuddleSkyG = 0.95, PuddleSkyB = 1.0;
     const double PuddleSkyLuma = 168.0;
-    const double PuddleReflect = 0.34;       // how much sky the pool interior shows
+    const double PuddleReflect = 0.62;       // how much sky the pool interior shows
 
     // A bright rim where the meniscus curves. This is the single strongest cue
     // that something is a pool of liquid rather than a stain, so it is drawn
     // from the mask gradient exactly the way the snow crest is.
-    const double PuddleRimGain = 52.0;
-    const double PuddleRimLow = 0.06;
-    const double PuddleRimHigh = 0.40;
+    const double PuddleRimGain = 78.0;
+    const double PuddleRimLow = 0.02;
+    const double PuddleRimHigh = 0.22;
 
     // Pools gather in recesses first: around the bolt, the sight base, the
     // trigger guard. Same crevice proxy the snow mask uses.
