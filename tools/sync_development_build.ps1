@@ -185,6 +185,12 @@ function Invoke-ProjectValidation([bool]$Regenerate) {
         Invoke-Checked 'powershell.exe' @(
             '-NoProfile', '-ExecutionPolicy', 'Bypass',
             '-File', 'tools/validate_snow_textures.ps1')
+        # First, because it is the cheapest and the one whose failure is
+        # invisible in game: an unbalanced block does not throw, it stops the
+        # mod loading at all. The pure-logic tests below exercise a JavaScript
+        # mirror of the simulation, not the shipped Lua, so nothing else here
+        # reads those files.
+        Invoke-Checked 'node' @('tools/check_lua_blocks.js')
         Invoke-Checked 'node' @('tests/pure_logic_test.js')
         Invoke-Checked 'node' @('tools/validate.js')
     }

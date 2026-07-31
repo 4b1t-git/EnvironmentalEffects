@@ -183,4 +183,91 @@ end
 function Exposure.attachedToBody(item)
     return bodyExposure(item) > 0
 end
+
+-- The other players this client can see, excluding the local one.
+--
+-- Empty in single player. Guarded rather than branched on isClient(), because a
+-- coop host is both and the question that matters is simply whether there is
+-- anyone else on screen to draw. That also makes split screen work for free:
+-- there the "remote" players are the other local ones.
+function Exposure.remotePlayers(localPlayer)
+    local result = {}
+    local ok, players = pcall(function() return getOnlinePlayers() end)
+    if not ok or players == nil then return result end
+
+    local size = 0
+    local okSize, value = pcall(function() return players:size() end)
+    if okSize then size = tonumber(value) or 0 end
+
+    for index = 0, size - 1 do
+        local okPlayer, other = pcall(function() return players:get(index) end)
+        if okPlayer and other and other ~= localPlayer then
+            -- A player whose square the cell has not loaded is not being drawn,
+            -- so simulating their weapon would be work nobody can see.
+            local okSquare, square = pcall(function() return other:getSquare() end)
+            if okSquare and square then result[#result + 1] = other end
+        end
+    end
+    return result
+end
+
+-- What another player has ON them, which is all of what this client draws for
+-- them: the two hands, and anything slung or holstered.
+--
+-- Deliberately NOT the full walk `resolve` does. Their backpack contents are
+-- never rendered, so snowing them would be invisible work, and the ground near
+-- them is already covered by the local player's own sweep whenever the two are
+-- close enough to see each other -- recording a ground item twice would charge
+-- it the elapsed time twice and age it at double rate.
+function Exposure.resolveRendered(player)
+    local result, seen = {}, {}
+    if not player then return result end
+
+    local outside = false
+    local okSquare, square = pcall(function() return player:getSquare() end)
+    if okSquare and square then
+        local okOutside, value = pcall(function() return square:isOutside() end)
+        if okOutside then outside = value == true end
+    end
+
+    local function record(item, exposed)
+        if not item or seen[item] then return end
+        if not Profiles.find(item) then return end
+        seen[item] = true
+        result[#result + 1] = {
+            item = item,
+            exposed = exposed,
+            outside = outside,
+            worldObject = nil,
+            square = nil,
+        }
+    end
+
+    local okPrimary, primary = pcall(function() return player:getPrimaryHandItem() end)
+    if okPrimary then record(primary, 1) end
+    local okSecondary, secondary = pcall(function() return player:getSecondaryHandItem() end)
+    if okSecondary then record(secondary, 1) end
+
+    local okInventory, inventory = pcall(function() return player:getInventory() end)
+    if okInventory and inventory then
+        local okItems, items = pcall(function() return inventory:getItems() end)
+        if okItems and items then
+            local size = 0
+            local okSize, value = pcall(function() return items:size() end)
+            if okSize then size = tonumber(value) or 0 end
+            for index = 0, size - 1 do
+                local okItem, item = pcall(function() return items:get(index) end)
+                -- Top level only, and only if it is actually worn: a slung rifle
+                -- reports an attachment slot, a spare one loose in the inventory
+                -- does not and is not drawn on the character.
+                if okItem and item then
+                    local worn = bodyExposure(item)
+                    if worn > 0 then record(item, worn) end
+                end
+            end
+        end
+    end
+
+    return result
+end
 return Exposure

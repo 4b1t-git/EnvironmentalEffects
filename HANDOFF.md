@@ -321,21 +321,41 @@ Structurally that is expected and is worth keeping true: **no file under
 `shared/`, so a single stray require there would crash it on boot. There is a
 one-line check for this at the top of the require graph -- keep it that way.
 
-### What the code says will happen, and has NOT been tested live
+### Remote players ARE drawn, as of 2026-07-31
+
+Each client now simulates the weapons of every player it can see, not only its
+own. `Exposure.remotePlayers` enumerates them and `Exposure.resolveRendered`
+returns what is actually drawn on each -- the two hands and anything slung or
+holstered -- and the controller runs the same simulation over them.
+
+Three decisions worth keeping:
+
+- **No networking, still.** Weather is global, the other player's square is
+  readable locally, and their client runs this same simulation over the same
+  inputs, so the two converge without anyone sending anything. The "do not add
+  networking" guardrail survives intact.
+- **Their item's modData is never written.** A remote weapon's state lives in
+  `State.ensureRemote`, an in-memory weak-keyed table. Writing modData on
+  someone else's item would be this client deciding what their rifle looks like
+  everywhere, which is exactly the reach the mod avoids by never transmitting.
+- **Their backpack and the ground near them are skipped.** Bag contents are not
+  rendered, so it would be invisible work; ground items near them are already
+  covered by the local sweep when the two are close enough to see each other,
+  and recording one twice would charge it the elapsed time twice and age it at
+  double rate. `simulate` dedupes by item identity as a second line of defence.
+
+### What has NOT been tested live
 
 Everything that moves lives in `client/`, so the server runs none of it and
-carries no load from this mod. That is the good case, with two consequences:
+carries no load from this mod.
 
-1. **You will not see other players' weapons change.** `Exposure.resolve` walks
-   `getPlayer()` only, so each client updates its own carried items and nobody
-   else's. A teammate standing in a blizzard with a snowed rifle looks dry to
-   you.
-2. **State is per client.** It lives in `item:getModData()` and the mod never
-   calls `transmitModData()`, so it is never sent anywhere. That is the right
-   default for a cosmetic effect -- transmitting every tracked item every ten
-   minutes for every player is real traffic for no gameplay gain -- but it means
-   the same rifle can read differently on two machines, and it is unknown
-   whether a server inventory sync overwrites the field.
+**State is per client.** It lives in `item:getModData()` for your own items and
+in memory for everyone else's, and the mod never calls `transmitModData()`. It
+is unknown whether a server inventory sync overwrites the field on your own
+weapon, and whether the server accepts a client-side `setWeaponSprite` on
+another player's item or reverts it. If it reverts, the adapter re-applies on
+the next tick by design, because its early return is justified against the live
+sprite readback rather than against its own record.
 
 Unknown and only answerable in a live session with two players: whether the
 server accepts a client-side `setWeaponSprite` or reverts it, and whether the
@@ -343,13 +363,17 @@ anti-cheat objects to it. Nothing here touches damage, condition, ammo or any
 other stat, so the exposure is cosmetic, but that is reasoning rather than
 evidence.
 
-### If remote players should see it too
+### Nothing verifies the Lua compiles, except block balance
 
-The shape is: keep the simulation client-side, and have each client also walk
-the players it can see rather than only itself. That needs no networking and no
-server-side Lua -- weather and exposure are derivable locally for any visible
-player -- which keeps the mod's "no networking" guardrail intact. It was not
-built, because it is a real feature and single-player was the agreed scope.
+`tools/check_lua_blocks.js` is not a parser and is not trying to be. It catches
+one thing -- a missing or extra `end`, an unclosed `repeat` -- which is the
+mistake that turns the mod into a mod that silently does not load. Nothing else
+in this toolchain reads the shipped Lua at all: `tests/pure_logic_test.js`
+exercises a JavaScript mirror of the simulation, not those files, so before this
+a syntax error reached the game unopposed. It runs first in the sync pipeline
+because it is the cheapest and its failure mode is the most invisible.
+
+A real check would need a Lua runtime and the project takes no new dependencies.
 
 ## Open tasks
 

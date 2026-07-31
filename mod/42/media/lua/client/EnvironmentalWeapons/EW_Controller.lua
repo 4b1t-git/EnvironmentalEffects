@@ -53,11 +53,15 @@ function Controller.update()
             .. " tracked=" .. tostring(#tracked))
     end
 
-    for _, exposure in ipairs(tracked) do
+    -- `owner` is whose character the item is drawn on, which is what the adapter
+    -- needs to refresh the right model. `ensureState` differs for someone else's
+    -- weapon: see State.ensureRemote.
+    local function simulate(exposure, owner, ensureState)
         local item = exposure.item
+        if trackedNow[item] then return end   -- seen already this tick
         trackedNow[item] = true
         local profile = Profiles.find(item)
-        local state = State.ensure(item, worldAgeHours)
+        local state = ensureState(item, worldAgeHours)
         -- A newly observed item is charged zero minutes, so time before it was
         -- carried is never applied retroactively.
         local itemElapsedMinutes = Controller.previouslyTracked[item]
@@ -79,9 +83,31 @@ function Controller.update()
                 .. " value=" .. tostring(state.snow)
                 .. " stage=" .. tostring(state.stage))
         end
-        VisualAdapter.reconcile(player, item, profile, state.stage, state,
+        VisualAdapter.reconcile(owner, item, profile, state.stage, state,
             exposure.worldObject, exposure.square)
     end
+
+    for _, exposure in ipairs(tracked) do
+        simulate(exposure, player, State.ensure)
+    end
+
+    -- Then everyone else this client is drawing.
+    --
+    -- Without this a teammate standing beside you in a blizzard carries a bare
+    -- rifle on your screen while it is white on theirs, because every client
+    -- only ever looked at its own inventory.
+    --
+    -- No networking is involved and none is wanted: weather is global, their
+    -- square is readable locally, and their client is running this same
+    -- simulation over the same inputs, so the two converge on their own. The one
+    -- thing this must not do is write to their item's modData -- that is their
+    -- data -- which is why the remote path gets its own in-memory state.
+    for _, other in ipairs(Exposure.remotePlayers(player)) do
+        for _, exposure in ipairs(Exposure.resolveRendered(other)) do
+            simulate(exposure, other, State.ensureRemote)
+        end
+    end
+
     Controller.previouslyTracked = trackedNow
 end
 
