@@ -106,11 +106,17 @@ function Convert-ToGif {
 # 1 MB exactly is the documented Workshop preview cap; leave a little room so a
 # byte-count difference on Steam's side cannot reject it.
 #
-# The crop is 16:9 around the character and the rifle, measured off a frame at
-# 1.5s. It also drops the letterbox bars the clip was recorded with, which would
-# otherwise eat both pixels and palette entries for nothing.
+# SQUARE, because the Workshop card is square: a 16:9 preview gets letterboxed
+# into it with black bars above and below, which is what the first version did.
+# Both previews that are known to display correctly -- WarmUp's and the official
+# ModTemplate's -- are 256x256.
+#
+# 760x760 centred on the character at x 935 and the rifle at y 555. A tighter
+# square than the full frame height on purpose: fewer pixels to encode buys a
+# higher rung on the ladder, so the subject ends up both larger in frame AND
+# sharper, rather than trading one for the other.
 Convert-ToGif -Source $ThumbSource -Target (Join-Path $OutDir 'preview.gif') `
-    -MaxBytes 990KB -Label 'thumbnail (preview.gif)' -Crop '960:540:560:200'
+    -MaxBytes 990KB -Label 'thumbnail (preview.gif)' -Crop '760:760:555:180'
 
 # The description image has a far looser budget, so it keeps the wider shot;
 # only the letterbox comes off.
