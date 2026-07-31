@@ -400,9 +400,23 @@ scripts. Measured on 2026-07-31:
   `MSR788_Rifle.x` (879), so neither is a rifle-with-scope. `HuntingRifle_Scope.png`
   is a 128x128 atlas of an old wooden rifle. **No vanilla script references any
   of them.** They are dead assets.
-**There may be a route after all, and the earlier "impossible" was wrong.** It
-was concluded from what the vanilla Lua calls; reading the game's own class files
-turned up an API vanilla never uses:
+**CLOSED 2026-07-31, tested in game.** A route looked plausible and did not
+survive contact. Both halves of it are blocked, and this is now measured rather
+than assumed in either direction:
+
+- `ModelWeaponPart` is **not exposed to Lua**. The global is nil, so the class
+  cannot be constructed and the `ArrayList` that `setModelWeaponPart` takes
+  cannot be built.
+- Reading a field off a `ModelWeaponPart` returned by `getModelWeaponPart()`
+  **raises**. The class declares four public Strings and no accessors, and
+  Kahlua exposes methods, not fields. So even the objects the game hands back
+  are opaque: they cannot be read and they cannot be edited in place.
+
+`getModelWeaponPart()` and `list:size()` and `list:get(i)` all work, which is
+what made this look promising. The objects that come out are useless from Lua.
+
+The evidence that made it look possible, kept because it is correct and only the
+Lua reachability was missing:
 
 - The model a mounted part uses is declared on the **weapon**, not on the part:
   `ModelWeaponPart = x2Scope x2Scope scope scope` in `items/weapon.txt` means
@@ -413,21 +427,24 @@ turned up an API vanilla never uses:
 - `HandWeapon` exposes **public** `getModelWeaponPart()` and
   `setModelWeaponPart(ArrayList)`.
 
-So on paper a scope can be pointed at a snowed model per weapon and per stage,
-which is exactly the thing this section said could not be done.
+On paper that is a per-weapon, per-stage lever. In practice Lua cannot reach it,
+per the test above. `EW_DebugProbe.inspectWeaponParts` is kept as the record and
+re-runs the whole check in one click; it uses a nil test rather than a blind
+call, so it reports instead of tripping the debugger.
 
-**Unverified, and it must be tested before any of it is built:** whether Kahlua
-exposes `ModelWeaponPart` for construction from Lua, whether the returned list
-is per-item or shared with the script object -- a shared list would mean writing
-to it changes every weapon of that type in the save -- and whether changing it
-re-renders the mounted part at all. `EW_DebugProbe.inspectWeaponParts` answers
-all three and is deliberately read-only. Run it on a scoped rifle and read the
-console before writing a line of the feature.
+The only remaining way to make a scope react would be replacing the shared
+`weapons/parts/Rifle_12XScope` texture globally, which is static -- a
+permanently snowy scope in July -- and therefore worse than leaving it alone.
 
-If it does work, the shape is: seven derivatives of `weapons/parts/Rifle_12XScope`
-(one texture covers all four scopes), seven EW scope models, and a write in the
-adapter alongside the existing `setWeaponSprite`. If the list turns out to be
-shared, stop -- a global write is worse than no feature.
+**Do not reopen this without new evidence.** It has now been wrong in both
+directions: first declared impossible from the wrong reason, then thought
+possible from a real API that turns out to be unreachable. If a future build
+exposes `ModelWeaponPart` to Lua, the shape is seven derivatives of
+`Rifle_12XScope` (one texture covers all four scopes), seven EW scope models,
+and a write in the adapter beside the existing `setWeaponSprite` -- and the
+first thing to check then is whether the returned list is per-item or shared
+with the script object, because a shared list would change every weapon of that
+type in the save.
 
 **What was done instead**, because the scope anchor is the fragile part:
 `generate_mod_wiring.js` copies vanilla's attachment blocks into all 133 EW

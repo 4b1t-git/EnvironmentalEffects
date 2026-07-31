@@ -99,25 +99,36 @@ function DebugProbe.inspectWeaponParts(item)
 
     Diagnostics.log("parts probe | ---- " .. tostring(item:getFullType()) .. " ----")
 
-    -- Decisive question one: can Lua build the objects a write would need? If
-    -- either of these is unreachable the whole approach is dead, so ask before
-    -- anything that might halt the run.
-    local okClass = step("ModelWeaponPart.new()", function() return ModelWeaponPart.new() end)
-    local okList = step("ArrayList.new()", function() return ArrayList.new() end)
+    -- Decisive question one: can Lua build the objects a write would need?
+    --
+    -- Tested by checking the global for nil rather than by calling through it.
+    -- An undefined global reads as nil in Lua without raising, but indexing that
+    -- nil for `.new` does raise -- and the in-game debugger halts on caught
+    -- errors, so the blind call stopped the run every time and answered nothing.
+    -- The nil check gives the same answer and cannot halt anything.
+    local hasClass = ModelWeaponPart ~= nil
+    Diagnostics.log("parts probe | ModelWeaponPart exposed to Lua = " .. tostring(hasClass))
+    Diagnostics.log("parts probe | ArrayList exposed to Lua = " .. tostring(ArrayList ~= nil))
 
     -- Decisive question two: are the fields writable? ModelWeaponPart declares
     -- four public Strings and NO accessors, and Kahlua exposes methods rather
-    -- than fields, so this is the step most likely to sink it: an object that
-    -- cannot be filled in is useless even if it can be constructed.
-    if okClass then
+    -- than fields, so an instance that cannot be filled in is useless even if it
+    -- can be built.
+    if hasClass then
         step("write+read modelName on a fresh instance", function()
             local fresh = ModelWeaponPart.new()
             fresh.modelName = "EW_probe"
             return fresh.modelName
         end)
+    else
+        Diagnostics.log("parts probe | VERDICT: a scope cannot take a per-state "
+            .. "visual. The class is not constructible from Lua, so the list "
+            .. "setModelWeaponPart wants cannot be built.")
     end
 
-    -- Everything below is detail, and is allowed to be the part that halts.
+    -- Everything below is detail, and is allowed to be the part that halts:
+    -- reading a field off a returned ModelWeaponPart raises, which is itself the
+    -- finding. Run with the debugger's Break On Error unticked to see it through.
     local okGet, list = step("getModelWeaponPart()", function()
         return item:getModelWeaponPart()
     end)
@@ -126,7 +137,6 @@ function DebugProbe.inspectWeaponParts(item)
         if okSize and size then
             for i = 0, size - 1 do
                 step("entry " .. i .. " partType", function() return list:get(i).partType end)
-                step("entry " .. i .. " modelName", function() return list:get(i).modelName end)
             end
         end
     end
