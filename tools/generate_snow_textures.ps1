@@ -181,7 +181,18 @@ public static class EwSnowMask
     // grey pixel. Few large shapes survive that reduction; many medium ones do
     // not. tools/gameplay_scale_preview.ps1 exists to stop that mistake repeating.
     const double PuddleNoiseScale = 0.13;
-    const double PuddleEdge = 0.13;          // wide enough that the rim survives downscaling
+    // Narrow, so a pool has a flat saturated interior and a thin border.
+    //
+    // This was 0.13 on the reasoning that a wide edge survives downscaling. That
+    // got the priority backwards. Over a smooth single-octave field a band that
+    // wide is spatially enormous, so the pools were ramp all the way through and
+    // alpha almost never reached its ceiling: on the hunting rifle 19045 of
+    // 20944 core texels were still registering as edge. The darkening is scaled
+    // by alpha, so pools that never saturate can never darken properly.
+    //
+    // What has to survive the reduction to ~200 px is the large dark SHAPE, and
+    // a flat blob survives it perfectly. The meniscus is a close-range detail.
+    const double PuddleEdge = 0.05;
     const uint PuddleSeed = 0x7A9D;
 
     // Water goes everywhere except the undersides.
@@ -208,24 +219,51 @@ public static class EwSnowMask
     // was a mistake: at that strength pools over dark wood came out near-white
     // and the rifle looked mould-spotted or snowed, not wet. The visibility has
     // to come from the darkening and the rim instead.
-    const double PuddleDarken = 0.44;
+    //
+    // Measured against the snow textures, the version before this one was still
+    // failing at that: over the whole painted area a snow texel moved about 110
+    // luma, a wet texel about 22, and the wet mean moved UPWARD. So both
+    // phenomena were pushing the same way and wetness read as thin snow. Water
+    // now darkens hard enough to be snow's opposite rather than its weak copy,
+    // which is what makes the two distinguishable at the size a weapon is drawn.
+    const double PuddleDarken = 0.62;
     const double PuddleSaturate = 0.34;
 
     // The sky reflection is what actually sells standing water, and it is what
     // the tint version was missing entirely. Water reflects an overcast sky:
     // a cool, bright, fairly flat grey.
+    //
+    // It belongs in the meniscus, NOT smeared across the pool interior. Firearm
+    // atlases are dark, and mixing a dark texel toward luma 168 across the whole
+    // pool brightened it: at 0.20 the interior of a pool over blued steel came
+    // out lighter than the dry steel next to it, which is how the darkening
+    // above got cancelled. Real standing water shows the sky at grazing angles,
+    // so PuddleRimGain carries it and the interior keeps only a trace.
     const double PuddleSkyR = 0.90, PuddleSkyG = 0.95, PuddleSkyB = 1.0;
     const double PuddleSkyLuma = 168.0;
-    const double PuddleReflect = 0.20;       // how much sky the pool interior shows
+    const double PuddleReflect = 0.05;       // how much sky the pool interior shows
 
     // A bright rim where the meniscus curves. This is the single strongest cue
     // that something is a pool of liquid rather than a stain, so it is drawn
     // from the mask gradient exactly the way the snow crest is.
     // With one smooth octave there are far fewer borders, so each one carries
     // more of the read and does not need to shout.
-    const double PuddleRimGain = 46.0;
-    const double PuddleRimLow = 0.02;
-    const double PuddleRimHigh = 0.22;
+    //
+    // Scaled by the level's alpha at the call site. The smoothstep below
+    // saturates on almost every border at every level, so an unscaled gain gave
+    // a lightly-rained-on weapon exactly the same meniscus as a soaked one and
+    // flattened a third of the difference between the levels.
+    // Raised off 0.02/0.22, which fired on any gradient at all and so painted a
+    // lip across nine tenths of every pool -- a wash, not a meniscus, and the
+    // brightness it added was cancelling the darkening it was supposed to frame.
+    //
+    // The gain came down from 46 at the same time. That figure was set when the
+    // pool interiors were a pale wash and the rim had to carry the whole read;
+    // against an interior that now genuinely darkens, +46 luma is a floodlight
+    // rather than a highlight and it was undoing a third of the darkening.
+    const double PuddleRimGain = 20.0;
+    const double PuddleRimLow = 0.06;
+    const double PuddleRimHigh = 0.30;
 
     // Pools gather in recesses first: around the bolt, the sight base, the
     // trigger guard. Same crevice proxy the snow mask uses.
@@ -233,13 +271,29 @@ public static class EwSnowMask
 
     // Fine beading OUTSIDE the pools, so a weapon is not either flooded or bone
     // dry. Sparse and small; the pools carry the effect.
-    const double BeadScale = 9.0;
-    const double BeadGain = 0.30;
+    //
+    // Coarsened from 9.0: multiplied by a noiseBase of 9 that put the beads at
+    // frequency 81, fine enough that the whole layer averaged away to flat grey
+    // in the downsample and contributed nothing but a haze.
+    //
+    // The gain is deliberately low. Beading is a second texture competing with
+    // the pools, and at any real strength it covers a wooden stock in even dark
+    // dots -- the same speckled read that got the earlier pass rejected, only
+    // darker. It is here to stop the gaps between pools looking bone dry, not to
+    // be seen in its own right.
+    const double BeadScale = 2.0;
+    const double BeadGain = 0.16;
     const uint BeadSeed = 0x3C7B;
 
     // Absolute floor on the result. Below this a dark barrel would crush to
     // black and lose the machining that makes it readable.
-    const double WetLumaFloor = 26.0;
+    //
+    // Was 26, which is where the M9 Pistol's "water cannot darken this, it can
+    // only add sheen" conclusion came from: the M9 atlas sits near 30, so a
+    // floor of 26 left four luma of room and no darkening was possible. The
+    // conclusion was about the floor, not about the pistol. At 14 dark steel has
+    // somewhere to go and still keeps its machining.
+    const double WetLumaFloor = 14.0;
 
     // Reset per asset by ParseMesh; the batch loop is strictly sequential.
     static double[][] _v, _n, _t;
@@ -1189,7 +1243,10 @@ public static class EwSnowMask
 
         int changed = 0, coreTexels = 0, specularTexels = 0;
         double wetMass = 0, coreLumaSum = 0, coreSatSum = 0;
-        double vanillaCoreLumaSum = 0, shiftSum = 0;
+        // shiftSum is unsigned magnitude, signedShiftSum keeps the direction.
+        // Both are needed: the magnitude says the effect applied at all, the
+        // direction says it applied as water rather than as pale snow.
+        double vanillaCoreLumaSum = 0, shiftSum = 0, signedShiftSum = 0;
 
         // "Core" means the most soaked part of THIS level, so the threshold is a
         // fraction of the level's own alpha ceiling rather than a fixed value.
@@ -1253,7 +1310,11 @@ public static class EwSnowMask
             double edge = SmoothStep(rim[o], PuddleRimLow, PuddleRimHigh);
             if (edge > 0)
             {
-                double lip = PuddleRimGain * edge;
+                // Scaled by the level, because edge itself saturates: the mask
+                // gradient clears PuddleRimHigh on nearly every border at every
+                // level, so an unscaled lip gave the lightest level the same
+                // meniscus as the heaviest.
+                double lip = PuddleRimGain * edge * wetMaxAlpha;
                 wr += lip * PuddleSkyR; wg += lip * PuddleSkyG; wb += lip * PuddleSkyB;
                 specularTexels++;
             }
@@ -1273,6 +1334,7 @@ public static class EwSnowMask
             {
                 double outLuma = 0.299 * nr + 0.587 * ng + 0.114 * nb;
                 shiftSum += Math.Abs(outLuma - srcLuma);
+                signedShiftSum += outLuma - srcLuma;
                 coreLumaSum += outLuma;
                 vanillaCoreLumaSum += srcLuma;
                 int mx = Math.Max(nr, Math.Max(ng, nb));
@@ -1298,35 +1360,38 @@ public static class EwSnowMask
         double darkening = vanillaCoreLuma > 0 ? 1.0 - (coreLuma / vanillaCoreLuma) : 0;
 
         double lumaShift = coreTexels > 0 ? shiftSum / coreTexels : 0;
+        double signedShift = coreTexels > 0 ? signedShiftSum / coreTexels : 0;
 
-        // Fail closed on wetness that is not visible. Absolute luma is useless
-        // here the way it is for snow, and so is demanding that the result be
-        // DARKER: on the M9 Pistol, which is near-black across its whole atlas,
-        // water correctly shows as sheen rather than as deeper black, and an
-        // assertion that insisted on darkening rejected a correct texture.
-        //
-        // What holds for every substrate is that the pixels must have MOVED. The
-        // direction is the material's business.
-        // Measured RELATIVE to the surface it is changing, and scaled to the
-        // level. An absolute shift is not portable across this weapon set: a
-        // shift of 3 on the M16's near-black receiver is a visible change, while
-        // the same 3 on a pale wooden stock is nothing. Judging both by one
-        // absolute number rejected correct dark textures and would have passed
-        // invisible pale ones.
+        // Fail closed on wetness that is not visible. Measured RELATIVE to the
+        // surface it is changing: an absolute shift is not portable across this
+        // weapon set, because a shift of 3 on the M16's near-black receiver is a
+        // visible change while the same 3 on a pale wooden stock is nothing.
         double reference = vanillaCoreLuma > 20.0 ? vanillaCoreLuma : 20.0;
         double relativeShift = lumaShift / reference;
-        //
-        // The bar is deliberately a sanity floor, not a quality bar. It catches
-        // "the effect did not apply" -- a wrong axis, an empty mask, a parameter
-        // zeroed by a typo. Whether a given level looks right is judged on the
-        // rendered contact sheet and then in game, because no single number
-        // distinguishes convincing water from a flat wash.
-        double minimumShift = 0.022 * (wetMaxAlpha / 0.46);
+        double relativeSignedShift = signedShift / reference;
+
+        double minimumShift = 0.10 * wetMaxAlpha;
         if (coreTexels == 0)
             throw new Exception("mask produced no wet surface");
         if (relativeShift < minimumShift)
             throw new Exception("wet surface is indistinguishable from vanilla; relative luma shift "
                 + Inv(relativeShift, 4) + " below the " + Inv(minimumShift, 4) + " this level requires");
+
+        // The soaked core must be DARKER than the dry weapon, not merely
+        // different from it. This is the assertion that was missing, and its
+        // absence is what let the levels ship reading as thin snow: every wet
+        // core was measurably brighter than vanilla, so both phenomena moved
+        // the weapon the same way and only snow had the strength to say which.
+        //
+        // An earlier version of this file argued the direction was the
+        // material's business, on the evidence that the near-black M9 Pistol
+        // could only take sheen. That evidence was an artefact of WetLumaFloor
+        // sitting at 26 with the M9 atlas near 30. With the floor at 14 the
+        // pistol darkens like everything else.
+        if (relativeSignedShift > -0.5 * minimumShift)
+            throw new Exception("wet surface is not darker than vanilla; relative signed shift "
+                + Inv(relativeSignedShift, 4) + " (water darkens, snow brightens -- a wet texture "
+                + "that brightens reads as thin snow in game)");
         if (coreSat <= 0)
             throw new Exception("wet surface lost all colour");
 
@@ -1345,7 +1410,9 @@ public static class EwSnowMask
             "vanillaCoreLuma=" + Inv(vanillaCoreLuma, 2),
             "darkeningRatio=" + Inv(darkening, 4),
             "meanLumaShift=" + Inv(lumaShift, 2),
+            "meanSignedLumaShift=" + Inv(signedShift, 2),
             "relativeLumaShift=" + Inv(relativeShift, 4),
+            "relativeSignedLumaShift=" + Inv(relativeSignedShift, 4),
             "coreWetSaturation=" + Inv(coreSat, 4)
         });
     }

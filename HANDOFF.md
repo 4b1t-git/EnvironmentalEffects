@@ -223,7 +223,11 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | --- | --- | --- |
 | Two separate mods for snow and rain | A weapon has ONE `WeaponSprite`, so something must arbitrate which phenomenon draws, and that arbiter is shared logic. Worse, each mod snapshots the "original" visual to restore later: whichever ran second would capture the first one's texture as vanilla and write that corruption into the save. Mod load order is not guaranteed either | One mod, one state, sandbox options for the player's choice |
 | Wetness as a second independent axis | Snow x wet x mud would be 4x3x3 = 36 textures per weapon, 684 total | One SIGNED axis: +snow, 0 dry, -wet. States are mutually exclusive, which the existing "rain strips snow" rule already made physically true |
-| Darkening as the universal wet effect | Water on a DARK surface does not read as darker, it reads as shiny; the M9 Pistol is near-black across its atlas and had no headroom to darken before hitting the luma floor. The assertion demanding "darker than vanilla" rejected a correct texture | Scale darkening by how much headroom the vanilla pixel has, and shift into sheen where it runs out |
+| ~~Darkening cannot be the universal wet effect~~ **-- OVERTURNED 2026-07-30** | The evidence was that the near-black M9 Pistol had no headroom to darken before hitting the luma floor. The floor was `WetLumaFloor = 26` and the M9 atlas sits near 30, so the finding was about the constant, not about the pistol. At a floor of 14 every one of the 19 weapons darkens, M9 included | Water darkens, always. Both validators now REJECT a wet core that is brighter than vanilla |
+| Letting wetness brighten "where the material calls for it" | It brightened on every weapon, because firearm atlases are dark and `PuddleReflect` mixed toward luma 168. Snow moves a texel +110 and wet moved it +20, so both phenomena pushed the same way and wetness read as thin snow at play size | The two phenomena move in OPPOSITE directions. That contrast is what makes them distinguishable, not their strength |
+| Ramping the wet levels on coverage alone | Snow can, because each snow texel moves ~110 luma; the area ramp is all it needs. A wet texel moves a fraction of that, and three levels at 24, 22 and 22 luma were a progression on paper and none on screen | Wet levels ramp depth AND area. `validate_snow_textures.ps1` requires each level to be >= 0.06 deeper than the last |
+| A wide pool edge so the rim survives downscaling | Backwards priority. Over a smooth single-octave field a 0.13 band is spatially enormous, so pools were ramp all the way through: 19045 of 20944 core texels still counted as edge and alpha never reached its ceiling. Since the darkening scales by alpha, the pools could not darken | The large dark SHAPE is what survives the reduction to ~200 px; the meniscus is close-range detail. Narrow edge, flat saturated interior |
+| Contact sheet preferring the delivered texture over the preview | The generator writes unverified assets to the preview tree and leaves the previously approved copy in `mod/`, so "delivered wins" rendered a regenerated texture as its own predecessor. An entire retune of the wet levels reviewed as the pass it replaced, with no visible difference to explain why | The preview copy wins. It only exists while an asset is under review |
 | Absolute luma-shift assertion for wetness | Not portable: a shift of 3 on the M16's near-black receiver is a visible change, the same 3 on a pale stock is nothing | Assert the shift RELATIVE to the vanilla luma underneath, scaled by the level |
 | Wide specular highlight on wet metal | A barrel is a cylinder, so a large share of it reads as up-facing; a highlight with a 0.55 floor and a 2.6x dark boost lit the whole top half and turned black steel mid-grey, which looks dusty rather than wet | Narrow the highlight to the crown (0.80 floor) and carry dark surfaces with a small uniform lift instead |
 | Uniform wet base share on every material | Wood soaks evenly but metal beads. A flat base share made barrels an even pale grey | Metal takes most of its wetness from the pooling mask, wood from the uniform base |
@@ -290,36 +294,59 @@ reviewed. Do not upload or publish the texture, seed, or package.
   `id=EnvironmentalWeapons`.
 - Keep `WorldStaticModel` unset for the Hunting Rifle snow profile.
 
-## The two open tasks, in order
+## Open tasks
 
-Both were opened by in-game screenshots on 2026-07-30 and are specified enough
-to start cold.
+### 1. Separate the three wet levels -- REWORKED, awaiting the in-game verdict
 
-### 1. Separate the three wet levels
+The user's verdict on the first wet build was that the three levels "are not
+consistent like the snow". Measuring the shipped textures against the snow ones
+found three defects, not the one this file previously recorded.
 
-Wetness ships and is visible, but the user's verdict is that the three levels
-"are not consistent like the snow". They are correct, and the reason is
-structural rather than a tuning mistake:
+Per painted texel, against vanilla, on the hunting rifle:
 
-**Snow adds an opaque material of a different colour** -- white over brown wood
-and black steel -- so more snow reads as more white and the progression needs no
-explanation. **Water has no colour of its own.** It darkens what is already
-there and reflects a little light, so more water over brown wood is slightly
-darker brown wood. The phenomenon is intrinsically less legible.
+| | painted % | mean signed shift | mean absolute shift |
+| --- | --- | --- | --- |
+| SnowLight -> SnowFull | 20.5 -> 39.9 | +99 -> +113 | 103 -> 116 |
+| WetLight -> WetHeavy, before | 27.6 -> 51.0 | **+23 -> +18 -> +15** | 24 -> 22 -> 22 |
+| WetLight -> WetHeavy, after | 22.2 -> 46.4 | **-5 -> -14 -> -21** | 7 -> 17 -> 24 |
 
-What is fixable: today the three levels sit within a few luma points of each
-other. The fix is to SPREAD them -- level 1 nearly imperceptible, level 3
-clearly dark and glossy -- roughly tripling the distance between them. The knobs
-are `wetCoverage` and `wetMaxAlpha` per level in `tools/generate_wet_assets.js`,
-plus `PuddleDarken` and `PuddleRimGain` in the generator.
+1. **Water was brightening the weapon.** `PuddleReflect` mixed pool interiors
+   toward luma 168, and firearm atlases are dark, so the reflection beat the
+   darkening and every wet core came out paler than the dry weapon. Snow at +110
+   and water at +20 push the SAME way, so at gameplay scale wetness could only
+   read as thin snow. Reflection now stays in the meniscus: 0.20 -> 0.05.
+2. **The levels ramped on area alone.** Their per-texel shift measured 24, 22
+   and 22 -- flat. Snow gets away with an area-only ramp because each of its
+   texels moves ~110 luma; water has no such margin. Alpha now spans 0.50 to
+   1.00 instead of 0.62 to 0.94, so depth ramps too.
+3. **The pools were all edge and no interior.** `PuddleEdge` was 0.13 over a
+   smooth single-octave field, so 19045 of 20944 core texels still counted as
+   rim and alpha almost never reached its ceiling -- and since the darkening is
+   scaled by alpha, pools that never saturate can never darken. Now 0.05.
 
-**Do not fix this by raising `PuddleReflect`.** That was tried at 0.62 and pools
-over dark wood came out near-white; the rifle read as mould-spotted or snowed.
-Water reads by contrast, not brightness.
+Also: `WetLumaFloor` 26 -> 14. The old "water can only add sheen to the M9
+Pistol, it cannot darken it" conclusion was an artefact of that floor sitting
+just under the M9's near-black atlas, not a fact about the pistol.
+
+Resulting core darkening ratio, hunting rifle: **0.18 / 0.34 / 0.45**, monotonic
+and separated. Every one of the 19 weapons passes a >= 0.06 deepening step.
+
+**Still true and still binding:** snow adds an opaque material of a different
+colour, water has none of its own, so water is intrinsically the less legible of
+the two. It is now snow's OPPOSITE rather than a weak copy, which is what makes
+them distinguishable; do not expect it to match snow for sheer strength.
+
+**Do not fix anything here by raising `PuddleReflect`.** At 0.62 pools over dark
+wood came out near-white and the rifle read as mould-spotted.
 
 **Judge every wet change with `tools/gameplay_scale_preview.ps1`.** A rifle is
 ~1000 px wide on the contact sheet and ~200 px in game. A version that looked
 correct at review size shipped completely invisible, twice.
+
+Two regression guards now exist so none of this can silently come back: both
+validators reject a wet texture whose core is brighter than vanilla, and
+`validate_snow_textures.ps1` rejects a wet level that is not at least 0.06
+deeper than the level before it.
 
 ### 2. Scopes, as a weapon variant rather than an attachment
 

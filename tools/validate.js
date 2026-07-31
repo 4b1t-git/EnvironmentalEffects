@@ -153,6 +153,16 @@ for (const [id, entry] of Object.entries(textureManifest.assets)) {
     if (!(entry.relativeLumaShift > 0)) {
       throw new Error(`${id}: wet texture records no shift from vanilla: ${entry.relativeLumaShift}`);
     }
+    // Water darkens; snow brightens. Without this the two phenomena were free to
+    // move a weapon the same way, and they did: every wet core shipped BRIGHTER
+    // than vanilla, so at gameplay scale wetness read as a thin coat of snow
+    // rather than as its own state.
+    if (!(entry.relativeSignedLumaShift < 0)) {
+      throw new Error(
+        `${id}: wet texture brightens rather than darkens (${entry.relativeSignedLumaShift}); ` +
+          `that reads as snow in game`
+      );
+    }
     if (!(entry.coreWetSaturation > 0)) {
       throw new Error(`${id}: wet texture lost all colour: ${entry.coreWetSaturation}`);
     }

@@ -24,16 +24,25 @@ const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
 // few puddles have gathered in the recesses, at the heaviest they have run
 // together across most of the level surface but still stop short of flooding it.
 //
-// Alpha stays well below 1.0 even when soaked, because water is transparent and
-// the weapon has to stay visible through it.
-// Coverage is now of the whole weapon rather than of its level surfaces only, so
+// Coverage is of the whole weapon rather than of its level surfaces only, so
 // these are lower than they look: at the heaviest level a bit over half the
 // weapon carries water and the rest still shows through, which is what keeps it
 // reading as pools ON a rifle instead of a rifle made of water.
+//
+// Alpha spans 0.42 to 1.00 rather than the 0.62-0.94 it used to. That old range
+// is 1.5x from end to end, and since alpha is what scales the darkening, it
+// produced three levels whose painted pixels all moved by about the same amount
+// -- measured at 24, 22 and 22 luma. All the separation was coming from area,
+// which is the one cue that survives downscaling worst. Snow gets away with a
+// pure area ramp because each of its texels moves 110 luma; water does not have
+// that margin and has to ramp depth as well.
+//
+// Alpha reaching 1.0 does not mean opaque: it is the input to a transparent
+// darkening, so a fully soaked surface still shows the weapon through it.
 const LEVELS = [
-  { suffix: "WetLight", stage: -1, wetCoverage: 0.22, wetMaxAlpha: 0.62 },
-  { suffix: "WetMedium", stage: -2, wetCoverage: 0.40, wetMaxAlpha: 0.80 },
-  { suffix: "WetHeavy", stage: -3, wetCoverage: 0.60, wetMaxAlpha: 0.94 },
+  { suffix: "WetLight", stage: -1, wetCoverage: 0.20, wetMaxAlpha: 0.50 },
+  { suffix: "WetMedium", stage: -2, wetCoverage: 0.40, wetMaxAlpha: 0.76 },
+  { suffix: "WetHeavy", stage: -3, wetCoverage: 0.62, wetMaxAlpha: 1.00 },
 ];
 
 const isWet = asset => asset.mode === "wet";

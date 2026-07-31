@@ -308,7 +308,13 @@ for (const asset of selected) {
   const base = `${asset.mesh}|${asset.source}`;
   const deliveredPath = path.join(modRoot, asset.output);
   const previewPath = path.join(PREVIEW_ROOT, `${asset.id}.png`);
-  const texturePath = fs.existsSync(deliveredPath) ? deliveredPath : previewPath;
+  // The preview copy wins. A preview only exists while an asset is unverified,
+  // which is exactly when it is the version under review, and the generator
+  // leaves the previously approved copy sitting in the mod tree meanwhile.
+  // Preferring the delivered one meant a regenerated texture was reviewed as
+  // its own predecessor: a whole retune of the wet levels rendered as the pass
+  // it was replacing, with no visible difference to explain why.
+  const texturePath = fs.existsSync(previewPath) ? previewPath : deliveredPath;
   if (!fs.existsSync(texturePath)) {
     console.error(`skip ${asset.id}: no texture at ${deliveredPath} or ${previewPath}`);
     continue;

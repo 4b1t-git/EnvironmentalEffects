@@ -1624,12 +1624,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR788_Rifle_WetMedium",
@@ -1646,11 +1646,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR788_Rifle_WetHeavy",
@@ -1666,12 +1666,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M16_Rifle_WetLight",
@@ -1687,12 +1687,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M16_Rifle_WetMedium",
@@ -1709,11 +1709,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M16_Rifle_WetHeavy",
@@ -1729,12 +1729,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M14_Rifle_WetLight",
@@ -1750,12 +1750,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M14_Rifle_WetMedium",
@@ -1772,11 +1772,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M14_Rifle_WetHeavy",
@@ -1792,12 +1792,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS14_WetLight",
@@ -1813,12 +1813,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS14_WetMedium",
@@ -1835,11 +1835,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS14_WetHeavy",
@@ -1855,12 +1855,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_L92_Carbine_WetLight",
@@ -1876,12 +1876,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_L92_Carbine_WetMedium",
@@ -1898,11 +1898,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_L92_Carbine_WetHeavy",
@@ -1918,12 +1918,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR700_Rifle_WetLight",
@@ -1939,12 +1939,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR700_Rifle_WetMedium",
@@ -1961,11 +1961,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR700_Rifle_WetHeavy",
@@ -1981,12 +1981,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_T_Carabine_WetLight",
@@ -2002,12 +2002,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_T_Carabine_WetMedium",
@@ -2024,11 +2024,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_T_Carabine_WetHeavy",
@@ -2044,12 +2044,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR788_Rifle_Tactical_WetLight",
@@ -2065,12 +2065,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR788_Rifle_Tactical_WetMedium",
@@ -2087,11 +2087,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_MSR788_Rifle_Tactical_WetHeavy",
@@ -2107,12 +2107,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_PumpAction_Shotgun_WetLight",
@@ -2128,12 +2128,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_PumpAction_Shotgun_WetMedium",
@@ -2150,11 +2150,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_PumpAction_Shotgun_WetHeavy",
@@ -2170,12 +2170,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_PumpAction_Shotgun_Sawn_WetLight",
@@ -2191,12 +2191,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_PumpAction_Shotgun_Sawn_WetMedium",
@@ -2213,11 +2213,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_PumpAction_Shotgun_Sawn_WetHeavy",
@@ -2233,12 +2233,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS_2000_WetLight",
@@ -2254,12 +2254,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS_2000_WetMedium",
@@ -2276,11 +2276,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS_2000_WetHeavy",
@@ -2296,12 +2296,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS_2000_Sawn_WetLight",
@@ -2317,12 +2317,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS_2000_Sawn_WetMedium",
@@ -2339,11 +2339,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS_2000_Sawn_WetHeavy",
@@ -2359,12 +2359,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS3T_Tactical_Shotgun_WetLight",
@@ -2380,12 +2380,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS3T_Tactical_Shotgun_WetMedium",
@@ -2402,11 +2402,11 @@
       "upSign": 1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_JS3T_Tactical_Shotgun_WetHeavy",
@@ -2422,12 +2422,12 @@
       "upAxis": 2,
       "upSign": 1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M9_Pistol_WetLight",
@@ -2443,12 +2443,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M9_Pistol_WetMedium",
@@ -2465,11 +2465,11 @@
       "upSign": -1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M9_Pistol_WetHeavy",
@@ -2485,12 +2485,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_1911_Pistol_WetLight",
@@ -2506,12 +2506,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_1911_Pistol_WetMedium",
@@ -2528,11 +2528,11 @@
       "upSign": -1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_1911_Pistol_WetHeavy",
@@ -2548,12 +2548,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_D_E_Pistol_WetLight",
@@ -2569,12 +2569,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_D_E_Pistol_WetMedium",
@@ -2591,11 +2591,11 @@
       "upSign": -1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_D_E_Pistol_WetHeavy",
@@ -2611,12 +2611,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M625_Revolver_WetLight",
@@ -2632,12 +2632,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M625_Revolver_WetMedium",
@@ -2654,11 +2654,11 @@
       "upSign": -1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M625_Revolver_WetHeavy",
@@ -2674,12 +2674,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_Magnum_Revolver_WetLight",
@@ -2695,12 +2695,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_Magnum_Revolver_WetMedium",
@@ -2717,11 +2717,11 @@
       "upSign": -1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_Magnum_Revolver_WetHeavy",
@@ -2737,12 +2737,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M36_Revolver_WetLight",
@@ -2758,12 +2758,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.22,
-      "wetMaxAlpha": 0.62,
+      "wetCoverage": 0.2,
+      "wetMaxAlpha": 0.5,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M36_Revolver_WetMedium",
@@ -2780,11 +2780,11 @@
       "upSign": -1,
       "flipV": false,
       "wetCoverage": 0.4,
-      "wetMaxAlpha": 0.8,
+      "wetMaxAlpha": 0.76,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     },
     {
       "id": "EW_M36_Revolver_WetHeavy",
@@ -2800,12 +2800,12 @@
       "upAxis": 2,
       "upSign": -1,
       "flipV": false,
-      "wetCoverage": 0.6,
-      "wetMaxAlpha": 0.94,
+      "wetCoverage": 0.62,
+      "wetMaxAlpha": 1,
       "noiseBase": 9,
       "edgeSoftness": 0.13,
       "visuallyVerified": true,
-      "verificationNote": "Standing water across the whole weapon, reviewed at gameplay scale 2026-07-30."
+      "verificationNote": "Reviewed at gameplay scale 2026-07-30 after the darkening rework: water now darkens instead of brightening, and the three levels separate by depth as well as by area. Not yet confirmed in game."
     }
   ]
 }

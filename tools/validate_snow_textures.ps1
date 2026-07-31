@@ -177,6 +177,13 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
         if ([double]$entry.relativeLumaShift -le 0) {
             throw "$id`: wet texture records no shift from vanilla: $($entry.relativeLumaShift)"
         }
+        # Water darkens; snow brightens. Without this the two phenomena were free
+        # to move a weapon the same way, and they did: every wet core shipped
+        # BRIGHTER than vanilla, so at gameplay scale wetness read as a thin coat
+        # of snow rather than as its own state.
+        if ([double]$entry.relativeSignedLumaShift -ge 0) {
+            throw "$id`: wet texture brightens rather than darkens ($($entry.relativeSignedLumaShift)); that reads as snow in game"
+        }
         if ([double]$entry.coreWetSaturation -le 0) {
             throw "$id`: wet texture lost all colour: $($entry.coreWetSaturation)"
         }
@@ -193,6 +200,7 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
             OutputSha256 = $outputHash
             CoveragePercent = [double]$entry.coveragePercent
             ChangedRgbPixels = $changedRgbPixels
+            DarkeningRatio = [double]$entry.darkeningRatio
         }
         continue
     }
@@ -307,7 +315,19 @@ foreach ($group in $reports | Group-Object { "$($_.FullType)|$($_.Mode)" }) {
             if ($current.ChangedRgbPixels -lt $previous.ChangedRgbPixels) {
                 throw "$($group.Name): wet level $($current.Stage) touches fewer texels than $($previous.Stage)"
             }
-            Write-Host "progression $($group.Name) stage $($previous.Stage)->$($current.Stage): PASS (wet, $($current.ChangedRgbPixels) texels)"
+            # Area alone is not enough for water, and assuming it was is what
+            # produced three levels nobody could tell apart. Snow can ramp on
+            # area only because each of its texels moves about 110 luma; a wet
+            # texel moves a fraction of that, so depth has to ramp too. The
+            # three levels once measured 0.62, 0.80 and 0.94 alpha and came out
+            # shifting 24, 22 and 22 luma -- a progression on paper and none on
+            # screen. A tenth of darkening between levels is the smallest step
+            # that survives the reduction to on-screen size.
+            $deepening = $current.DarkeningRatio - $previous.DarkeningRatio
+            if ($deepening -lt 0.06) {
+                throw "$($group.Name): wet level $($current.Stage) is not visibly deeper than $($previous.Stage): darkening $($previous.DarkeningRatio) -> $($current.DarkeningRatio)"
+            }
+            Write-Host "progression $($group.Name) stage $($previous.Stage)->$($current.Stage): PASS (wet, $($current.ChangedRgbPixels) texels, darkening $($current.DarkeningRatio))"
         }
         continue
     }
