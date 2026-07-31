@@ -1,5 +1,7 @@
 name=Environmental Effects
 id=EnvironmentalEffects
+author=4b1t
 modversion=1.0.0
 poster=poster.png
+versionMin=42.0.0
 description=Tus armas reaccionan al clima. Si nieva se les acumula nieve encima, y si llueve el agua se la lleva y el arma queda mojada. Lo que importa es dónde la llevas: en las manos o a la espalda junta nieve, enfundada la mitad, guardada en una mochila se descongela. Diecinueve de las veintidós armas de fuego del juego base, cuatro niveles de nieve y tres de agua cada una. Funciona en multijugador y también ves las armas de los demás. Solo cambia el aspecto: munición, cargador, recámara, condición, nombre y accesorios quedan intactos.
