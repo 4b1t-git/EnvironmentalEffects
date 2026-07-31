@@ -1,0 +1,78 @@
+Tus armas recuerdan el clima.
+
+Lleva un arma durante una nevada o bajo la lluvia y la nieve o el agua se acumularán sobre ella. Entra bajo techo y caliéntate, o espera a que mejore el clima, para que se descongele y se seque. Si comienza a llover mientras el arma está cubierta de nieve, el agua arrastrará la nieve y dejará el arma mojada.
+
+[h1]Cómo funciona[/h1]
+[list]
+[*][b]El nivel aumenta y disminuye mientras juegas.[/b] Un arma expuesta a la nieve o la lluvia obtiene una nueva capa cada diez minutos de juego y la pierde al mismo ritmo cuando se guarda o entra en un lugar cálido. Nada ocurre de forma instantánea y ningún cambio es permanente.
+[*][b]Importa dónde lleves el arma.[/b] En las manos o colgada en la espalda queda completamente expuesta. Enfundada, se enfría y acumula efectos climáticos a la mitad de velocidad. Guardada en una mochila, comienza a descongelarse y secarse. Si se deja en el suelo, su estado se calcula según el lugar donde se encuentre y continúa actualizándose en tiempo real.
+[*][b]La lluvia elimina la nieve, incluso bajo cero.[/b] Si un arma cubierta de nieve queda expuesta a la lluvia, el agua arrastrará la nieve. Después, el arma quedará mojada y acumulará o perderá humedad siguiendo su propio ritmo, de manera similar a la nieve.
+[/list]
+
+[h1]Multijugador[/h1]
+El mod funciona en multijugador y también permite ver los efectos climáticos en las armas de los demás jugadores. No añade tráfico de red ni carga adicional al servidor: el clima es global y cada cliente calcula los mismos efectos de manera independiente.
+
+[h1]Tu arma nunca se reemplaza[/h1]
+El mod solo modifica la apariencia visual del arma. La munición, el cargador, la recámara, la condición, el nombre personalizado, el estado de favorito y todos los accesorios permanecen intactos. Cuando la nieve o el agua desaparecen, la apariencia original del arma se restaura exactamente.
+
+[h1]Armas compatibles[/h1]
+El mod incluye 19 armas de fuego del juego base: Assault Rifle, Assault Rifle (M14), Hunting Rifle, MSR7T Tactical Rifle, MSR700 Rifle, JS-14 Rifle, L92 Carbine, Varmint Rifle, Trapper Carbine, Shotgun, Shotgun (recortada), Double Barrel Shotgun, Double Barrel Shotgun (recortada), JS-3T Tactical Shotgun, M9, M1911, Desert Eagle, M625, Magnum y M36.
+
+El L94 Rifle no está incluido. Comparte la malla de otro rifle, pero utiliza un desplegado de textura muy diferente, por lo que el efecto de nieve todavía no se ve correctamente.
+
+[h1]Limitaciones conocidas[/h1]
+[list]
+[*]Un arma que se deja en el suelo conserva la apariencia que tenía en el momento de caer hasta que alguien la recoge. Su estado continúa avanzando internamente y el nivel correcto aparece en cuanto vuelve a levantarse. Project Zomboid genera el modelo del suelo cuando el objeto cae y no vuelve a actualizarlo. El juego base tampoco modifica la apariencia de los objetos que ya se encuentran en el suelo.
+[*]Las miras montadas no reciben nieve ni agua. El juego no proporciona una forma de cambiar el modelo de una pieza mientras está instalada en un arma. Esta limitación fue verificada en los archivos de la Build 42.20.
+[*]Por ahora, solo se incluyen armas de fuego del juego base. Las armas cuerpo a cuerpo y las armas añadidas por otros mods todavía no son compatibles.
+[/list]
+
+[h1]Compatibilidad[/h1]
+El mod puede activarse o desactivarse en cualquier momento, incluso en partidas ya iniciadas. No modifica archivos ni objetos del juego base. Solo añade sus propias texturas y modelos.
+
+[b]Build 42 estable:[/b] un jugador y multijugador. Desarrollado y verificado en la 42.20.
+
+[h1]Qué está terminado y qué está pendiente[/h1]
+[list]
+[*][b]Listo:[/b] nieve con cuatro niveles, agua con tres, multijugador con las armas de los demás, y 19 armas de fuego del juego base.
+[*][b]Pendiente:[/b] el L94 Rifle, que usa un desplegado de textura distinto al de las demás.
+[*][b]Planeado:[/b] armas cuerpo a cuerpo, mochilas y bolsos.
+[*][b]No es posible por ahora:[/b] las miras montadas. El juego no permite cambiar el modelo de una pieza mientras está instalada.
+[/list]
+
+
+[h1]English[/h1]
+
+Your weapons remember the weather.
+
+Carry a weapon through snowfall or rain and snow or water will gradually accumulate on it. Move indoors and warm up, or wait for the weather to improve, and the weapon will begin to thaw and dry. If rain starts while the weapon is covered in snow, the water will wash the snow away and leave the weapon wet.
+
+[h1]How it works[/h1]
+[list]
+[*][b]The effect builds up and fades while you play.[/b] A weapon exposed to snow or rain gains a new layer every ten in-game minutes and loses layers at the same rate when stored or moved into a warm location. Nothing happens instantly, and no visual change is permanent.
+[*][b]Where you carry the weapon matters.[/b] A weapon held in your hands or carried on your back is fully exposed. A holstered weapon cools down and accumulates weather effects at half the normal speed. A weapon stored inside a backpack begins to thaw and dry. If it is left on the ground, its state is calculated according to its location and continues updating in real time.
+[*][b]Rain removes snow, even below freezing.[/b] If a snow-covered weapon is exposed to rain, the water will wash the snow away. The weapon will then remain wet and gain or lose moisture according to its own progression rate, similar to the snow system.
+[/list]
+
+[h1]Multiplayer[/h1]
+The mod works in multiplayer and also lets you see weather effects on other players' weapons. It adds no network traffic or additional server-side processing: weather is global, and every client independently calculates the same effects.
+
+[h1]Your weapon is never replaced[/h1]
+The mod only changes the weapon's visual appearance. Ammunition, magazines, chambered rounds, condition, custom names, favorite status, and all attachments remain completely intact. When the snow or water disappears, the weapon's original appearance is restored exactly.
+
+[h1]Supported weapons[/h1]
+19 base-game firearms, listed by name in the Spanish section above; the names are identical in both languages.
+
+The L94 Rifle is not included. It shares its mesh with another rifle but uses a very different texture layout, so the snow effect does not yet display correctly.
+
+[h1]Known limitations[/h1]
+[list]
+[*]A weapon left on the ground keeps the appearance it had when it was dropped until someone picks it up. Its internal state continues progressing, and the correct visual level appears as soon as the weapon is collected. Project Zomboid creates the ground model when an item lands and does not refresh it afterward. The base game also does not update the appearance of items that are already on the ground.
+[*]Mounted sights do not receive snow or water effects. The game does not provide a way to change the model of an attachment while it is mounted on a weapon. This limitation was verified against the Build 42.20 files.
+[*]Only base-game firearms are currently supported. Melee weapons and firearms added by other mods are not yet included.
+[/list]
+
+[h1]Compatibility[/h1]
+The mod can be enabled or disabled at any time, including in existing saves. It does not modify any base-game files or items. It only adds its own textures and models.
+
+[i]Build 42.20, singleplayer and multiplayer. See the tables above.[/i]
