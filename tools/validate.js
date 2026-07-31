@@ -147,9 +147,18 @@ for (const [id, entry] of Object.entries(textureManifest.assets)) {
   // vanilla pixels and is usually saturated. Relaxing the snow bounds until
   // both fitted would have thrown away the guarantee that snow reads as snow.
   if (entry.mode === "wet") {
-    // No placement assertion here on purpose. Rain reaches every surface, so
-    // there is no up-facing concentration to prove -- the equivalent invariant
-    // is that the pixels moved relative to what was underneath them.
+    // Water accumulates from the top down and creeps onto the flanks as it
+    // builds, on the same mask snow uses. An earlier version claimed there was
+    // no placement to assert here because "rain reaches every surface", gave
+    // water a scattered field of its own, and in game it read as staining
+    // rather than as a weapon getting wet. The bar is below snow's 0.45
+    // because water runs down the flanks by design: concentrated up top, not
+    // confined there.
+    if (!(entry.wetUpShare >= 0.35)) {
+      throw new Error(
+        `${id}: water is not concentrated on up-facing surfaces: ${entry.wetUpShare}`
+      );
+    }
     if (!(entry.relativeLumaShift > 0)) {
       throw new Error(`${id}: wet texture records no shift from vanilla: ${entry.relativeLumaShift}`);
     }

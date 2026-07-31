@@ -160,54 +160,13 @@ public static class EwSnowMask
     const double SparkleNoiseScale = 5.5;
     const uint SparkleSeedOffset = 0x9E37;
 
-    // ---- Standing water ----
+    // ---- Water ----
     //
-    // Discrete pools sitting ON the weapon, not a wash tinting all of it. An
-    // earlier version soaked the whole surface -- darker and more saturated
-    // everywhere -- and it read as the weapon being a different colour rather
-    // than as water on it. Standing water is a thing you can point at.
-    //
-    // So this behaves much more like the snow mask than like a tint: pools
-    // collect where a surface faces up, they are discrete, and they leave the
-    // rest of the weapon completely untouched.
-    //
-    // Pools need to be bigger and rounder than snow drifts, so the noise runs
-    // coarser and the edge is much harder. Water has surface tension; it does
-    // not fade out at its border the way a snow drift does.
-    // Very coarse, and that is the whole point. An earlier pass used 0.42 and
-    // produced pools that were clearly readable on the contact sheet and utterly
-    // invisible in a screenshot: at review size a rifle is about 1000 px wide, in
-    // game it is closer to 200, so a twenty-texel pool averages down to a single
-    // grey pixel. Few large shapes survive that reduction; many medium ones do
-    // not. tools/gameplay_scale_preview.ps1 exists to stop that mistake repeating.
-    const double PuddleNoiseScale = 0.13;
-    // Narrow, so a pool has a flat saturated interior and a thin border.
-    //
-    // This was 0.13 on the reasoning that a wide edge survives downscaling. That
-    // got the priority backwards. Over a smooth single-octave field a band that
-    // wide is spatially enormous, so the pools were ramp all the way through and
-    // alpha almost never reached its ceiling: on the hunting rifle 19045 of
-    // 20944 core texels were still registering as edge. The darkening is scaled
-    // by alpha, so pools that never saturate can never darken properly.
-    //
-    // What has to survive the reduction to ~200 px is the large dark SHAPE, and
-    // a flat blob survives it perfectly. The meniscus is a close-range detail.
-    const double PuddleEdge = 0.05;
-    const uint PuddleSeed = 0x7A9D;
-
-    // Water goes everywhere except the undersides.
-    //
-    // An earlier pass restricted pools to near-level surfaces on the reasoning
-    // that water runs off anything steeper. Physically defensible, visually
-    // wrong: Project Zomboid's camera sees a weapon mostly from the side, so
-    // confining the effect to the top faces put nearly all of it out of view and
-    // what little showed read as staining along the barrel.
-    //
-    // Surface tension holds drops on a vertical surface too -- a rifle pulled out
-    // of the rain has water clinging all over it, not only on its spine. Only
-    // faces that point genuinely downward stay clear, which is the same rule the
-    // snow flank pass uses.
-    const double PuddleUpFloor = -0.05;
+    // Water uses the SNOW mask, unchanged: see BuildWetMask. Only the optics
+    // below are its own. The constants that built a separate pool field --
+    // its noise scale, edge width, seed, up floor, crevice boost and the
+    // scattered bead layer -- are gone with it, because water accumulating
+    // top-down the way snow does is what the effect was missing.
 
     // What a pool does to the pixels beneath it. Water is transparent, so the
     // substrate stays visible and merely deepens -- much less than the old wash,
@@ -264,26 +223,6 @@ public static class EwSnowMask
     const double PuddleRimGain = 20.0;
     const double PuddleRimLow = 0.06;
     const double PuddleRimHigh = 0.30;
-
-    // Pools gather in recesses first: around the bolt, the sight base, the
-    // trigger guard. Same crevice proxy the snow mask uses.
-    const double PuddleCreviceBoost = 0.90;
-
-    // Fine beading OUTSIDE the pools, so a weapon is not either flooded or bone
-    // dry. Sparse and small; the pools carry the effect.
-    //
-    // Coarsened from 9.0: multiplied by a noiseBase of 9 that put the beads at
-    // frequency 81, fine enough that the whole layer averaged away to flat grey
-    // in the downsample and contributed nothing but a haze.
-    //
-    // The gain is deliberately low. Beading is a second texture competing with
-    // the pools, and at any real strength it covers a wooden stock in even dark
-    // dots -- the same speckled read that got the earlier pass rejected, only
-    // darker. It is here to stop the gaps between pools looking bone dry, not to
-    // be seen in its own right.
-    const double BeadScale = 2.0;
-    const double BeadGain = 0.16;
-    const uint BeadSeed = 0x3C7B;
 
     // Absolute floor on the result. Below this a dark barrel would crush to
     // black and lose the machining that makes it readable.
@@ -723,7 +662,6 @@ public static class EwSnowMask
         public double[] Alpha;
         public double[] Upness;
         public double[] Used;
-        public double[] Beads;   // wet only: scattered droplets outside the pools
         public string MeshInfo;
         public double Threshold;
         public int UpFacingTexels;
@@ -733,10 +671,16 @@ public static class EwSnowMask
 
     // The surface analysis needs the coverage mask, and the mask needs the mesh, so
     // the order is fixed: parse, rasterize coverage, analyse surface, then build.
+    // `maxAlpha` is the ceiling for the top drift, the counterpart of
+    // flankMaxAlpha for the flanks. It is a parameter rather than the MaxAlpha
+    // constant because wetness reuses this same geometry with its own per-level
+    // ceiling, and the two regions have to scale independently: rescaling the
+    // finished mask by one factor would have moved the flank dusting too, which
+    // already carries its own absolute cap.
     static SnowMask BuildMask(string meshText, byte[] bgra, out Surface surface,
         int upAxis, int upSign, bool flipV,
         double targetUpCoverage, double noiseBase, double edgeSoftness,
-        double flankCoverage, double flankMaxAlpha)
+        double flankCoverage, double flankMaxAlpha, double maxAlpha)
     {
         string meshInfo = ParseMesh(meshText);
         double[] upness, used, rawUp;
@@ -807,7 +751,7 @@ public static class EwSnowMask
             // thinner than the same drift on a level one, so it tapers around the
             // barrel's curve instead of cutting off in a hard band.
             double thickness = ThicknessFloor + (1.0 - ThicknessFloor) * upness[o];
-            alpha[o] = MaxAlpha * thickness
+            alpha[o] = maxAlpha * thickness
                 * SmoothStep(field[o], threshold, threshold + edgeSoftness);
         }
 
@@ -909,7 +853,8 @@ public static class EwSnowMask
     {
         Surface surface;
         SnowMask mask = BuildMask(meshText, bgra, out surface, upAxis, upSign, flipV,
-            targetUpCoverage, noiseBase, edgeSoftness, flankCoverage, flankMaxAlpha);
+            targetUpCoverage, noiseBase, edgeSoftness, flankCoverage, flankMaxAlpha,
+            MaxAlpha);
         double[] alpha = mask.Alpha;
         double[] upness = mask.Upness;
         double[] used = mask.Used;
@@ -1136,113 +1081,49 @@ public static class EwSnowMask
         });
     }
 
-    // Builds the wet mask. Deliberately NOT a mode flag on BuildMask: the two
-    // masks share only their noise and their surface analysis, and every gate in
-    // between is reversed. Folding them together would produce a function whose
-    // every branch depends on which phenomenon it is drawing.
+    // The wet mask IS the snow mask.
+    //
+    // It used to be a phenomenon of its own: a coarse pool field with every
+    // surface but the undersides eligible, so water gathered as scattered
+    // patches spread over the whole weapon. Reviewed in game that reads as
+    // staining, not as weather, and no amount of retuning the pools fixed it
+    // because the defect was structural rather than a matter of strength.
+    //
+    // Snow lands on what faces the sky and creeps down the flanks as it builds.
+    // Rain does the same: it wets the upward faces first and only sheets down
+    // the sides once there is enough of it. The two phenomena share a geometry
+    // and differ only in optics, so the mask is now literally the same code and
+    // CompositeWet darkens exactly where Composite whitens.
+    //
+    // This is also what finally makes the levels legible. The top-down ramp is
+    // what carried snow's four stages all along; water inherits it instead of
+    // relying on a scattered field to grow denser.
     static SnowMask BuildWetMask(string meshText, byte[] bgra, out Surface surface,
         int upAxis, int upSign, bool flipV,
-        double wetCoverage, double noiseBase, double edgeSoftness, double wetMaxAlpha)
+        double targetUpCoverage, double noiseBase, double edgeSoftness,
+        double flankCoverage, double flankMaxAlpha, double wetMaxAlpha)
     {
-        string meshInfo = ParseMesh(meshText);
-        double[] upness, used, rawUp;
-        BuildUpness(upAxis, upSign, flipV, out upness, out used, out rawUp);
-        surface = AnalyseSurface(bgra, used);
-
-        var field = new double[Size * Size];
-        int owned = 0, upFacing = 0, eligible = 0;
-        for (int y = 0; y < Size; y++)
-        {
-            for (int x = 0; x < Size; x++)
-            {
-                int o = y * Size + x;
-                field[o] = -1;
-                if (used[o] <= 0) continue;
-                owned++;
-                if (upness[o] >= UpFacingThreshold) upFacing++;
-
-                // Everything but the undersides can carry water.
-                if (upness[o] < PuddleUpFloor) continue;
-                eligible++;
-
-                // One smooth octave, NOT the three-octave fbm the snow mask uses.
-                // Fractal noise is self-similar by construction, so it always
-                // carries fine detail no matter how coarse the base frequency is
-                // -- which produced thousands of small blobs, each with its own
-                // bright rim, and the rifle read as mould-spotted rather than
-                // wet. A pool is one large rounded shape with a clean border.
-                double n = ValueNoise((x + 0.5) / Size * noiseBase * PuddleNoiseScale,
-                    (y + 0.5) / Size * noiseBase * PuddleNoiseScale, PuddleSeed);
-
-                // Pools find the low spots first: around the bolt, the sight base,
-                // the trigger guard.
-                double affinity = 1.0 + PuddleCreviceBoost * surface.Crevice[o];
-                if (affinity > AffinityCeiling) affinity = AffinityCeiling;
-                field[o] = n * affinity;
-            }
-        }
-        if (owned == 0) throw new Exception("no owned texels found; the mesh or UV layout is wrong");
-        if (eligible == 0) throw new Exception("no level surface found to hold standing water");
-
-        // Coverage is of the surface that can actually hold water, not of the
-        // whole weapon: a pistol with almost no level area must not be forced to
-        // flood its flanks to satisfy a number.
-        double lo = 0.0, hi = 2.0, threshold = 0.5;
-        for (int iter = 0; iter < 60; iter++)
-        {
-            threshold = 0.5 * (lo + hi);
-            int hit = 0;
-            for (int o = 0; o < field.Length; o++)
-            {
-                if (field[o] < 0) continue;
-                if (SmoothStep(field[o], threshold, threshold + PuddleEdge) > 0.5) hit++;
-            }
-            if ((double)hit / eligible > wetCoverage) lo = threshold; else hi = threshold;
-        }
-
-        var alpha = new double[Size * Size];
-        for (int o = 0; o < field.Length; o++)
-        {
-            if (field[o] < 0) continue;
-            // Hard rim, unlike a snow drift: water has surface tension and holds
-            // a defined edge instead of fading out.
-            alpha[o] = wetMaxAlpha * SmoothStep(field[o], threshold, threshold + PuddleEdge);
-        }
-
-        // Scattered beads everywhere else, so a weapon is not either flooded or
-        // bone dry. Deliberately far below pool strength; the pools carry this.
-        var beads = new double[Size * Size];
-        for (int o = 0; o < Size * Size; o++)
-        {
-            if (used[o] <= 0 || alpha[o] > 0) continue;
-            if (upness[o] < FlankMinRawUp) continue;   // undersides stay clear
-            double d = Fbm((o % Size + 0.5) / Size * noiseBase * BeadScale,
-                (o / Size + 0.5) / Size * noiseBase * BeadScale, BeadSeed);
-            if (d < 0.62) continue;
-            beads[o] = wetMaxAlpha * BeadGain * (d - 0.62) / 0.38;
-        }
-
-        return new SnowMask {
-            Alpha = alpha, Upness = upness, Used = used, MeshInfo = meshInfo,
-            Threshold = threshold, UpFacingTexels = upFacing,
-            FlankThreshold = 0, FlankTexels = eligible, Beads = beads
-        };
+        return BuildMask(meshText, bgra, out surface, upAxis, upSign, flipV,
+            targetUpCoverage, noiseBase, edgeSoftness, flankCoverage, flankMaxAlpha,
+            wetMaxAlpha);
     }
 
     // Composites water over the vanilla pixels. bgra is modified in place.
     public static string CompositeWet(byte[] bgra, string meshText,
         int upAxis, int upSign, bool flipV,
-        double wetCoverage, double noiseBase, double edgeSoftness, double wetMaxAlpha)
+        double targetUpCoverage, double noiseBase, double edgeSoftness,
+        double flankCoverage, double flankMaxAlpha, double wetMaxAlpha)
     {
         Surface surface;
         SnowMask mask = BuildWetMask(meshText, bgra, out surface, upAxis, upSign, flipV,
-            wetCoverage, noiseBase, edgeSoftness, wetMaxAlpha);
+            targetUpCoverage, noiseBase, edgeSoftness, flankCoverage, flankMaxAlpha,
+            wetMaxAlpha);
         double[] alpha = mask.Alpha;
         double[] upness = mask.Upness;
         double[] used = mask.Used;
 
         int changed = 0, coreTexels = 0, specularTexels = 0;
-        double wetMass = 0, coreLumaSum = 0, coreSatSum = 0;
+        double wetMass = 0, wetMassUp = 0, coreLumaSum = 0, coreSatSum = 0;
         // shiftSum is unsigned magnitude, signedShiftSum keeps the direction.
         // Both are needed: the magnitude says the effect applied at all, the
         // direction says it applied as water rather than as pale snow.
@@ -1255,10 +1136,9 @@ public static class EwSnowMask
         // then described nothing at all.
         double solidAlpha = 0.75 * wetMaxAlpha;
 
-        // The rim is drawn from the gradient of the pool mask, the same way the
-        // snow crest is drawn from the gradient of the drift mask. It is the
-        // single strongest cue that separates a pool of liquid from a stain.
-        double[] beads = mask.Beads;
+        // The rim is drawn from the gradient of the wet mask, the same way the
+        // snow crest is drawn from the gradient of the drift mask. It is what
+        // separates a wetted surface from a discoloured one.
         var rim = new double[Size * Size];
         for (int y = 0; y < Size; y++)
         {
@@ -1278,9 +1158,7 @@ public static class EwSnowMask
         for (int o = 0; o < Size * Size; o++)
         {
             double a = alpha[o];
-            double bead = beads != null ? beads[o] : 0;
-            if (a <= 0 && bead <= 0) continue;
-            if (a <= 0) a = bead;
+            if (a <= 0) continue;
 
             int b = bgra[o * 4], g = bgra[o * 4 + 1], r = bgra[o * 4 + 2];
             double srcLuma = surface.Luma[o];
@@ -1328,7 +1206,11 @@ public static class EwSnowMask
             if (nr < 0) nr = 0; if (ng < 0) ng = 0; if (nb < 0) nb = 0;
 
             if (nr != r || ng != g || nb != b) changed++;
-            if (used[o] > 0) wetMass += a;
+            if (used[o] > 0)
+            {
+                wetMass += a;
+                if (upness[o] >= UpFacingThreshold) wetMassUp += a;
+            }
 
             if (a >= solidAlpha && used[o] > 0)
             {
@@ -1395,6 +1277,17 @@ public static class EwSnowMask
         if (coreSat <= 0)
             throw new Exception("wet surface lost all colour");
 
+        // Water accumulates top-down, exactly like snow. This is the assertion
+        // that keeps it there: an earlier version spread water evenly over every
+        // surface but the undersides, and in game it read as scattered staining
+        // instead of as a weapon getting wet from above. The bar is below snow's
+        // 0.45 because water also runs down the flanks by design -- it only has
+        // to be CONCENTRATED up top, not confined there.
+        double wetUpShare = wetMass > 0 ? wetMassUp / wetMass : 0;
+        if (wetUpShare < 0.35)
+            throw new Exception("water is not concentrated on up-facing surfaces: "
+                + Inv(wetUpShare, 4) + "; it must accumulate from the top down the way snow does");
+
         return string.Join(";", new string[] {
             "mesh=" + mask.MeshInfo,
             "threshold=" + Inv(mask.Threshold, 6),
@@ -1406,6 +1299,7 @@ public static class EwSnowMask
             "semiTransparentTexels=" + semiTransparent,
             "specularTexels=" + specularTexels,
             "wetMass=" + Inv(wetMass, 2),
+            "wetUpShare=" + Inv(wetUpShare, 4),
             "coreWetLuma=" + Inv(coreLuma, 2),
             "vanillaCoreLuma=" + Inv(vanillaCoreLuma, 2),
             "darkeningRatio=" + Inv(darkening, 4),
@@ -1524,8 +1418,9 @@ foreach ($asset in $spec.assets) {
                     $report = [EwSnowMask]::CompositeWet(
                         $buffer, $meshText,
                         [int]$asset.upAxis, [int]$asset.upSign, [bool]$asset.flipV,
-                        [double]$asset.wetCoverage, [double]$asset.noiseBase,
-                        [double]$asset.edgeSoftness, [double]$asset.wetMaxAlpha)
+                        [double]$asset.targetUpCoverage, [double]$asset.noiseBase,
+                        [double]$asset.edgeSoftness, [double]$asset.flankCoverage,
+                        [double]$asset.flankMaxAlpha, [double]$asset.wetMaxAlpha)
                 }
                 elseif ($mode -eq 'snow') {
                     $report = [EwSnowMask]::Composite(

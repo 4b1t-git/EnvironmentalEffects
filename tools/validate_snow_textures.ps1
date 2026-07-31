@@ -165,15 +165,20 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
     # density ratio, and the stage-to-stage nesting proof below. Values above 100
     # are expected, because changed texels include the bleed into gutter space
     # while the denominator counts owned surface only.
-    # Wetness is a different phenomenon and gets different assertions. Snow must
-    # be bright, neutral and concentrated on up-facing surfaces; water must be
-    # darker or shinier than what it sits on and reaches everywhere, so none of
-    # the snow rails below apply to it. The pixel-level guarantees that DO apply
-    # to both -- exact hashes, dimensions and untouched alpha -- were already
-    # asserted above this point.
+    # Wetness shares snow's PLACEMENT and differs only in its optics: both
+    # accumulate on up-facing surfaces and creep onto the flanks as they build,
+    # and the wet mask is literally the snow mask. What is asserted differently
+    # is colour -- snow must be bright and neutral, water must be darker than
+    # what it sits on. The pixel-level guarantees that apply to both -- exact
+    # hashes, dimensions and untouched alpha -- were asserted above this point.
     $mode = if ($entry.PSObject.Properties['mode']) { [string]$entry.mode } else { 'snow' }
     if ($mode -eq 'wet') {
         if ($changedRgbPixels -le 0) { throw "$id`: wet texture changed no pixels" }
+        # Below snow's 0.45 because water runs down the flanks by design: it has
+        # to be concentrated up top, not confined there.
+        if ([double]$entry.wetUpShare -lt 0.35) {
+            throw "$id`: water is not concentrated on up-facing surfaces: $($entry.wetUpShare)"
+        }
         if ([double]$entry.relativeLumaShift -le 0) {
             throw "$id`: wet texture records no shift from vanilla: $($entry.relativeLumaShift)"
         }

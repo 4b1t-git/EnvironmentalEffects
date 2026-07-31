@@ -24,26 +24,31 @@ const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
 // few puddles have gathered in the recesses, at the heaviest they have run
 // together across most of the level surface but still stop short of flooding it.
 //
-// Coverage is of the whole weapon rather than of its level surfaces only, so
-// these are lower than they look: at the heaviest level a bit over half the
-// weapon carries water and the rest still shows through, which is what keeps it
-// reading as pools ON a rifle instead of a rifle made of water.
+// Each wet level takes its GEOMETRY from one of the weapon's own snow stages
+// and supplies only its own alpha ceiling.
 //
-// Alpha spans 0.42 to 1.00 rather than the 0.62-0.94 it used to. That old range
-// is 1.5x from end to end, and since alpha is what scales the darkening, it
-// produced three levels whose painted pixels all moved by about the same amount
-// -- measured at 24, 22 and 22 luma. All the separation was coming from area,
-// which is the one cue that survives downscaling worst. Snow gets away with a
-// pure area ramp because each of its texels moves 110 luma; water does not have
-// that margin and has to ramp depth as well.
+// Water used to have a mask of its own -- a coarse pool field over every
+// surface but the undersides -- and reviewed in game it read as scattered
+// staining rather than as weather. Snow accumulates from the top down and
+// creeps onto the flanks as it builds; rain does the same, and that shared
+// top-down structure is what makes the two look like two states of one weapon.
+// Deriving from the snow stages rather than restating the numbers also keeps
+// each weapon's per-mesh flank tuning, which does vary across the roster.
 //
-// Alpha reaching 1.0 does not mean opaque: it is the input to a transparent
+// 1, 2 and 4 rather than 1, 2 and 3: the widest spread the snow ramp offers,
+// because legibility between levels was the original complaint.
+//
+// Alpha reaching 1.0 does not mean opaque. It is the input to a transparent
 // darkening, so a fully soaked surface still shows the weapon through it.
 const LEVELS = [
-  { suffix: "WetLight", stage: -1, wetCoverage: 0.20, wetMaxAlpha: 0.50 },
-  { suffix: "WetMedium", stage: -2, wetCoverage: 0.40, wetMaxAlpha: 0.76 },
-  { suffix: "WetHeavy", stage: -3, wetCoverage: 0.62, wetMaxAlpha: 1.00 },
+  { suffix: "WetLight", stage: -1, geometryFromSnowStage: 1, wetMaxAlpha: 0.50 },
+  { suffix: "WetMedium", stage: -2, geometryFromSnowStage: 2, wetMaxAlpha: 0.76 },
+  { suffix: "WetHeavy", stage: -3, geometryFromSnowStage: 4, wetMaxAlpha: 1.00 },
 ];
+
+// The MaxAlpha constant in generate_snow_textures.ps1, which is the ceiling the
+// snow flank alphas below were chosen against.
+const SNOW_MAX_ALPHA = 0.95;
 
 const isWet = asset => asset.mode === "wet";
 const templates = spec.assets.filter(a => !isWet(a) && Number(a.stage) === 1);
@@ -52,9 +57,27 @@ if (templates.length === 0) {
   throw new Error("no stage 1 snow entries found to derive wet entries from");
 }
 
+// Every snow stage of one weapon, keyed by stage, so a level can borrow the
+// geometry of a stage other than the one the naming is derived from.
+const snowStagesByWeapon = new Map();
+for (const asset of spec.assets) {
+  if (isWet(asset)) continue;
+  const key = `${asset.fullType}|${asset.mesh}|${asset.source}`;
+  if (!snowStagesByWeapon.has(key)) snowStagesByWeapon.set(key, new Map());
+  snowStagesByWeapon.get(key).set(Number(asset.stage), asset);
+}
+
 const wetAssets = [];
 for (const template of templates) {
+  const stages = snowStagesByWeapon.get(
+    `${template.fullType}|${template.mesh}|${template.source}`);
   for (const level of LEVELS) {
+    const geometry = stages && stages.get(level.geometryFromSnowStage);
+    if (!geometry) {
+      throw new Error(
+        `${template.id}: no snow stage ${level.geometryFromSnowStage} to take ` +
+          `${level.suffix} geometry from`);
+    }
     const id = template.id.replace(/_Snow[A-Za-z]+$/, `_${level.suffix}`);
     const modelName = template.modelName.replace(/_Snow[A-Za-z]+$/, `_${level.suffix}`);
     if (id === template.id || modelName === template.modelName) {
@@ -74,15 +97,26 @@ for (const template of templates) {
       upAxis: template.upAxis,
       upSign: template.upSign,
       flipV: template.flipV,
-      wetCoverage: level.wetCoverage,
+      // Geometry borrowed wholesale from a snow stage of the same weapon, so
+      // water builds up exactly the way snow does and each mesh keeps the flank
+      // tuning it was given.
+      targetUpCoverage: geometry.targetUpCoverage,
+      flankCoverage: geometry.flankCoverage,
+      // Rescaled into this level's range, not copied. The snow flank alphas were
+      // picked against a ceiling of 0.95, so copying 0.42 straight into a level
+      // whose top only reaches 0.50 would make the flanks nearly as dark as the
+      // upward faces and flatten the very top-down gradient this change is for.
+      // Scaling by the same ratio the top uses preserves snow's proportion.
+      flankMaxAlpha: Number(
+        (geometry.flankMaxAlpha * (level.wetMaxAlpha / SNOW_MAX_ALPHA)).toFixed(4)),
       wetMaxAlpha: level.wetMaxAlpha,
       // Shared with this weapon's snow entries on purpose. The noise field is
       // what makes one level a superset of the last; re-rolling it per level
-      // would move the wet patches around as the weapon soaks.
+      // would move the wetted area around as the weapon soaks.
       noiseBase: template.noiseBase,
       edgeSoftness: template.edgeSoftness,
       visuallyVerified: false,
-      verificationNote: `Derived from ${template.id}: identical mesh, source and axis. Not yet seen in game.`,
+      verificationNote: `Derived from ${template.id}, geometry from snow stage ${level.geometryFromSnowStage}. Not yet seen in game.`,
     });
   }
 }
@@ -91,10 +125,13 @@ spec.assets = spec.assets.filter(a => !isWet(a)).concat(wetAssets);
 
 spec.conventions.wetness =
   "Wet entries carry mode='wet' and a NEGATIVE stage, matching the signed state axis in EW_Config: " +
-  "positive stages are snow, negative are wet, 0 is vanilla. They use wetCoverage and wetMaxAlpha " +
-  "instead of targetUpCoverage/flankCoverage/flankMaxAlpha, because water has no up-facing gate to " +
-  "tune -- rain reaches every surface and only pools differently. noiseBase and edgeSoftness are " +
-  "inherited from the weapon's snow entries so both phenomena sit on the same noise field.";
+  "positive stages are snow, negative are wet, 0 is vanilla. They carry the SAME geometry keys as " +
+  "snow -- targetUpCoverage, flankCoverage, flankMaxAlpha, noiseBase, edgeSoftness -- copied from " +
+  "one of the weapon's own snow stages (1, 2 and 4 for the three levels), and add only wetMaxAlpha. " +
+  "Water builds from the top down and creeps onto the flanks exactly the way snow does; only the " +
+  "compositing differs, darkening where snow whitens. An earlier version gave water a pool field of " +
+  "its own with every surface but the undersides eligible, and in game it read as scattered staining " +
+  "rather than as weather.";
 
 fs.writeFileSync(specPath, JSON.stringify(spec, null, 2) + "\n");
 
