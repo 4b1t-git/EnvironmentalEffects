@@ -3,6 +3,7 @@ if not Config.DEBUG then return end
 
 require "ISUI/ISInventoryPaneContextMenu"
 
+local Diagnostics = require "EnvironmentalWeapons/EW_Diagnostics"
 local Profiles = require "EnvironmentalWeapons/EW_Profiles"
 local State = require "EnvironmentalWeapons/EW_State"
 local VisualAdapter = require "EnvironmentalWeapons/EW_VisualAdapter"
@@ -64,6 +65,54 @@ function DebugProbe.restoreVanilla(item)
     refresh(item, profile, 0, 0)
 end
 
+-- Reports whether the mounted-part model can be reached from Lua at all.
+--
+-- Vanilla declares which model a mounted part uses on the WEAPON, not on the
+-- part: `ModelWeaponPart = x2Scope x2Scope scope scope` means "for part type
+-- x2Scope draw model x2Scope at anchor scope". zombie.scripting.objects.
+-- ModelWeaponPart has four public String fields and a public no-arg
+-- constructor, and HandWeapon exposes public get/setModelWeaponPart, so on
+-- paper a scope could be pointed at a snowed model per weapon and per stage --
+-- which is the one thing this mod was believed unable to do.
+--
+-- What is NOT established is whether Kahlua exposes the class for construction,
+-- whether the list is per-item or shared with the script object, and whether
+-- changing it re-renders anything. Read-only: it constructs nothing and sets
+-- nothing, it only reports what is reachable, because a shared list would mean
+-- a write here changed every weapon of the type in the save.
+function DebugProbe.inspectWeaponParts(item)
+    if not item then return end
+    local report = { tostring(item:getFullType()) }
+
+    local okGet, list = pcall(function() return item:getModelWeaponPart() end)
+    if not okGet or list == nil then
+        report[#report + 1] = "getModelWeaponPart: UNAVAILABLE"
+    else
+        local okSize, size = pcall(function() return list:size() end)
+        report[#report + 1] = "parts=" .. (okSize and tostring(size) or "size() failed")
+        if okSize then
+            for i = 0, size - 1 do
+                local okEntry, entry = pcall(function() return list:get(i) end)
+                if okEntry and entry then
+                    local okFields, line = pcall(function()
+                        return tostring(entry.partType) .. "->" .. tostring(entry.modelName)
+                            .. "@" .. tostring(entry.attachmentNameSelf)
+                    end)
+                    report[#report + 1] = "  " .. (okFields and line or "fields unreadable")
+                end
+            end
+        end
+    end
+
+    -- Can Lua build the pieces a write would need?
+    local okClass = pcall(function() return ModelWeaponPart.new() end)
+    report[#report + 1] = "ModelWeaponPart.new: " .. (okClass and "OK" or "not exposed")
+    local okList = pcall(function() return ArrayList.new() end)
+    report[#report + 1] = "ArrayList.new: " .. (okList and "OK" or "not exposed")
+
+    Diagnostics.log("weapon parts | " .. table.concat(report, " | "))
+end
+
 local SNOW_LABELS = {
     "EW Debug: force stage 1 (light snow)",
     "EW Debug: force stage 2 (medium snow)",
@@ -105,6 +154,8 @@ local function onContextMenu(playerIndex, context, items)
         end
     end
 
+    context:addOption("EW Debug: inspect weapon parts (log only)", target,
+        DebugProbe.inspectWeaponParts)
     context:addOption("EW Debug: restore vanilla", target, DebugProbe.restoreVanilla)
 end
 

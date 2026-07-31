@@ -400,14 +400,34 @@ scripts. Measured on 2026-07-31:
   `MSR788_Rifle.x` (879), so neither is a rifle-with-scope. `HuntingRifle_Scope.png`
   is a 128x128 atlas of an old wooden rifle. **No vanilla script references any
   of them.** They are dead assets.
-- There is no exposed API to change the model of a MOUNTED part. `setStaticModel`
-  and `setWorldStaticModel` both address the ground item, not the part as drawn
-  on the weapon. Vanilla resolves a mounted part's model from the item by name.
+**There may be a route after all, and the earlier "impossible" was wrong.** It
+was concluded from what the vanilla Lua calls; reading the game's own class files
+turned up an API vanilla never uses:
 
-So a scope cannot take a per-state visual through `WeaponSprite` swapping, which
-is this mod's only mechanism. The only thing that would work is replacing the
-shared `Rifle_12XScope` texture globally, which is static -- a permanently snowy
-scope in July -- and therefore worse than leaving it alone.
+- The model a mounted part uses is declared on the **weapon**, not on the part:
+  `ModelWeaponPart = x2Scope x2Scope scope scope` in `items/weapon.txt` means
+  "for part type x2Scope, draw model x2Scope at anchor scope".
+- `zombie.scripting.objects.ModelWeaponPart` has four **public** String fields
+  (`partType`, `modelName`, `attachmentNameSelf`, `attachmentParent`) and a
+  **public no-arg constructor**.
+- `HandWeapon` exposes **public** `getModelWeaponPart()` and
+  `setModelWeaponPart(ArrayList)`.
+
+So on paper a scope can be pointed at a snowed model per weapon and per stage,
+which is exactly the thing this section said could not be done.
+
+**Unverified, and it must be tested before any of it is built:** whether Kahlua
+exposes `ModelWeaponPart` for construction from Lua, whether the returned list
+is per-item or shared with the script object -- a shared list would mean writing
+to it changes every weapon of that type in the save -- and whether changing it
+re-renders the mounted part at all. `EW_DebugProbe.inspectWeaponParts` answers
+all three and is deliberately read-only. Run it on a scoped rifle and read the
+console before writing a line of the feature.
+
+If it does work, the shape is: seven derivatives of `weapons/parts/Rifle_12XScope`
+(one texture covers all four scopes), seven EW scope models, and a write in the
+adapter alongside the existing `setWeaponSprite`. If the list turns out to be
+shared, stop -- a global write is worse than no feature.
 
 **What was done instead**, because the scope anchor is the fragile part:
 `generate_mod_wiring.js` copies vanilla's attachment blocks into all 133 EW
