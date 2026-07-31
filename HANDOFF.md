@@ -376,6 +376,39 @@ because it is the cheapest and its failure mode is the most invisible.
 
 A real check would need a Lua runtime and the project takes no new dependencies.
 
+## Open: the straight snow line on shotgun stocks
+
+Reported in game 2026-07-31: a hard straight line across the stock with no snow
+below it, worst on the shotguns. It is real and reproducible -- in the atlas it
+is a block of flat saturated white with straight edges, which looks nothing like
+the mottle everywhere else.
+
+**Not fixed.** Five candidate causes were tested and ruled out, so do not spend
+time on these again:
+
+| Ruled out | Evidence |
+| --- | --- |
+| Metal-vs-wood affinity starving the stock | Measured per material: shotgun stage 4 is metal 32.0% / wood 27.8%, while the hunting rifle -- which looks fine -- is 42.0% / 24.9%. The disparity is worse on the weapon that looks right |
+| Flank coverage too low | Raised it 1.6x at stage 4. The band stayed and a straight painted-looking streak appeared, which is the failure the `flankMaxAlpha` cap already exists to prevent. Reverted |
+| The mesh having several Mesh blocks, only the first parsed | `PumpAction_Shotgun.x` has exactly one `Frame` and one `Mesh`, same as the rifle |
+| UVs outside 0..1 being dropped by the rasteriser | All four weapons measured: every UV inside `u[0.005,0.996] v[0.007,0.996]`, zero out of range |
+| Gutter dilation bleeding into unowned atlas space | Set `GutterDilation` to 0 and regenerated. The band is unchanged |
+| The noise never dipping below the threshold, so a whole facet saturates | `NoiseFloor` lowered 0.45 -> 0.20, which widens the within-facet variation. No visible change |
+| Boundary raggedness switched off on flat facets | The jitter is multiplied by the texture-space gradient, which is zero inside a flat UV island. Added a floor, then raised it 2.75x. No visible change either time |
+
+What the evidence leaves: those texels genuinely carry an upward normal in the
+mesh, and the mask is doing exactly what it is told. The neighbouring facet's
+normal changes abruptly across a hard mesh edge that is also a UV seam, so the
+mask flips from full to nothing with nothing in between, and no texture-space
+softening can bridge it -- the two sides are not adjacent in the atlas.
+
+**The fix, if it is wanted:** blur `upness` across the SURFACE using mesh
+adjacency, rather than across texels. Build the triangle adjacency once from the
+`.x` file, smooth the per-texel up value along shared edges, then rasterise. That
+crosses UV seams because it works in mesh space, and it would soften every hard
+facet edge on every weapon, not just this one. It is a real piece of work in
+`BuildUpness` and was not started.
+
 ## Open tasks
 
 ### 1. Wetness -- DONE, confirmed in game 2026-07-30
