@@ -404,6 +404,71 @@ foreach ($report in $reports) {
 if ($models.Contains('model EW_HuntingRifle_SnowLight_World')) {
     throw 'Legacy world model is still registered'
 }
+
+# Every EW model must carry EXACTLY the attachment points of the vanilla model
+# it replaces, checked against the vanilla script rather than against itself.
+#
+# This is what keeps a mounted scope working. The scope is not part of the rifle
+# mesh -- vanilla declares `attachment scope` on the weapon model and hangs the
+# separate x2Scope/x4Scope/x8Scope model off that anchor -- so swapping the
+# WeaponSprite to an EW model swaps the anchor set with it. generate_mod_wiring.js
+# copies those blocks out of the vanilla script by brace matching, and a miscopy
+# there would silently move or drop every mounted part on the affected weapon.
+#
+# validate.js proves the set is non-empty and consistent across a weapon's seven
+# states without needing the game installed. This is the other half: that the set
+# is the RIGHT one. It lives here because this validator already reads vanilla
+# textures and so already requires the install.
+# Derived from a spec mesh path rather than hard-coded, so this does not pin the
+# check to one machine's Steam library. Every mesh lives at
+# <media>\models_X\weapons\firearm\<name>.x, so <media> is three levels up.
+$anyMesh = @($spec.assets)[0].mesh
+$mediaRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $anyMesh)))
+$vanillaModelsPath = Join-Path $mediaRoot 'scripts\generated\models_weapons.txt'
+if (-not (Test-Path -LiteralPath $vanillaModelsPath -PathType Leaf)) {
+    throw "vanilla models script not found for the attachment cross-check: $vanillaModelsPath"
+}
+$vanillaModels = Get-Content -LiteralPath $vanillaModelsPath -Raw
+
+function Get-ModelBody([string]$text, [string]$name) {
+    $bare = if ($name.Contains('.')) { $name.Substring($name.IndexOf('.') + 1) } else { $name }
+    $header = [regex]::Match($text, "(^|\n)\s*model\s+$([regex]::Escape($bare))\s*(\r?\n)?\s*\{")
+    if (-not $header.Success) { return $null }
+    $open = $text.IndexOf('{', $header.Index)
+    $depth = 0
+    for ($i = $open; $i -lt $text.Length; $i++) {
+        if ($text[$i] -eq '{') { $depth++ }
+        elseif ($text[$i] -eq '}') {
+            $depth--
+            if ($depth -eq 0) { return $text.Substring($open + 1, $i - $open - 1) }
+        }
+    }
+    return $null
+}
+
+function Get-AttachmentNames([string]$body) {
+    if ($null -eq $body) { return @() }
+    return @([regex]::Matches($body, 'attachment\s+(\w+)') | ForEach-Object { $_.Groups[1].Value } | Sort-Object)
+}
+
+$attachmentChecks = 0
+foreach ($asset in $spec.assets) {
+    $vanillaBody = Get-ModelBody $vanillaModels $asset.vanillaModel
+    if ($null -eq $vanillaBody) {
+        throw "$($asset.id): vanilla model $($asset.vanillaModel) not found for the attachment cross-check"
+    }
+    $ourBody = Get-ModelBody $models $asset.modelName
+    if ($null -eq $ourBody) {
+        throw "$($asset.id): model $($asset.modelName) is not declared"
+    }
+    $expected = Get-AttachmentNames $vanillaBody
+    $actual = Get-AttachmentNames $ourBody
+    if (($expected -join ',') -ne ($actual -join ',')) {
+        throw "$($asset.modelName): attachment points differ from vanilla $($asset.vanillaModel); expected [$($expected -join ',')] got [$($actual -join ',')]. A mounted scope or muzzle device would move or vanish on this state."
+    }
+    $attachmentChecks++
+}
+Write-Host "attachments: PASS ($attachmentChecks models match vanilla anchor sets)"
 # Firearms must never carry a WorldStaticModel: it forces the generic atlas
 # branch and stands the dropped weapon upright. Five slots per profiled weapon.
 $weaponCount = @($spec.assets | ForEach-Object { $_.fullType } | Sort-Object -Unique).Count

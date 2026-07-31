@@ -234,6 +234,8 @@ reviewed. Do not upload or publish the texture, seed, or package.
 | One fixed metric list in the texture manifest | The wet composite reports specular counts and no flank threshold; the snow composite the reverse. A fixed list emitted `"flankThreshold": ,` and produced unparseable JSON | The manifest emits whatever metrics the running composite actually reported |
 | Sorting stages -3..4 as one progression | Compared the most soaked texture against the least snowed one. On the wet side -3 is the DEEPEST level, so signed order runs backwards | Group by weapon AND mode, order by magnitude. Only snow proves texel nesting |
 | Debug probe hard-coded to `Base.HuntingRifle` | Quietly stopped covering eighteen of the nineteen supported firearms once the roster grew | The probe offers itself for any profiled item |
+| Reading vanilla's structure off filenames | `HuntingRifle_Scope.png` and `VarmintRifle_Scope.x` look exactly like a rifle-with-scope variant, and a whole task was specified on that reading. They are dead assets no script references: the two meshes are byte-identical to each other and have FEWER vertices than the plain rifle, and the PNG is a 128x128 atlas of a different, older rifle. A scope is really a separate model on an `attachment scope` anchor, and all four scopes share one texture | Confirm against `media/scripts/`, not against `media/textures/` and `media/models_X/`. A vanilla asset that no script mentions is not a feature |
+| Generating attachment blocks with nothing checking them | `generate_mod_wiring.js` copies vanilla's attachment anchors into all 133 EW models by brace matching. A miscopy would move or drop every mounted part -- scope, muzzle, bayonet, recoil pad, red dot -- on the affected weapon, silently, and only for players who had one attached | Two layers, because either alone has a blind spot. `validate.js` proves the set is non-empty and identical across a weapon's states, with no need for the game installed. `validate_snow_textures.ps1` proves it matches vanilla exactly, which is the only way to catch every state being wrong in the same way |
 | Giving water a mask of its own | Pools over every surface but the undersides, on the reasoning that rain reaches everything. In game it reads as scattered staining, not as weather, and no amount of retuning the pools fixed it because the defect was structural. Snow accumulates from the top down and creeps onto the flanks as it builds; rain does the same. Sharing the geometry and differing only in the optics is what makes the two look like two states of one weapon | `BuildWetMask` delegates to `BuildMask`. Wet spec entries carry snow's geometry keys, copied from the weapon's own snow stages 1, 2 and 4. Both validators now assert `wetUpShare >= 0.35` |
 | Trusting `state.visual` to decide the visual is already applied | `state.visual` lives in the item's modData and survives a save and reload; the `WeaponSprite` it describes is a runtime override that does not necessarily survive with it. After a reload the two disagree -- modData says "WetHeavy applied", the item has its vanilla sprite back -- and `reconcile` returns early because the stage asked for is the one it believes it set. The weapon renders dry forever while the state says soaked, silently, because the return precedes the only log in the function | Justify the early return with the ITEM's live `getWeaponSprite()`, not with our own record of what we asked for. Self-correcting after a reload and after anything else that resets the sprite |
 | Logging only from the visual adapter | The adapter returns early when the stage it is asked for is the one already applied, so a weapon that never leaves stage 0 is silent forever -- and `Controller.update` returned silently when there was no player yet. A live-but-idle build and a build whose client Lua never executed produced byte-identical logs. An in-game report of "it was soaked and nothing showed" could not be told apart from "it never got wet", which are opposite problems and cost a full debugging pass | With `DEBUG`, log proof of life at require time, the climate sample and tracked count every tick, and each item's value and stage before reconciling |
@@ -380,28 +382,44 @@ whose up-facing share falls below 0.35. `validate_snow_textures.ps1` rejects a
 wet level that is not at least 0.06 deeper than the level before it. And the
 adapter justifies its early return against the item's live sprite readback.
 
-### 2. Scopes, as a weapon variant rather than an attachment -- THE ONLY OPEN TASK
+### 2. Scopes -- NOT POSSIBLE with this mod's mechanism. Premise corrected.
 
-Measured against vanilla 42.20, and it makes this much cheaper than it looks:
+**There is no scoped rifle variant in vanilla 42.20.** An earlier version of this
+section claimed a mounted scope is drawn as part of the rifle's model and that
+feeding the generator a scoped mesh would snow the scope for free. That was
+wrong on every point, and it was written from filenames rather than from the
+scripts. Measured on 2026-07-31:
 
-- The scope ITEMS (`x2Scope`, `x4Scope`, `x8Scope`) declare only
-  `WorldStaticModel` and have **no `WeaponSprite`**. The mod works by swapping
-  `WeaponSprite`, so there is nothing on a scope to swap, and `WorldStaticModel`
-  is forbidden here anyway.
-- `HuntingRifle_Scope.png` and `VarmintRifle_Scope.png` are **not scope
-  textures**. They are textures for the rifle-WITH-scope model.
-- Therefore a mounted scope is drawn as part of the rifle's model. Feed the
-  generator the scoped mesh and snow lands on the scope **automatically**, with
-  no attachment system, no per-attachment modData, and no generator changes.
+- A scope is its own model hung off an anchor: every weapon model declares
+  `attachment scope` (and often `scope2`), and vanilla defines
+  `model x2Scope { mesh = weapons/parts/Rifle_2XScope, texture =
+  weapons/parts/Rifle_12XScope }`, likewise x4, x8 and x12. All four share ONE
+  texture.
+- `HuntingRifle_Scope.x` and `VarmintRifle_Scope.x` are **the same file**
+  (106548 bytes, 575 vertices) and have FEWER vertices than the plain
+  `MSR788_Rifle.x` (879), so neither is a rifle-with-scope. `HuntingRifle_Scope.png`
+  is a 128x128 atlas of an old wooden rifle. **No vanilla script references any
+  of them.** They are dead assets.
+- There is no exposed API to change the model of a MOUNTED part. `setStaticModel`
+  and `setWorldStaticModel` both address the ground item, not the part as drawn
+  on the weapon. Vanilla resolves a mounted part's model from the item by name.
 
-So the work is: two more spec entries (`HuntingRifle_Scope`,
-`VarmintRifle_Scope`) with their seven states each, plus a condition in
-`EW_Profiles`/`EW_VisualAdapter` that picks the scoped texture set when the
-weapon currently carries a scope. Only those two rifles have a scoped variant in
-vanilla, so the other seventeen need nothing.
+So a scope cannot take a per-state visual through `WeaponSprite` swapping, which
+is this mod's only mechanism. The only thing that would work is replacing the
+shared `Rifle_12XScope` texture globally, which is static -- a permanently snowy
+scope in July -- and therefore worse than leaving it alone.
 
-Decision already taken by the user on 2026-07-30, for the day a scope ever does
-get its own visual: **a scope keeps its own state** when moved between weapons,
+**What was done instead**, because the scope anchor is the fragile part:
+`generate_mod_wiring.js` copies vanilla's attachment blocks into all 133 EW
+models by brace matching, and nothing verified the copy. A miscopy would move or
+drop every mounted part on the affected weapon, silently. `validate.js` now
+proves the set is non-empty and identical across a weapon's seven states without
+needing the game installed; `validate_snow_textures.ps1` proves it matches the
+vanilla anchor set exactly, with the vanilla path derived from the spec rather
+than hard-coded.
+
+Decision already taken by the user on 2026-07-30, held for the day the engine
+ever allows it: **a scope keeps its own state** when moved between weapons,
 because state lives in the item's own modData like everything else in this mod.
 
 ## Prioritized next tasks

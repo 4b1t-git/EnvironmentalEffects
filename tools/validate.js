@@ -67,6 +67,66 @@ for (const reference of [
 if (/model EW_HuntingRifle_SnowLight_World\b/.test(models)) {
   throw new Error("Legacy world model must not be registered");
 }
+
+// Every EW model must carry the vanilla model's attachment points, and all of a
+// weapon's states must carry the SAME ones.
+//
+// This is what keeps a scoped rifle working. A mounted scope is not part of the
+// rifle mesh: vanilla declares `attachment scope` on the weapon model and hangs
+// the separate x2Scope/x4Scope/x8Scope model off that anchor. Swapping the
+// weapon's WeaponSprite to an EW model therefore swaps the anchor set too, and a
+// model that lost its attachment blocks would leave every mounted part -- scope,
+// muzzle, bayonet, recoil pad, red dot -- with nowhere to sit. Nothing checked
+// this before, and generate_mod_wiring.js copies those blocks out of the vanilla
+// script by brace matching, which is exactly the kind of thing that fails
+// quietly and only on some weapons.
+{
+  const byModel = new Map();
+  const re = /model\s+(EW_\w+)\s*(?:\r?\n)?\s*\{/g;
+  let match;
+  while ((match = re.exec(models))) {
+    const name = match[1];
+    let depth = 0;
+    const open = models.indexOf("{", match.index);
+    let body = null;
+    for (let i = open; i < models.length; i++) {
+      if (models[i] === "{") depth++;
+      else if (models[i] === "}" && --depth === 0) {
+        body = models.slice(open + 1, i);
+        break;
+      }
+    }
+    if (body === null) throw new Error(`${name}: unterminated model block`);
+    const attachments = [...body.matchAll(/attachment\s+(\w+)/g)].map(a => a[1]).sort();
+    if (attachments.length === 0) {
+      throw new Error(
+        `${name}: declares no attachment points; a mounted scope or muzzle ` +
+          `device would have no anchor on this state`
+      );
+    }
+    byModel.set(name, attachments.join(","));
+  }
+  if (byModel.size === 0) throw new Error("no EW models found to check attachments on");
+
+  // States of one weapon share a name prefix: EW_<weapon>_<state>.
+  const byWeapon = new Map();
+  for (const [name, attachments] of byModel) {
+    const weapon = name.replace(/_(Snow|Wet)[A-Za-z]+$/, "");
+    if (weapon === name) throw new Error(`${name}: cannot derive a weapon from the model name`);
+    if (!byWeapon.has(weapon)) byWeapon.set(weapon, new Map());
+    byWeapon.get(weapon).set(name, attachments);
+  }
+  for (const [weapon, states] of byWeapon) {
+    const distinct = new Set(states.values());
+    if (distinct.size > 1) {
+      const detail = [...states].map(([n, a]) => `${n}=[${a}]`).join(" ");
+      throw new Error(
+        `${weapon}: states disagree on their attachment points, so a mounted ` +
+          `part would move or vanish as the weapon ices up or dries: ${detail}`
+      );
+    }
+  }
+}
 const profiles = fs.readFileSync(resolve("42/media/lua/shared/EnvironmentalWeapons/EW_Profiles.lua"), "utf8");
 if (!/\[1\]\s*=\s*\{[\s\S]*?worldModel\s*=\s*nil/.test(profiles)) {
   throw new Error("Hunting Rifle Stage 1 must use HandWeapon world fallback");
