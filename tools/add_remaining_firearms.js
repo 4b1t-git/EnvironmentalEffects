@@ -42,26 +42,21 @@ const WEAPONS = [
     // coverage ramp. Nothing here is a guess.
     shapeOf: "EW_L92_Carbine",
   },
-  {
-    id: "EW_Revolver_CapGun",
-    fullType: "Base.Revolver_CapGun",
-    vanillaModel: "Base.Revolver_CapGun",
-    modelName: "EW_Revolver_CapGun",
-    mesh: mesh("ToyGun_Hand"),
-    source: texture("ToyGun"),
-    // A pistol-shaped toy; the handgun ramp fits it, not the rifle one.
-    shapeOf: "EW_M9_Pistol",
-  },
-  {
-    id: "EW_Rifle_CapGun",
-    fullType: "Base.Rifle_CapGun",
-    vanillaModel: "Base.Rifle_CapGun",
-    modelName: "EW_Rifle_CapGun",
-    mesh: mesh("ToyRifle_Hand"),
-    source: texture("ToyRifle"),
-    shapeOf: "EW_L92_Carbine",
-  },
 ];
+
+// The two cap guns are deliberately absent, and this is the reason rather than
+// an oversight: they are declared in
+// scripts/generated/TEMPORARY_TESTING_new_items/TESTING_CapGuns.txt, which is
+// the developers' own name for unfinished content, and their atlases are 64x64
+// -- too few texels for the noise field to make anything but coarse blotches.
+// The size barrier that used to exclude them is gone, so if they ever graduate
+// out of that folder they are two entries here and nothing else:
+//
+//   Revolver_CapGun  mesh ToyGun_Hand,   texture ToyGun,   shape of EW_M9_Pistol
+//   Rifle_CapGun     mesh ToyRifle_Hand, texture ToyRifle, shape of EW_L92_Carbine
+//
+// The toy meshes are authored on a different axis from every other firearm:
+// Rifle_CapGun measured 0.96 up-facing share on axis 0 against 0.39 on axis 2.
 
 const SUFFIX = { 1: "SnowLight", 2: "SnowMedium", 3: "SnowHeavy", 4: "SnowFull" };
 

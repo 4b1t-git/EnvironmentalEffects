@@ -75,11 +75,23 @@ foreach ($property in $manifest.assets.PSObject.Properties) {
     $sourceBitmap = [System.Drawing.Bitmap]::new($entry.sourcePath)
     $outputBitmap = [System.Drawing.Bitmap]::new($outputPath)
     try {
-        if ($sourceBitmap.Width -ne 256 -or $sourceBitmap.Height -ne 256) {
-            throw "$id`: source dimensions are not 256x256"
+        # Square, a power of two, and IDENTICAL between source and output. The
+        # edge itself is whatever the vanilla art uses: the L94 Rifle ships a
+        # 2048 atlas while everything else is 256, and demanding 256 here is the
+        # other half of what kept it out of the roster.
+        #
+        # What actually has to hold is that the derivative has the same shape as
+        # what it derives from, which the generator's own size guard cannot check
+        # because it only ever sees the source.
+        $atlas = $sourceBitmap.Width
+        if ($sourceBitmap.Width -ne $sourceBitmap.Height) {
+            throw "$id`: source is not square ($($sourceBitmap.Width)x$($sourceBitmap.Height))"
         }
-        if ($outputBitmap.Width -ne 256 -or $outputBitmap.Height -ne 256) {
-            throw "$id`: output dimensions are not 256x256"
+        if ($atlas -band ($atlas - 1)) {
+            throw "$id`: source edge $atlas is not a power of two"
+        }
+        if ($outputBitmap.Width -ne $atlas -or $outputBitmap.Height -ne $atlas) {
+            throw "$id`: output is $($outputBitmap.Width)x$($outputBitmap.Height) but its source is ${atlas}x${atlas}"
         }
 
         $opaquePixels = 0
