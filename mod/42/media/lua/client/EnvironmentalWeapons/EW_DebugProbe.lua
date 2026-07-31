@@ -80,37 +80,58 @@ end
 -- changing it re-renders anything. Read-only: it constructs nothing and sets
 -- nothing, it only reports what is reachable, because a shared list would mean
 -- a write here changed every weapon of the type in the save.
+-- Logged step by step rather than assembled and printed at the end, and ordered
+-- so the decisive questions are answered first.
+--
+-- The first run of this proved the point: reading a field off a ModelWeaponPart
+-- raises, the pcall catches it, but the in-game debugger's "Break On Error"
+-- halts on caught errors too, so the run stopped before reaching the questions
+-- that actually matter and the report was never printed. Emitting as it goes
+-- means whatever has already been established survives an interruption.
 function DebugProbe.inspectWeaponParts(item)
     if not item then return end
-    local report = { tostring(item:getFullType()) }
+    local function step(label, fn)
+        local ok, value = pcall(fn)
+        Diagnostics.log("parts probe | " .. label .. " = "
+            .. (ok and tostring(value) or "FAILED"))
+        return ok, value
+    end
 
-    local okGet, list = pcall(function() return item:getModelWeaponPart() end)
-    if not okGet or list == nil then
-        report[#report + 1] = "getModelWeaponPart: UNAVAILABLE"
-    else
-        local okSize, size = pcall(function() return list:size() end)
-        report[#report + 1] = "parts=" .. (okSize and tostring(size) or "size() failed")
-        if okSize then
+    Diagnostics.log("parts probe | ---- " .. tostring(item:getFullType()) .. " ----")
+
+    -- Decisive question one: can Lua build the objects a write would need? If
+    -- either of these is unreachable the whole approach is dead, so ask before
+    -- anything that might halt the run.
+    local okClass = step("ModelWeaponPart.new()", function() return ModelWeaponPart.new() end)
+    local okList = step("ArrayList.new()", function() return ArrayList.new() end)
+
+    -- Decisive question two: are the fields writable? ModelWeaponPart declares
+    -- four public Strings and NO accessors, and Kahlua exposes methods rather
+    -- than fields, so this is the step most likely to sink it: an object that
+    -- cannot be filled in is useless even if it can be constructed.
+    if okClass then
+        step("write+read modelName on a fresh instance", function()
+            local fresh = ModelWeaponPart.new()
+            fresh.modelName = "EW_probe"
+            return fresh.modelName
+        end)
+    end
+
+    -- Everything below is detail, and is allowed to be the part that halts.
+    local okGet, list = step("getModelWeaponPart()", function()
+        return item:getModelWeaponPart()
+    end)
+    if okGet and list ~= nil then
+        local okSize, size = step("list:size()", function() return list:size() end)
+        if okSize and size then
             for i = 0, size - 1 do
-                local okEntry, entry = pcall(function() return list:get(i) end)
-                if okEntry and entry then
-                    local okFields, line = pcall(function()
-                        return tostring(entry.partType) .. "->" .. tostring(entry.modelName)
-                            .. "@" .. tostring(entry.attachmentNameSelf)
-                    end)
-                    report[#report + 1] = "  " .. (okFields and line or "fields unreadable")
-                end
+                step("entry " .. i .. " partType", function() return list:get(i).partType end)
+                step("entry " .. i .. " modelName", function() return list:get(i).modelName end)
             end
         end
     end
 
-    -- Can Lua build the pieces a write would need?
-    local okClass = pcall(function() return ModelWeaponPart.new() end)
-    report[#report + 1] = "ModelWeaponPart.new: " .. (okClass and "OK" or "not exposed")
-    local okList = pcall(function() return ArrayList.new() end)
-    report[#report + 1] = "ArrayList.new: " .. (okList and "OK" or "not exposed")
-
-    Diagnostics.log("weapon parts | " .. table.concat(report, " | "))
+    Diagnostics.log("parts probe | ---- end ----")
 end
 
 local SNOW_LABELS = {
